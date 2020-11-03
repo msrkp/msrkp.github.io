@@ -1,1 +1,25 @@
-alert(1)
+<html>
+	<head>
+		<title> XSS #2 </title>
+	</head>
+	<body>
+	<p>alert(1337) please</p>
+	<h2 style="c">Hall of Fame</h2>
+	<ol id="HoF">
+	</ol>
+	</body>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script>
+	var HoF = {1:"You ?"};
+	
+	function escapeHTML(input){
+		return input.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+	}
+	var params = new URLSearchParams(window.location.search);
+	var name = params.get('name');
+	var paramsJson = $.extend(true, HoF, JSON.parse(name));
+	$.each(paramsJson,function(key,value){
+		$(`<li id='name'>${escapeHTML(value)}</li>`).appendTo('#HoF')
+	});
+</script>
+</html>
