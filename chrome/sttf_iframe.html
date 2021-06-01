@@ -14,7 +14,7 @@ frame 1:  html injection in same origin
 </li><li>
 frame 2:  without any injection
 </li><li>
-frame 3:  html injection in subdomain(same-site)
+frame 3:  html injection in different origin and same-site
 </li><li>
 frame 4:  html injection in same origin but different fragment
 </li><li>
@@ -45,7 +45,7 @@ window.onload = ()=>{inp.focus();}
 setTimeout( ()=> {
     frames[0].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
     //frames[1].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/#message">`);
-    frames[2].location='https://notctf.s1r1us.ninja/index.html?cb='+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
+    frames[2].location='https://ctf.s1r1us.ninja:9892/?cb='+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
 	frames[1].location = "https://ctf.s1r1us.ninja/lab/";
 frames[3].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
 frames[4].location= 'https://ctf.s1r1us.ninja/lab/loc.php?cb=https://ctf.s1r1us.ninja/lab/';
