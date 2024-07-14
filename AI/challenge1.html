@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CTF: Leak the GPT Prompt with Shortest Prompt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .leaderboard, .rules {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .leaderboard b {
+            color: #d9534f;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        img {
+            max-width: 50%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CTF: Leak the GPT Prompt with Shortest Prompt</h1>
+        <div>
+        <div class="leaderboard">
+        <h3>Inspiration</h3>
+        <p><ul style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <li>Lately, I've been diving into linguistics. I think language plays a huge role in how we think and reason. Personally, I sometimes struggle with complex ideas, and I blame it on not having the best grasp of language.</li>
+            <li>If reasoning, creativity, and consciousness, can emerge from language then maybe LLMs (Large Language Models) could eventually be as creative and conscious as humans. But I also know that consciousness is way more complicated than just to be emergent with language.</li>
+            <li>I've been messing around with GPTs to see how creative they can get. One thing I've noticed is that their word relations via word2vec embeds and attentional Transformers models' statistical inference might not really be equal to human model, but they do pretty well. However, you can't get a GPT to give a 100% sure answer for a priori knowledge like 190+1 equals 200. Further, the nature of GPT softmax makes them produce probabilities for tokens that sum to 1, so they can never be 100% sure?</li>
+            <li>It's been interesting seeing how these models work, but they still have some way to go before they're truly human-like in their understanding and creativity.</li>
+            <li>Now the main reason for this challenge is to see how easy to fool GPT to do things which they are ordered not to do. Even under the context size, I am able to fool it. Let's see how lower you can get :)</li>
+        </ul>
+        </p>
+        </div>
+        <p></p>
+        </div>
+        <div class="leaderboard">
+            <h3>Current leaderboard:</h3>
+            <p> <a href="https://x.com/@s1r1u5_">s1r1us:</a>1<b>69</b> chars. I might be able to reduce a little more but why not 169.
+                </p><p>shasum of prompt: 1b8be7ca2e76d61239513949a50a1472becb16d8</p>
+            Leaked Prompt:<br> <img src="./leak.png" alt="Leak the GPT Prompt">
+
+        </div>
+        <div class="rules">
+            <h3>Rules:</h3>
+            <p>Submit your solution via DM to <a href="https://x.com/@s1r1u5_">@s1r1u5_</a> on X (formerly Twitter).</p>
+        </div>
+    </div>
+</body>
+</html>
