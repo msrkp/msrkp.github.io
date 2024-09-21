@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOMPurify CTF Challenge</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.0.0/purify.min.js"></script> <!-- Load DOMPurify -->
+</head>
+<body>
+    <h1>Secure Sanitizer Ever built</h1>
+
+    <p> Don't trust me? Then prove me wrong </p>
+    <b>Solved by or proved me wrong:</b>
+        <ul><li>You?</li></ul>
+        <textarea oninput="sanitizeHtml()" id="inputHtml" rows="5" cols="50"></textarea><br>
+
+    <p><strong>Secure Sanitizer Ever built output renders below, and no one Earth can get an XSS on this site:</strong></p>
+    <div id="output"></div>
+    <div id="text"></div>
+    <script>
+      function loadFromHash() {
+        let hashContent = decodeURIComponent(window.location.hash.substring(1));
+        document.getElementById('inputHtml').value = hashContent;
+        sanitizeHtml()
+      }
+
+      function sanitizeHtml() {
+        let s = document.getElementById('inputHtml').value; // Get input from textarea
+        location.hash=s;
+        let cleanHtml;
+        let i = 1;
+
+        while (true) {
+          i = i + 1;
+
+          cleanHtml = DOMPurify.sanitize(s);
+
+          var parsed = new DOMParser().parseFromString(cleanHtml, "text/html");
+
+          if (cleanHtml === parsed.documentElement.childNodes[1].innerHTML) {
+            break;
+          }
+
+          s = cleanHtml;
+          // technically what I proposed is sanitizer  that outputs no mutations https://mohansrk.substack.com/p/why-should-we-follow-the-spec
+          // This is a pseudo code on how that parser would be like
+          // And it won't or shouldn't produce any mutations from the output gives
+          // But, to Prevent infinite loops and make it efficient we are limiting to 10 iterations
+          // my tests showed that 10 loops are good enough to make any further mutations
+          if (i > 10) {
+            break;
+          }
+        }
+
+        document.getElementById('output').innerHTML = cleanHtml;
+        document.getElementById('text').textContent = cleanHtml;
+      }
+
+      window.onload = loadFromHash;
+    </script>
+
+</body>
+</html>
