@@ -106,7 +106,7 @@ The source code of it implemenation can be found here. https://github.com/electr
 
 The minimal version looks as below([unsnipped version](https://gist.github.com/msrkp/1ed54c513caef9f0e0b5cfa9b9c35cde)), you can compile and play around with it.
 
-`$ clang++ hello_world.cc -I. -Iinclude -Lout.gn/discord.release/obj -lv8_monolith -o hello_world -std=c++17 -stdlib=libc++ -DV8_COMPRESS_POINTERS -target arm64-apple-macos11 -lpthread&& ./hello_world`
+`$ clang++ hello_world.cc -I. -Iinclude -Lout.gn/main.release/obj -lv8_monolith -o hello_world -std=c++17 -stdlib=libc++ -DV8_COMPRESS_POINTERS -target arm64-apple-macos11 -lpthread&& ./hello_world`
 
 ```c++
 #include <libplatform/libplatform.h>
@@ -273,7 +273,7 @@ For a proof of concept, I created [this code](https://gist.github.com/msrkp/6853
 ```c++
   const char* isolated_code = R"(
         console.log("In Isolated Context:");
-        var regexp = /^discord_[a-z0-9_-]+$/;
+        var regexp = /^only_allow_this_module_[a-z0-9_-]+$/;
         %DebugPrint(regexp);
         %DebugPrint(regexp.source);
         function requireModule(name) {
