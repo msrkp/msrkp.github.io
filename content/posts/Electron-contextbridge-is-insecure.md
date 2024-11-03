@@ -1,7 +1,7 @@
 ---
 title: "Mind the v8 patch gap: Electron's Context Isolation is insecure"
 date: 2024-11-03T15:16:18+05:30
-draft: true
+draft: false
 ---
 
 ### TL;DR

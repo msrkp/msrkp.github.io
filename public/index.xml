@@ -2,75 +2,68 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>s1r1us Blog</title>
-    <link>//localhost:52413/</link>
+    <link>//localhost:1313/</link>
     <description>Recent content on s1r1us Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
     <lastBuildDate>Sun, 03 Nov 2024 15:16:18 +0530</lastBuildDate>
-    <atom:link href="//localhost:52413/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure</title>
-      <link>//localhost:52413/posts/electron-contextbridge-is-insecure/</link>
+      <link>//localhost:1313/posts/electron-contextbridge-is-insecure/</link>
       <pubDate>Sun, 03 Nov 2024 15:16:18 +0530</pubDate>
-      <guid>//localhost:52413/posts/electron-contextbridge-is-insecure/</guid>
+      <guid>//localhost:1313/posts/electron-contextbridge-is-insecure/</guid>
       <description>&lt;h3 id=&#34;tldr&#34;&gt;TL;DR&lt;/h3&gt;&#xA;&lt;p&gt;As I was working on the script for my Discord RCE video, I took another look at Electron security and noticed that a lot of apps don’t fully understand how context isolation works and potential vulnerabilities in context isolation, especially if they’re not regularly updating Electron. I came across a few apps where, with a V8 exploit, you can actually bypass context isolation and access dangerous APIs within the isolated context, APIs that normally wouldn’t be accessible from the main context. In this post, I want to share some insights for both bug hunters and developers on issues they might find around context isolation.&lt;/p&gt;</description>
     </item>
     <item>
       <title>My Advice for Someone Who Wants to Be an Hacker</title>
-      <link>//localhost:52413/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</link>
+      <link>//localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</link>
       <pubDate>Sun, 03 Nov 2024 13:45:55 +0530</pubDate>
-      <guid>//localhost:52413/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</guid>
+      <guid>//localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</guid>
       <description>&lt;p&gt;Recently I replied to a tweet from @nahamsec &lt;a href=&#34;https://x.com/NahamSec/status/1851818696685314160&#34;&gt;https://x.com/NahamSec/status/1851818696685314160&lt;/a&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Bug bounty hunters: What’s your advice for someone who’s trying to make their first $100,000 in 2025? What should they do/learn? What should they avoid?&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;Here is my personal advice on the question:&lt;/p&gt;&#xA;&lt;p&gt;Pick a niche, become an expert, find bugs maybe even 0days or reverse n-days, and write blogs. Even if you don’t hit those $100k bounties, it’ll be a stepping stone toward a $100k job.&lt;/p&gt;</description>
     </item>
     <item>
-      <title>V8 CVE-2021-21224 Renderer RCE Root Cause Analysis</title>
-      <link>//localhost:52413/posts/v8-rca/</link>
-      <pubDate>Tue, 29 Oct 2024 17:30:20 +0530</pubDate>
-      <guid>//localhost:52413/posts/v8-rca/</guid>
-      <description>&lt;h3 id=&#34;v8-cve-2021-21224-renderer-rce-root-cause-analysis&#34;&gt;V8 CVE-2021-21224 Renderer RCE Root Cause Analysis&lt;/h3&gt;&#xA;&lt;p&gt;Initially, I didn’t know much about V8’s exploitation as I was a web guy with interest in v8, it was my CTF teammate, &lt;a href=&#34;https://twitter.com/ptryudai?lang=en&#34;&gt;ptr-yudai&lt;/a&gt;, who helped me craft the Discord exploit. Back then, understanding the root cause wasn’t always necessary; for some of the exploits used in &lt;a href=&#34;https://media.defcon.org/DEF%20CON%2030/DEF%20CON%2030%20presentations/Aaditya%20Purani%20-%20ElectroVolt%20Pwning%20popular%20desktop%20apps%20while%20uncovering%20new%20attack%20surface%20on%20Electron.pdf&#34;&gt;Electrovolt&lt;/a&gt; research, I relied on regression tests added with patches or on existing exploits from GitHub or blogs. From there, I would write primitives and exploit Electron internals as needed. The goal for Electrovolt research was to exploit Electron apps running on older Chromium V8 versions with plenty of known bugs, often by using a JIT bug, writing the exploit, and compromising the app, so I never had to know about the root cause of the issue 😂.&lt;/p&gt;</description>
-    </item>
-    <item>
       <title>About &#34;me&#34;</title>
-      <link>//localhost:52413/about/</link>
+      <link>//localhost:1313/about/</link>
       <pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate>
-      <guid>//localhost:52413/about/</guid>
+      <guid>//localhost:1313/about/</guid>
       <description>&lt;p&gt;This is Mohan Sri Rama Krishna Pedhapati.&lt;/p&gt;&#xA;&lt;p&gt;About me?&lt;/p&gt;&#xA;&lt;h4 id=&#34;on-a-biological-and-cultural-level&#34;&gt;on a biological and cultural level:&lt;/h4&gt;&#xA;&lt;p&gt;A homo sapien from southern part of India, speaking a Dravidian language.&lt;/p&gt;&#xA;&lt;h4 id=&#34;on-a-ontological-level&#34;&gt;on a ontological level:&lt;/h4&gt;&#xA;&lt;p&gt;I don’t know what I am; perhaps I am an evolving work, a piece of art that will only reach completion after I am gone, continually shaped by books, philosophy, and science. An art without purpose or meaning, yet the art becomes the purpose itself.&lt;/p&gt;</description>
     </item>
     <item>
       <title>MXSS Evolution and Timeline: A primer to MXSS</title>
-      <link>//localhost:52413/posts/mxss-101/</link>
+      <link>//localhost:1313/posts/mxss-101/</link>
       <pubDate>Tue, 03 Sep 2024 13:40:27 +0530</pubDate>
-      <guid>//localhost:52413/posts/mxss-101/</guid>
+      <guid>//localhost:1313/posts/mxss-101/</guid>
       <description>&lt;p&gt;&lt;strong&gt;MXSS Evolution and Timeline&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Note this a document which I created while working on the MXSS video series &lt;a href=&#34;https://youtu.be/aczTceXp49U&#34;&gt;https://youtu.be/aczTceXp49U&lt;/a&gt;, its very raw just random thoughts added here, if you want anything to change. feel free to pr.&lt;/p&gt;&#xA;&lt;h3 id=&#34;how-do-html-sanitizers-work&#34;&gt;&lt;strong&gt;How Do HTML Sanitizers Work?&lt;/strong&gt;&lt;/h3&gt;&#xA;&lt;p&gt;Sanitizers are tools designed to filter harmful content from HTML, making it safe to insert into a webpage. The process involves several steps:&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;strong&gt;Parsing:&lt;/strong&gt; The HTML content is parsed into a DOM tree on either the server or in the browser.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Sanitization:&lt;/strong&gt; The sanitizer iterates through the DOM tree to remove dangerous or harmful content.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Serialization:&lt;/strong&gt; After sanitizing, the DOM tree is serialized back into an HTML string.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Re-parsing:&lt;/strong&gt; The serialized HTML is assigned to &lt;code&gt;innerHTML&lt;/code&gt;, triggering another parsing process.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Appending to Document:&lt;/strong&gt; The final, sanitized DOM tree is appended to the document.&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;However, despite these steps, sanitizers—especially server-side ones—can fail due to &lt;strong&gt;parser differentials&lt;/strong&gt; between server and client. A server-side sanitizer might miss dangerous content that behaves differently when parsed by a browser. A typical example is when content is treated as RAWTEXT on the server but as active HTML in the browser.&lt;/p&gt;</description>
     </item>
     <item>
       <title>MXSS: Why Should We Follow Spec</title>
-      <link>//localhost:52413/posts/mxss-why-should-we-follow-spec/</link>
+      <link>//localhost:1313/posts/mxss-why-should-we-follow-spec/</link>
       <pubDate>Sat, 03 Aug 2024 13:54:16 +0530</pubDate>
-      <guid>//localhost:52413/posts/mxss-why-should-we-follow-spec/</guid>
+      <guid>//localhost:1313/posts/mxss-why-should-we-follow-spec/</guid>
       <description>&lt;p&gt;Edit: freddyb from Firefox reminded me about RETURN_DOM_FRAGMENT flag in DOMPurify which effectiely removes second parsing and the mxss problem too, read about it here&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://x.com/freddyb/status/1843916184477126945&#34;&gt;https://x.com/freddyb/status/1843916184477126945&lt;/a&gt;&lt;/p&gt;&#xA;&lt;h1 id=&#34;why-should-we-follow-the-spec&#34;&gt;Why should we follow the spec?&lt;/h1&gt;&#xA;&lt;h2 id=&#34;following-the-spec-might-not-always-ensure-security&#34;&gt;Following the Spec Might Not Always Ensure Security?&lt;/h2&gt;&#xA;&lt;p&gt;&lt;strong&gt;Parsing Differentials&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;HTML sanitization is a challenging problem because the HTML needs to be parsed during sanitization to remove potentially dangerous elements. However, when the sanitized HTML string is assigned to the browser DOM, it gets parsed again.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Hacker Roadmap 2023: Becoming a Hacker: A Personal Narrative and a Roadmap</title>
-      <link>//localhost:52413/posts/hacker-roadmap-2023/</link>
+      <link>//localhost:1313/posts/hacker-roadmap-2023/</link>
       <pubDate>Fri, 03 Nov 2023 13:42:50 +0530</pubDate>
-      <guid>//localhost:52413/posts/hacker-roadmap-2023/</guid>
+      <guid>//localhost:1313/posts/hacker-roadmap-2023/</guid>
       <description>&lt;h1 id=&#34;becoming-a-hacker-a-personal-narrative-and-a-roadmap&#34;&gt;Becoming a Hacker: A Personal Narrative and a Roadmap&lt;/h1&gt;&#xA;&lt;p&gt;The following will guide anyone interested in getting started in hacking or infosec. All the below content is based on the assumption that the reader doesn&amp;rsquo;t know anything about computer/hacking.&lt;/p&gt;&#xA;&lt;p&gt;&amp;ldquo;I can only show you the door. You&amp;rsquo;re the one that has to walk through it.&amp;rdquo; - Morpheus, The Matrix. I&amp;rsquo;m giving you the map, but you&amp;rsquo;ve got to steer the journey. Success depends on your effort and choices.&lt;/p&gt;</description>
     </item>
     <item>
       <title>2022 - 2024 Archived posts</title>
-      <link>//localhost:52413/posts/2022-24.s1r1us.ninja-old-blog/</link>
+      <link>//localhost:1313/posts/2022-24.s1r1us.ninja-old-blog/</link>
       <pubDate>Thu, 03 Nov 2022 14:39:29 +0530</pubDate>
-      <guid>//localhost:52413/posts/2022-24.s1r1us.ninja-old-blog/</guid>
+      <guid>//localhost:1313/posts/2022-24.s1r1us.ninja-old-blog/</guid>
       <description>&lt;h2 id=&#34;2022---2024-archived-posts&#34;&gt;2022 - 2024 Archived posts&lt;/h2&gt;&#xA;&lt;p&gt;The blog can be accessed at &lt;a href=&#34;https://blog.s1r1us.ninja/&#34;&gt;here&lt;/a&gt; or&#xA;&lt;a href=&#34;https://sites.google.com/view/h1-2006-ctf-124adsfadfladklkld/home?authuser=0&#34;&gt;here&lt;/a&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://github.com/msrkp/hacker-roadmap/blob/main/README.md&#34;&gt;Becoming a Hacker: A Personal Narrative and a Roadmap&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://sites.google.com/view/h1-2006-ctf-124adsfadfladklkld/research/brokenconflu?authuser=0&#34;&gt;CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://sites.google.com/view/h1-2006-ctf-124adsfadfladklkld/research/PP?authuser=0&#34;&gt;&amp;ldquo;A tale of making internet pollution free&amp;rdquo; - Exploiting Client-Side Prototype Pollution in the wild&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://sites.google.com/view/h1-2006-ctf-124adsfadfladklkld/about-me/Looking-Back-Looking-Forward?authuser=0&#34;&gt;Looking Back and Looking Forward&lt;/a&gt;, Dec 31, 2021&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://sites.google.com/view/h1-2006-ctf-124adsfadfladklkld/CTF/bsidesahm2021?authuser=0&#34;&gt;&amp;ldquo;1 Day XSLeak and a trailer for ElectronJS bugs&amp;rdquo; -Author&amp;rsquo;s writeup for BSides Ahmedabad CTF 2021&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://blog.s1r1us.ninja/bug-bounty/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks&#34;&gt;Cookie Tossing to RCE on Google Cloud JupyterLab&lt;/a&gt;, Dec 23, 2020&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://blog.s1r1us.ninja/CTF/site-isolation&#34;&gt;A tale of solving all the recent XSS challenges using chrome 1-day.&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://sites.google.com/view/h1-2006-ctf-124adsfadfladklkld/CTF/IuseBing?authuser=0&#34;&gt;Google CTF - 2020 Writeup&lt;/a&gt;, Aug  26, 2020&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Non-Infosec Quests&lt;/p&gt;</description>
     </item>
     <item>
       <title>2019 Archied posts</title>
-      <link>//localhost:52413/posts/2019.s1r1us.ninja-old-blog/</link>
+      <link>//localhost:1313/posts/2019.s1r1us.ninja-old-blog/</link>
       <pubDate>Sun, 03 Nov 2019 14:18:56 +0530</pubDate>
-      <guid>//localhost:52413/posts/2019.s1r1us.ninja-old-blog/</guid>
-      <description>&lt;h2 id=&#34;2022---2024-archived-posts&#34;&gt;2022 - 2024 Archived posts&lt;/h2&gt;&#xA;&lt;p&gt;This is my 2019 blog with some writeups &lt;a href=&#34;https://2019.s1r1us.ninja/&#34;&gt;https://2019.s1r1us.ninja/&lt;/a&gt;&lt;/p&gt;</description>
+      <guid>//localhost:1313/posts/2019.s1r1us.ninja-old-blog/</guid>
+      <description>&lt;h2 id=&#34;2022---2024-archived-posts&#34;&gt;2022 - 2024 Archived posts&lt;/h2&gt;&#xA;&lt;p&gt;This is my 2019 blog with some writeups &lt;a href=&#34;https://2019.s1r1us.ninja/a&#34;&gt;https://2019.s1r1us.ninja/a&lt;/a&gt;&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

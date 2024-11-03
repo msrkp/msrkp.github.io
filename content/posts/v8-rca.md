@@ -1,15 +1,7 @@
 ---
 title: "V8 CVE-2021-21224 Renderer RCE Root Cause Analysis"
 date: 2024-10-29T17:30:20+05:30
-tags:
-    - v8
-categories:
-    - RCE
-keywords:
-    - v8
-    - exploit
-    - RCA
-    - RCE
+draft: true
 ---
 
 ### V8 CVE-2021-21224 Renderer RCE Root Cause Analysis 
