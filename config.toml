@@ -1,4 +1,4 @@
-baseURL = ""
+baseURL = "https://s1r1us.ninja"
 languageCode = "en-us"
 title = "s1r1us Blog"
 theme = "cactus"

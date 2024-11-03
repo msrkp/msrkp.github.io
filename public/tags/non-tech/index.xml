@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Non Tech on s1r1us Blog</title>
-    <link>//localhost:1313/tags/non-tech/</link>
+    <link>http://localhost:1313/tags/non-tech/</link>
     <description>Recent content in Non Tech on s1r1us Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
     <lastBuildDate>Fri, 03 Nov 2023 13:42:50 +0530</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/non-tech/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/non-tech/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hacker Roadmap 2023: Becoming a Hacker: A Personal Narrative and a Roadmap</title>
-      <link>//localhost:1313/posts/hacker-roadmap-2023/</link>
+      <link>http://localhost:1313/posts/hacker-roadmap-2023/</link>
       <pubDate>Fri, 03 Nov 2023 13:42:50 +0530</pubDate>
-      <guid>//localhost:1313/posts/hacker-roadmap-2023/</guid>
+      <guid>http://localhost:1313/posts/hacker-roadmap-2023/</guid>
       <description>&lt;h1 id=&#34;becoming-a-hacker-a-personal-narrative-and-a-roadmap&#34;&gt;Becoming a Hacker: A Personal Narrative and a Roadmap&lt;/h1&gt;&#xA;&lt;p&gt;The following will guide anyone interested in getting started in hacking or infosec. All the below content is based on the assumption that the reader doesn&amp;rsquo;t know anything about computer/hacking.&lt;/p&gt;&#xA;&lt;p&gt;&amp;ldquo;I can only show you the door. You&amp;rsquo;re the one that has to walk through it.&amp;rdquo; - Morpheus, The Matrix. I&amp;rsquo;m giving you the map, but you&amp;rsquo;ve got to steer the journey. Success depends on your effort and choices.&lt;/p&gt;</description>
     </item>
   </channel>

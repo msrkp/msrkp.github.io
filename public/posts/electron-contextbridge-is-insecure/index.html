@@ -9,12 +9,12 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title> Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure | s1r1us Blog</title>
-  <link rel = 'canonical' href = '//localhost:1313/posts/electron-contextbridge-is-insecure/'>
+  <link rel = 'canonical' href = 'http://localhost:1313/posts/electron-contextbridge-is-insecure/'>
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="googlebot" content="index,follow,snippet,archive">
-  <meta property="og:url" content="//localhost:1313/posts/electron-contextbridge-is-insecure/">
+  <meta property="og:url" content="http://localhost:1313/posts/electron-contextbridge-is-insecure/">
   <meta property="og:site_name" content="s1r1us Blog">
   <meta property="og:title" content="Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure">
   <meta property="og:description" content="TL;DR As I was working on the script for my Discord RCE video, I took another look at Electron security and noticed that a lot of apps don’t fully understand how context isolation works and potential vulnerabilities in context isolation, especially if they’re not regularly updating Electron. I came across a few apps where, with a V8 exploit, you can actually bypass context isolation and access dangerous APIs within the isolated context, APIs that normally wouldn’t be accessible from the main context. In this post, I want to share some insights for both bug hunters and developers on issues they might find around context isolation.">
@@ -34,7 +34,7 @@
     
   
   
-  <link rel="stylesheet" href="//localhost:1313/css/styles.7c754dee4bfc873743b12288cf94eadcfd3bee1f2cff5a106753b8047879ac5195c8d8ad90f6d73f12e9c841696c51a0abdeae8394e3eb3079f310f418ddf9ec.css" integrity="sha512-fHVN7kv8hzdDsSKIz5Tq3P077h8s/1oQZ1O4BHh5rFGVyNitkPbXPxLpyEFpbFGgq96ug5Tj6zB58xD0GN357A=="> 
+  <link rel="stylesheet" href="http://localhost:1313/css/styles.7c754dee4bfc873743b12288cf94eadcfd3bee1f2cff5a106753b8047879ac5195c8d8ad90f6d73f12e9c841696c51a0abdeae8394e3eb3079f310f418ddf9ec.css" integrity="sha512-fHVN7kv8hzdDsSKIz5Tq3P077h8s/1oQZ1O4BHh5rFGVyNitkPbXPxLpyEFpbFGgq96ug5Tj6zB58xD0GN357A=="> 
 
   
   
@@ -46,7 +46,7 @@
   
 
   
-<link rel="icon" type="image/png" href="//localhost:1313/images/favicon.ico" />
+<link rel="icon" type="image/png" href="http://localhost:1313/images/favicon.ico" />
 
   
   
@@ -78,7 +78,7 @@
       <ul>
         
         <li>
-          <a class="icon" href=" //localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/" aria-label="Previous">
+          <a class="icon" href=" http://localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/" aria-label="Previous">
             <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
           </a>
         </li>
@@ -110,47 +110,47 @@
   
   
   <li>
-    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Facebook">
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Facebook">
       <i class="fab fa-facebook " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&text=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Twitter">
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&text=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Twitter">
       <i class="fab fa-twitter " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Linkedin">
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Linkedin">
       <i class="fab fa-linkedin " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&is_video=false&description=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pinterest">
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&is_video=false&description=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pinterest">
       <i class="fab fa-pinterest " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="mailto:?subject=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Email">
+    <a class="icon" href="mailto:?subject=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&body=Check out this article: http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Email">
       <i class="fas fa-envelope " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pocket">
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pocket">
       <i class="fab fa-get-pocket " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="reddit">
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="reddit">
       <i class="fab fa-reddit " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&name=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&description=%3ch3%20id%3d%22tldr%22%3eTL%3bDR%3c%2fh3%3e%0a%3cp%3eAs%20I%20was%20working%20on%20the%20script%20for%20my%20Discord%20RCE%20video%2c%20I%20took%20another%20look%20at%20Electron%20security%20and%20noticed%20that%20a%20lot%20of%20apps%20don%e2%80%99t%20fully%20understand%20how%20context%20isolation%20works%20and%20potential%20vulnerabilities%20in%20context%20isolation%2c%20especially%20if%20they%e2%80%99re%20not%20regularly%20updating%20Electron.%20I%20came%20across%20a%20few%20apps%20where%2c%20with%20a%20V8%20exploit%2c%20you%20can%20actually%20bypass%20context%20isolation%20and%20access%20dangerous%20APIs%20within%20the%20isolated%20context%2c%20APIs%20that%20normally%20wouldn%e2%80%99t%20be%20accessible%20from%20the%20main%20context.%20In%20this%20post%2c%20I%20want%20to%20share%20some%20insights%20for%20both%20bug%20hunters%20and%20developers%20on%20issues%20they%20might%20find%20around%20context%20isolation.%3c%2fp%3e" aria-label="Tumblr">
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&name=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&description=%3ch3%20id%3d%22tldr%22%3eTL%3bDR%3c%2fh3%3e%0a%3cp%3eAs%20I%20was%20working%20on%20the%20script%20for%20my%20Discord%20RCE%20video%2c%20I%20took%20another%20look%20at%20Electron%20security%20and%20noticed%20that%20a%20lot%20of%20apps%20don%e2%80%99t%20fully%20understand%20how%20context%20isolation%20works%20and%20potential%20vulnerabilities%20in%20context%20isolation%2c%20especially%20if%20they%e2%80%99re%20not%20regularly%20updating%20Electron.%20I%20came%20across%20a%20few%20apps%20where%2c%20with%20a%20V8%20exploit%2c%20you%20can%20actually%20bypass%20context%20isolation%20and%20access%20dangerous%20APIs%20within%20the%20isolated%20context%2c%20APIs%20that%20normally%20wouldn%e2%80%99t%20be%20accessible%20from%20the%20main%20context.%20In%20this%20post%2c%20I%20want%20to%20share%20some%20insights%20for%20both%20bug%20hunters%20and%20developers%20on%20issues%20they%20might%20find%20around%20context%20isolation.%3c%2fp%3e" aria-label="Tumblr">
       <i class="fab fa-tumblr " aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&t=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Hacker News">
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&t=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Hacker News">
       <i class="fab fa-hacker-news " aria-hidden="true"></i>
     </a>
   </li>
@@ -605,47 +605,47 @@ b. 3 more context isolation bypass via leaked objects in main context <a href="h
   
   
   <li>
-    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Facebook">
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Facebook">
       <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&text=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Twitter">
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&text=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Twitter">
       <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Linkedin">
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Linkedin">
       <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&is_video=false&description=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pinterest">
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&is_video=false&description=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pinterest">
       <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="mailto:?subject=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Email">
+    <a class="icon" href="mailto:?subject=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&body=Check out this article: http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Email">
       <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pocket">
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pocket">
       <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="reddit">
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="reddit">
       <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&name=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&description=%3ch3%20id%3d%22tldr%22%3eTL%3bDR%3c%2fh3%3e%0a%3cp%3eAs%20I%20was%20working%20on%20the%20script%20for%20my%20Discord%20RCE%20video%2c%20I%20took%20another%20look%20at%20Electron%20security%20and%20noticed%20that%20a%20lot%20of%20apps%20don%e2%80%99t%20fully%20understand%20how%20context%20isolation%20works%20and%20potential%20vulnerabilities%20in%20context%20isolation%2c%20especially%20if%20they%e2%80%99re%20not%20regularly%20updating%20Electron.%20I%20came%20across%20a%20few%20apps%20where%2c%20with%20a%20V8%20exploit%2c%20you%20can%20actually%20bypass%20context%20isolation%20and%20access%20dangerous%20APIs%20within%20the%20isolated%20context%2c%20APIs%20that%20normally%20wouldn%e2%80%99t%20be%20accessible%20from%20the%20main%20context.%20In%20this%20post%2c%20I%20want%20to%20share%20some%20insights%20for%20both%20bug%20hunters%20and%20developers%20on%20issues%20they%20might%20find%20around%20context%20isolation.%3c%2fp%3e" aria-label="Tumblr">
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&name=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&description=%3ch3%20id%3d%22tldr%22%3eTL%3bDR%3c%2fh3%3e%0a%3cp%3eAs%20I%20was%20working%20on%20the%20script%20for%20my%20Discord%20RCE%20video%2c%20I%20took%20another%20look%20at%20Electron%20security%20and%20noticed%20that%20a%20lot%20of%20apps%20don%e2%80%99t%20fully%20understand%20how%20context%20isolation%20works%20and%20potential%20vulnerabilities%20in%20context%20isolation%2c%20especially%20if%20they%e2%80%99re%20not%20regularly%20updating%20Electron.%20I%20came%20across%20a%20few%20apps%20where%2c%20with%20a%20V8%20exploit%2c%20you%20can%20actually%20bypass%20context%20isolation%20and%20access%20dangerous%20APIs%20within%20the%20isolated%20context%2c%20APIs%20that%20normally%20wouldn%e2%80%99t%20be%20accessible%20from%20the%20main%20context.%20In%20this%20post%2c%20I%20want%20to%20share%20some%20insights%20for%20both%20bug%20hunters%20and%20developers%20on%20issues%20they%20might%20find%20around%20context%20isolation.%3c%2fp%3e" aria-label="Tumblr">
       <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
     </a>
   </li>
   <li>
-    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&t=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Hacker News">
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&t=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Hacker News">
       <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
     </a>
   </li>
