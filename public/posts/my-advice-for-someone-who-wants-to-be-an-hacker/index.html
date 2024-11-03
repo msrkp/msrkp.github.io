@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <script type="text/javascript" src="https://latest.cactus.chat/cactus.js"></script>
+  <link rel="stylesheet" href="https://latest.cactus.chat/style.css" type="text/css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> My Advice for Someone Who Wants to Be an Hacker | s1r1us Blog</title>
+  <link rel = 'canonical' href = '//localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/'>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:url" content="//localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="My Advice for Someone Who Wants to Be an Hacker">
+  <meta property="og:description" content="Recently I replied to a tweet from @nahamsec https://x.com/NahamSec/status/1851818696685314160
+Bug bounty hunters: What’s your advice for someone who’s trying to make their first $100,000 in 2025? What should they do/learn? What should they avoid?
+Here is my personal advice on the question:
+Pick a niche, become an expert, find bugs maybe even 0days or reverse n-days, and write blogs. Even if you don’t hit those $100k bounties, it’ll be a stepping stone toward a $100k job.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-03T13:45:55+05:30">
+    <meta property="article:modified_time" content="2024-11-03T13:45:55+05:30">
+    <meta property="article:tag" content="V8">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="My Advice for Someone Who Wants to Be an Hacker">
+  <meta name="twitter:description" content="Recently I replied to a tweet from @nahamsec https://x.com/NahamSec/status/1851818696685314160
+Bug bounty hunters: What’s your advice for someone who’s trying to make their first $100,000 in 2025? What should they do/learn? What should they avoid?
+Here is my personal advice on the question:
+Pick a niche, become an expert, find bugs maybe even 0days or reverse n-days, and write blogs. Even if you don’t hit those $100k bounties, it’ll be a stepping stone toward a $100k job.">
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="/css/styles.c6b6e1ea2d9a5ffc60bdd43664058a8fd8caa59181519f76ad68e7a40bb909a902c804ca6e312bd35f003597a2c2414752dd34cd7b14cc9e94ffce9bd1e69136.css" integrity="sha512-xrbh6i2aX/xgvdQ2ZAWKj9jKpZGBUZ92rWjnpAu5CakCyATKbjEr018ANZeiwkFHUt00zXsUzJ6U/86b0eaRNg=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="//localhost:1313/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" //localhost:1313/posts/v8-rca/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="//localhost:1313/posts/electron-contextbridge-is-insecure/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&text=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&title=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&is_video=false&description=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&title=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&title=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&name=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker&description=%3cp%3eRecently%20I%20replied%20to%20a%20tweet%20from%20%40nahamsec%20%3ca%20href%3d%22https%3a%2f%2fx.com%2fNahamSec%2fstatus%2f1851818696685314160%22%3ehttps%3a%2f%2fx.com%2fNahamSec%2fstatus%2f1851818696685314160%3c%2fa%3e%3c%2fp%3e%0a%3cblockquote%3e%0a%3cp%3eBug%20bounty%20hunters%3a%20What%e2%80%99s%20your%20advice%20for%20someone%20who%e2%80%99s%20trying%20to%20make%20their%20first%20%24100%2c000%20in%202025%3f%20What%20should%20they%20do%2flearn%3f%20What%20should%20they%20avoid%3f%3c%2fp%3e%0a%3c%2fblockquote%3e%0a%3cp%3eHere%20is%20my%20personal%20advice%20on%20the%20question%3a%3c%2fp%3e%0a%3cp%3ePick%20a%20niche%2c%20become%20an%20expert%2c%20find%20bugs%20maybe%20even%200days%20or%20reverse%20n-days%2c%20and%20write%20blogs.%20Even%20if%20you%20don%e2%80%99t%20hit%20those%20%24100k%20bounties%2c%20it%e2%80%99ll%20be%20a%20stepping%20stone%20toward%20a%20%24100k%20job.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&t=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        My Advice for Someone Who Wants to Be an Hacker
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2024-11-03 13:45:55 &#43;0530 IST" itemprop="datePublished">2024-11-03</time>
+          
+        </div>
+        
+         | 
+        <a class="a" href="/">Home</a>
+      </div>
+    </header>
+
+  
+    
+    <div class="content" itemprop="articleBody">
+      <p>Recently I replied to a tweet from @nahamsec <a href="https://x.com/NahamSec/status/1851818696685314160">https://x.com/NahamSec/status/1851818696685314160</a></p>
+<blockquote>
+<p>Bug bounty hunters: What’s your advice for someone who’s trying to make their first $100,000 in 2025? What should they do/learn? What should they avoid?</p>
+</blockquote>
+<p>Here is my personal advice on the question:</p>
+<p>Pick a niche, become an expert, find bugs maybe even 0days or reverse n-days, and write blogs. Even if you don’t hit those $100k bounties, it’ll be a stepping stone toward a $100k job.</p>
+<h4 id="what-niche-how-to-pick-examples">What niche? How to pick? Examples?</h4>
+<p>infosec being so vast from web3 sec to web2, mobile, desktop, recon, client-side, server-side, cryptography and so on. These are umbrella terms, but if we zoom in, there are specific areas where spending a lot of focused time will make you a top 20 expert &ndash; 100% sure.</p>
+<p>The key thing is, that the current top 20 experts in any niche will eventually be replaced as they get bored or burned out. This leaves room for you, and the easiest way to pick a niche is to learn from an existing expert in the niche, take inspiration, and grind to build on top of it.</p>
+<ol>
+<li>
+<p>For instance, I got into the client-side JS niche by following @terjanq’s work. From there, I went down even further to focus specifically on ElectronJS.</p>
+</li>
+<li>
+<p>Another example: @rootxharsh and @iamnoooob their niche is in reversing n-days and finding new ones based on that knowledge. I don’t think anyone in India can compete with them on reversing n-days, writing blogs, and submitting findings to bounty programs.</p>
+</li>
+<li>
+<p>And off the top of my head, @ajxchapman, from his tweets, seems to have a specific niche in V8 n-day exploits. I don’t think there’s anyone else in the web security scene who can write V8 exploits 😅.</p>
+</li>
+<li>
+<p>Like @orange_8361, pick a complex target and grind on it for months eventually uncovering mind-blowing findings.</p>
+</li>
+<li>
+<p>Or, like @albinowax, choose a complex specification, such as HTTP, and find bugs from every aspect of it from top to bottom</p>
+</li>
+</ol>
+<p>I could list so many more people, but my point is this: if you look at the top bug bounty hunters or experts, there’s a pattern. Their blogs or tweets consistently focus on a specific niche (or two) for years and years. No one ever becomes a pro in a night.</p>
+<h4 id="how-to-become-an-expert-in-a-specific-niche">How to Become an Expert in a Specific Niche?</h4>
+<p>Spend a lot of time. There’s no shortcut. Follow the work of the expert you picked for inspiration, read their blogs, dive into the blogs they learned from, and explore everyone else in that specific niche. Solve CTFs and write about them.</p>
+<p>For example, not to make it all about myself, but just as an example. I’ve read every blog from the people I listed as inspirations(<a href="https://blog.s1r1us.ninja/inspiration">https://blog.s1r1us.ninja/inspiration</a>) while learning client-side security.</p>
+<p>If it’s taking time to understand, you’re likely on the right path. That’s where most people give up, so keep pushing. Just dedicating days to it will put you ahead of at least 100 others. It’s that simple.</p>
+<pre tabindex="0"><code>Expert = Spent Time × IQ  
+</code></pre><p>Find Bugs or 0days, Reverse n-days, and &ldquo;Write Blogs</p>
+<p>Once you’re an expert, finding bugs will start to feel natural. But let’s be real, sometimes you might not get lucky. When that happens, reverse other n-days and write about it. I mean write about anything. Nothing gives you as much exposure as writing blogs: you’re helping others, plus you’re building a network that will eventually help you land a $100k job or $100k bounties.</p>
+<h4 id="why-the-above-advice-might-not-be-easy-to-execute">Why the above advice might not be easy to execute?</h4>
+<p>it&rsquo;s not easy.</p>
+<p>Exactly, this is what the equation captures: lower capability (IQ) requires more time, while higher capability requires less time.</p>
+<p>Expert = Spent Time × IQ</p>
+<p>But honestly, spending more time demands another dimension of brain power. It’s probably more like:</p>
+<p>Spending Time = Focus × Persistence × Interest</p>
+<p>Here, focus and persistence are largely influenced by brain factors beyond our control like ADHD making uniquely easy or hard for each person.</p>
+<p>So being delusional that we are going make it is the way.</p>
+
+    </div>
+  </article>
+
+  
+  
+
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/posts">Posts</a></li>
+         
+          <li><a href="/about">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&text=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&title=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&is_video=false&description=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&title=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&title=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&name=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker&description=%3cp%3eRecently%20I%20replied%20to%20a%20tweet%20from%20%40nahamsec%20%3ca%20href%3d%22https%3a%2f%2fx.com%2fNahamSec%2fstatus%2f1851818696685314160%22%3ehttps%3a%2f%2fx.com%2fNahamSec%2fstatus%2f1851818696685314160%3c%2fa%3e%3c%2fp%3e%0a%3cblockquote%3e%0a%3cp%3eBug%20bounty%20hunters%3a%20What%e2%80%99s%20your%20advice%20for%20someone%20who%e2%80%99s%20trying%20to%20make%20their%20first%20%24100%2c000%20in%202025%3f%20What%20should%20they%20do%2flearn%3f%20What%20should%20they%20avoid%3f%3c%2fp%3e%0a%3c%2fblockquote%3e%0a%3cp%3eHere%20is%20my%20personal%20advice%20on%20the%20question%3a%3c%2fp%3e%0a%3cp%3ePick%20a%20niche%2c%20become%20an%20expert%2c%20find%20bugs%20maybe%20even%200days%20or%20reverse%20n-days%2c%20and%20write%20blogs.%20Even%20if%20you%20don%e2%80%99t%20hit%20those%20%24100k%20bounties%2c%20it%e2%80%99ll%20be%20a%20stepping%20stone%20toward%20a%20%24100k%20job.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2fmy-advice-for-someone-who-wants-to-be-an-hacker%2f&t=My%20Advice%20for%20Someone%20Who%20Wants%20to%20Be%20an%20Hacker" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2024  Copyright © s1r1us 
+    
+      
+    
+      
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://github.com/ElecmsrkptrovoltSec" aria-label="github">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="mailto:l33tsirius@gmail.com" aria-label="Email">
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://twitter.com/s1r1u5_" aria-label="twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+    
+  
+  </div>
+  <div class="footer-right">
+    <nav>
+    
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+
+<script src=/js/code-copy.js></script>
+
+
+
+
+</html>

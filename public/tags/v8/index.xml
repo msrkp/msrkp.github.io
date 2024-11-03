@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>V8 on s1r1us Blog</title>
+    <link>//localhost:1313/tags/v8/</link>
+    <description>Recent content in V8 on s1r1us Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>Copyright © s1r1us</copyright>
+    <lastBuildDate>Sun, 03 Nov 2024 13:45:55 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/v8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My Advice for Someone Who Wants to Be an Hacker</title>
+      <link>//localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</link>
+      <pubDate>Sun, 03 Nov 2024 13:45:55 +0530</pubDate>
+      <guid>//localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</guid>
+      <description>&lt;p&gt;Recently I replied to a tweet from @nahamsec &lt;a href=&#34;https://x.com/NahamSec/status/1851818696685314160&#34;&gt;https://x.com/NahamSec/status/1851818696685314160&lt;/a&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Bug bounty hunters: What’s your advice for someone who’s trying to make their first $100,000 in 2025? What should they do/learn? What should they avoid?&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;Here is my personal advice on the question:&lt;/p&gt;&#xA;&lt;p&gt;Pick a niche, become an expert, find bugs maybe even 0days or reverse n-days, and write blogs. Even if you don’t hit those $100k bounties, it’ll be a stepping stone toward a $100k job.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>V8 CVE-2021-21224 Renderer RCE Root Cause Analysis</title>
+      <link>//localhost:1313/posts/v8-rca/</link>
+      <pubDate>Tue, 29 Oct 2024 17:30:20 +0530</pubDate>
+      <guid>//localhost:1313/posts/v8-rca/</guid>
+      <description>&lt;h3 id=&#34;v8-cve-2021-21224-renderer-rce-root-cause-analysis&#34;&gt;V8 CVE-2021-21224 Renderer RCE Root Cause Analysis&lt;/h3&gt;&#xA;&lt;p&gt;Initially, I didn’t know much about V8’s exploitation as I was a web guy with interest in v8, it was my CTF teammate, &lt;a href=&#34;https://twitter.com/ptryudai?lang=en&#34;&gt;ptr-yudai&lt;/a&gt;, who helped me craft the Discord exploit. Back then, understanding the root cause wasn’t always necessary; for some of the exploits used in &lt;a href=&#34;https://media.defcon.org/DEF%20CON%2030/DEF%20CON%2030%20presentations/Aaditya%20Purani%20-%20ElectroVolt%20Pwning%20popular%20desktop%20apps%20while%20uncovering%20new%20attack%20surface%20on%20Electron.pdf&#34;&gt;Electrovolt&lt;/a&gt; research, I relied on regression tests added with patches or on existing exploits from GitHub or blogs. From there, I would write primitives and exploit Electron internals as needed. The goal for Electrovolt research was to exploit Electron apps running on older Chromium V8 versions with plenty of known bugs, often by using a JIT bug, writing the exploit, and compromising the app, so I never had to know about the root cause of the issue 😂.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

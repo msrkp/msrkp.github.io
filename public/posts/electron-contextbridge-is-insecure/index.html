@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <script type="text/javascript" src="https://latest.cactus.chat/cactus.js"></script>
+  <link rel="stylesheet" href="https://latest.cactus.chat/style.css" type="text/css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure | s1r1us Blog</title>
+  <link rel = 'canonical' href = '//localhost:1313/posts/electron-contextbridge-is-insecure/'>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:url" content="//localhost:1313/posts/electron-contextbridge-is-insecure/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure">
+  <meta property="og:description" content="TL;DR As I was working on the script for my Discord RCE video, I took another look at Electron security and noticed that a lot of apps don’t fully understand how context isolation works and potential vulnerabilities in context isolation, especially if they’re not regularly updating Electron. I came across a few apps where, with a V8 exploit, you can actually bypass context isolation and access dangerous APIs within the isolated context, APIs that normally wouldn’t be accessible from the main context. In this post, I want to share some insights for both bug hunters and developers on issues they might find around context isolation.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-03T15:16:18+05:30">
+    <meta property="article:modified_time" content="2024-11-03T15:16:18+05:30">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure">
+  <meta name="twitter:description" content="TL;DR As I was working on the script for my Discord RCE video, I took another look at Electron security and noticed that a lot of apps don’t fully understand how context isolation works and potential vulnerabilities in context isolation, especially if they’re not regularly updating Electron. I came across a few apps where, with a V8 exploit, you can actually bypass context isolation and access dangerous APIs within the isolated context, APIs that normally wouldn’t be accessible from the main context. In this post, I want to share some insights for both bug hunters and developers on issues they might find around context isolation.">
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="/css/styles.c6b6e1ea2d9a5ffc60bdd43664058a8fd8caa59181519f76ad68e7a40bb909a902c804ca6e312bd35f003597a2c2414752dd34cd7b14cc9e94ffce9bd1e69136.css" integrity="sha512-xrbh6i2aX/xgvdQ2ZAWKj9jKpZGBUZ92rWjnpAu5CakCyATKbjEr018ANZeiwkFHUt00zXsUzJ6U/86b0eaRNg=="> 
+
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="//localhost:1313/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" //localhost:1313/posts/my-advice-for-someone-who-wants-to-be-an-hacker/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&text=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&is_video=false&description=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&name=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&description=%3ch3%20id%3d%22tldr%22%3eTL%3bDR%3c%2fh3%3e%0a%3cp%3eAs%20I%20was%20working%20on%20the%20script%20for%20my%20Discord%20RCE%20video%2c%20I%20took%20another%20look%20at%20Electron%20security%20and%20noticed%20that%20a%20lot%20of%20apps%20don%e2%80%99t%20fully%20understand%20how%20context%20isolation%20works%20and%20potential%20vulnerabilities%20in%20context%20isolation%2c%20especially%20if%20they%e2%80%99re%20not%20regularly%20updating%20Electron.%20I%20came%20across%20a%20few%20apps%20where%2c%20with%20a%20V8%20exploit%2c%20you%20can%20actually%20bypass%20context%20isolation%20and%20access%20dangerous%20APIs%20within%20the%20isolated%20context%2c%20APIs%20that%20normally%20wouldn%e2%80%99t%20be%20accessible%20from%20the%20main%20context.%20In%20this%20post%2c%20I%20want%20to%20share%20some%20insights%20for%20both%20bug%20hunters%20and%20developers%20on%20issues%20they%20might%20find%20around%20context%20isolation.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&t=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2024-11-03 15:16:18 &#43;0530 IST" itemprop="datePublished">2024-11-03</time>
+          
+        </div>
+        
+         | 
+        <a class="a" href="/">Home</a>
+      </div>
+    </header>
+
+  
+    
+    <div class="content" itemprop="articleBody">
+      <h3 id="tldr">TL;DR</h3>
+<p>As I was working on the script for my Discord RCE video, I took another look at Electron security and noticed that a lot of apps don’t fully understand how context isolation works and potential vulnerabilities in context isolation, especially if they’re not regularly updating Electron. I came across a few apps where, with a V8 exploit, you can actually bypass context isolation and access dangerous APIs within the isolated context, APIs that normally wouldn’t be accessible from the main context. In this post, I want to share some insights for both bug hunters and developers on issues they might find around context isolation.</p>
+<h2 id="chrome-isolates-how-context-isolation-works">Chrome isolates: How context isolation works</h2>
+<p>From Electron documentation, it states context isolation as</p>
+<ul>
+<li>
+<p>Context Isolation is a feature that ensures that both your preload scripts and Electron&rsquo;s internal logic run in a separate context to the website you load in a webContents. This is important for security purposes as it helps prevent the website from accessing Electron internals or the powerful APIs your preload script has access to.</p>
+</li>
+<li>
+<p>This means that the window object that your preload script has access to is actually a different object than the website would have access to. For example, if you set window.hello = &lsquo;wave&rsquo; in your preload script and context isolation is enabled, window.hello will be undefined if the website tries to access it.</p>
+</li>
+</ul>
+<p>The architecture looks as below.</p>
+<p><img src="/img/ciso.png" alt="ciso"></p>
+<h4 id="example">Example</h4>
+<p>Let’s assume a basic Electron app that loads an external page, <a href="https://ctf.s1r1us.ninja/jsbin.html">https://ctf.s1r1us.ninja/jsbin.html</a>. Here’s how we can use context isolation to protect against unauthorized access to Electron’s internal APIs or any sensitive functionality.</p>
+<p><em>main.js</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-js" data-lang="js"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">app</span>, <span style="color:#a6e22e">BrowserWindow</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;electron&#39;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;path&#39;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">createWindow</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">win</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">BrowserWindow</span>({
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#a6e22e">width</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">800</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>    <span style="color:#a6e22e">height</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">600</span>,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>    <span style="color:#a6e22e">webPreferences</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>      <span style="color:#a6e22e">preload</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">__dirname</span>, <span style="color:#e6db74">&#39;preload.js&#39;</span>),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>      <span style="color:#a6e22e">contextcontextIsolation</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>, <span style="color:#75715e">// Enable context isolation
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span><span style="color:#75715e"></span>      <span style="color:#a6e22e">nodeIntegration</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> <span style="color:#75715e">// Disable Node.js integration in renderer
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>  });
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>  <span style="color:#a6e22e">win</span>.<span style="color:#a6e22e">loadURL</span>(<span style="color:#e6db74">&#39;https://ctf.s1r1us.ninja/jsbin.html&#39;</span>);<span style="color:#75715e">//[1]
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span><span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">whenReady</span>().<span style="color:#a6e22e">then</span>(<span style="color:#a6e22e">createWindow</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20</span><span><span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;window-all-closed&#39;</span>, () =&gt; {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21</span><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">platform</span> <span style="color:#f92672">!==</span> <span style="color:#e6db74">&#39;darwin&#39;</span>) <span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">quit</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22</span><span>});
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24</span><span><span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;activate&#39;</span>, () =&gt; {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25</span><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">BrowserWindow</span>.<span style="color:#a6e22e">getAllWindows</span>().<span style="color:#a6e22e">length</span> <span style="color:#f92672">===</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">createWindow</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26</span><span>});
+</span></span></code></pre></div><p>Here’s what each setting does:</p>
+<ul>
+<li>nodeIntegration: false prevents the webpage from directly accessing Node.js APIs, reducing the risk of system access.</li>
+<li>contextIsolation: true ensures that Electron’s internals and any APIs defined in preload scripts remain isolated from the external webpage.</li>
+</ul>
+<p>Now, Let’s say we want to give <a href="https://ctf.s1r1us.ninja">https://ctf.s1r1us.ninja</a> access to a restricted set of modules, but without compromising security. We can achieve this by defining a safeRequire function in our preload script. This function will only allow access to modules with specific names, ensuring that ctf.s1r1us.ninja can’t load unauthorized modules or perform unsafe operations like <code>require('child_process').exec('calc');</code>.</p>
+<p><em>preload.js</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-js" data-lang="js"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">contextBridge</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;electron&#39;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">safeRequire</span>(<span style="color:#a6e22e">name</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span> <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">regexp</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/^only_allow_this_module_[a-z0-9_-]+$/</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span> <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">test</span>(<span style="color:#a6e22e">name</span>)) { <span style="color:#75715e">// only allow specific modules starting with a vlaue
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span><span style="color:#75715e"></span>   <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">`&#34;</span><span style="color:#e6db74">${</span>String(<span style="color:#a6e22e">name</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34; is not allowed`</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span> }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span> <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">require</span>(<span style="color:#a6e22e">name</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span><span style="color:#a6e22e">contextBridge</span>.<span style="color:#a6e22e">exposeInMainWorld</span>(<span style="color:#e6db74">&#39;secureAPI&#39;</span>, {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span> <span style="color:#a6e22e">safeRequire</span><span style="color:#f92672">:</span> (<span style="color:#a6e22e">name</span>) =&gt; <span style="color:#a6e22e">safeRequire</span>(<span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span>});
+</span></span></code></pre></div><p>This preload script uses contextBridge.exposeInMainWorld to safely expose safeRequire as window.secureAPI.safeRequire in the renderer. Now, the webpage can only load modules whose names start with only_allow_this_module_, ensuring that access is tightly controlled.</p>
+<p>And In <a href="https://ctf.s1r1us.ninja/jsbin.html">https://ctf.s1r1us.ninja/jsbin.html</a>, we can safely use window.secureAPI.safeRequire to load only the allowed modules:</p>
+<p><em>ctf.s1r1us.ninja/jsbin.html</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-html" data-lang="html"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span>  &lt;<span style="color:#f92672">script</span>&gt;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;loadModuleButton&#39;</span>).<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;click&#39;</span>, () =&gt; {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>      <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">module</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">secureAPI</span>.<span style="color:#a6e22e">safeRequire</span>(<span style="color:#e6db74">&#39;only_allow_this_module_safe-module&#39;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Loaded module:&#39;</span>, <span style="color:#a6e22e">module</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>      } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Error loading module:&#39;</span>, <span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>      }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>    });
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>  &lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><h2 id="how-electron-implemented-context-isolation">How electron implemented context isolation?</h2>
+<p>Electron leverages V8 isolates to create a secure execution environment within each renderer process, preventing web content(ctf.s1r1us.ninja) from directly accessing Electron or Node.js APIs (in preload.js). It is similar to how extensions work and cloudflare&rsquo;s <a href="https://developers.cloudflare.com/workers/reference/security-model/">webworkers</a> work.</p>
+<p>The source code of it implemenation can be found here. <a href="https://github.com/electron/electron/blob/main/shell/renderer/api/electron_api_context_bridge.cc">https://github.com/electron/electron/blob/main/shell/renderer/api/electron_api_context_bridge.cc</a></p>
+<p>The minimal version looks as below(<a href="https://gist.github.com/msrkp/1ed54c513caef9f0e0b5cfa9b9c35cde">unsnipped version</a>), you can compile and play around with it.</p>
+<p><code>$ clang++ hello_world.cc -I. -Iinclude -Lout.gn/discord.release/obj -lv8_monolith -o hello_world -std=c++17 -stdlib=libc++ -DV8_COMPRESS_POINTERS -target arm64-apple-macos11 -lpthread&amp;&amp; ./hello_world</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1</span><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;libplatform/libplatform.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2</span><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;v8.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3</span><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4</span><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5</span><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6</span><span><span style="color:#66d9ef">namespace</span> my_bridge {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8</span><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> kMaxRecursion <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10</span><span><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">DeepFreeze</span>(<span style="color:#66d9ef">const</span> v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Object<span style="color:#f92672">&gt;&amp;</span> object,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11</span><span>                v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;</span> context) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12</span><span> [...]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13</span><span>  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14</span><span>  <span style="color:#66d9ef">return</span> object<span style="color:#f92672">-&gt;</span>SetIntegrityLevel(context, v8<span style="color:#f92672">::</span>IntegrityLevel<span style="color:#f92672">::</span>kFrozen)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15</span><span>      .ToChecked();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18</span><span>v8<span style="color:#f92672">::</span>MaybeLocal<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Value<span style="color:#f92672">&gt;</span> PassValueToOtherContext(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19</span><span>    v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;</span> source_context,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20</span><span>    v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;</span> destination_context, v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Value<span style="color:#f92672">&gt;</span> value) { <span style="color:#75715e">//PassValueToOtherContext
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21</span><span><span style="color:#75715e"></span>  v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">::</span>Scope destination_scope(destination_context);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22</span><span>[...]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24</span><span>  <span style="color:#66d9ef">if</span> (value<span style="color:#f92672">-&gt;</span>IsObject()) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25</span><span>    v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Object<span style="color:#f92672">&gt;</span> obj <span style="color:#f92672">=</span> value.As<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Object<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26</span><span>    DeepFreeze(obj, destination_context);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27</span><span>    <span style="color:#66d9ef">return</span> obj;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28</span><span>  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30</span><span>  <span style="color:#66d9ef">return</span> v8<span style="color:#f92672">::</span>MaybeLocal<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Value<span style="color:#f92672">&gt;</span>(value);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33</span><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ExposeInMainWorld</span>(v8<span style="color:#f92672">::</span>Isolate<span style="color:#f92672">*</span> isolate,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34</span><span>                       v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;</span> main_context,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35</span><span>                       v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Object<span style="color:#f92672">&gt;</span> object, <span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> name) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36</span><span>  v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">::</span>Scope main_scope(main_context);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37</span><span>  main_context<span style="color:#f92672">-&gt;</span>Global()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38</span><span>      <span style="color:#f92672">-&gt;</span>Set(main_context,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39</span><span>            v8<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span>NewFromUtf8(isolate, name.c_str()).ToLocalChecked(),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40</span><span>            object)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41</span><span>      .Check();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43</span><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">InitializeContextBridge</span>(v8<span style="color:#f92672">::</span>Isolate<span style="color:#f92672">*</span> isolate) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44</span><span>  v8<span style="color:#f92672">::</span>HandleScope handle_scope(isolate);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46</span><span>  <span style="color:#66d9ef">auto</span> main_context <span style="color:#f92672">=</span> v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">::</span>New(isolate); <span style="color:#75715e">// [1]
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47</span><span><span style="color:#75715e"></span>  SetUpConsole(isolate, main_context);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48</span><span>  v8<span style="color:#f92672">::</span>Global<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;</span> main_context_global(isolate, main_context);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49</span><span>  isolate<span style="color:#f92672">-&gt;</span>SetData(<span style="color:#ae81ff">0</span>, <span style="color:#f92672">&amp;</span>main_context_global);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51</span><span>  <span style="color:#66d9ef">auto</span> isolated_context <span style="color:#f92672">=</span> v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">::</span>New(isolate); <span style="color:#75715e">// [2]
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52</span><span><span style="color:#75715e"></span>  SetUpConsole(isolate, isolated_context);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53</span><span>  v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">::</span>Scope isolated_scope(isolated_context);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55</span><span>  isolated_context<span style="color:#f92672">-&gt;</span>Global()
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56</span><span>      <span style="color:#f92672">-&gt;</span>Set(isolated_context,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57</span><span>            v8<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span>NewFromUtf8(isolate, <span style="color:#e6db74">&#34;ExposeInMainWorld&#34;</span>) <span style="color:#75715e">//[3] contextbridge.ExposeInMainWorld
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58</span><span><span style="color:#75715e"></span>                .ToLocalChecked(),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59</span><span>            v8<span style="color:#f92672">::</span>Function<span style="color:#f92672">::</span>New(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60</span><span>                isolated_context,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61</span><span>                [](<span style="color:#66d9ef">const</span> v8<span style="color:#f92672">::</span>FunctionCallbackInfo<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Value<span style="color:#f92672">&gt;&amp;</span> args) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62</span><span>                  <span style="color:#66d9ef">if</span> (args.Length() <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>args[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">-&gt;</span>IsString() <span style="color:#f92672">||</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63</span><span>                      <span style="color:#f92672">!</span>args[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">-&gt;</span>IsObject()) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64</span><span>                    args.GetIsolate()<span style="color:#f92672">-&gt;</span>ThrowException(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65</span><span>                        v8<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span>NewFromUtf8(args.GetIsolate(),
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66</span><span>                                                <span style="color:#e6db74">&#34;Invalid arguments&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67</span><span>                            .ToLocalChecked());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68</span><span>                    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69</span><span>                  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71</span><span>                  v8<span style="color:#f92672">::</span>Isolate<span style="color:#f92672">*</span> isolate <span style="color:#f92672">=</span> args.GetIsolate();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72</span><span>                  v8<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span>Utf8Value name(isolate, args[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73</span><span>                  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Object<span style="color:#f92672">&gt;</span> object <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">1</span>].As<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Object<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74</span><span>                  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;</span> main_context <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75</span><span>                      v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;::</span>New(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76</span><span>                          isolate, <span style="color:#f92672">*</span><span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Global<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Context<span style="color:#f92672">&gt;*&gt;</span>(
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77</span><span>                                       isolate<span style="color:#f92672">-&gt;</span>GetData(<span style="color:#ae81ff">0</span>)));
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78</span><span>                  my_bridge<span style="color:#f92672">::</span>ExposeInMainWorld(isolate, main_context, object,
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79</span><span>                                               <span style="color:#f92672">*</span>name);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80</span><span>                })
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81</span><span>                .ToLocalChecked())
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82</span><span>      .Check();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84</span><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> isolated_code <span style="color:#f92672">=</span> R<span style="color:#e6db74">&#34;(</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85</span><span>        console.log(<span style="color:#e6db74">&#34;In Isolated Context:&#34;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86</span><span>        var regexp <span style="color:#f92672">=</span> <span style="color:#f92672">/^</span>only_allow_this_[a<span style="color:#f92672">-</span>z0<span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>_<span style="color:#f92672">-</span>]<span style="color:#f92672">+</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">/</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87</span><span>        <span style="color:#f92672">%</span>DebugPrint(regexp);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88</span><span>        <span style="color:#f92672">%</span>DebugPrint(regexp.source);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89</span><span>        function <span style="color:#a6e22e">requireModule</span>(name) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90</span><span>             <span style="color:#66d9ef">if</span> (regexp.test(name) ) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91</span><span>                  <span style="color:#66d9ef">return</span> false;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92</span><span>              }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93</span><span>              <span style="color:#66d9ef">return</span> true;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94</span><span>        }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95</span><span>        <span style="color:#66d9ef">const</span> myObject <span style="color:#f92672">=</span> { name: <span style="color:#e6db74">&#34;isolated_object&#34;</span>, requireModule:requireModule}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96</span><span>        ExposeInMainWorld(<span style="color:#e6db74">&#34;exposedObject&#34;</span>, myObject); <span style="color:#75715e">//[3]
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97</span><span><span style="color:#75715e"></span>        <span style="color:#f92672">%</span>DebugPrint(myObject); 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98</span><span>    
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99</span><span>    )<span style="color:#e6db74">&#34;; //preload.js</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100</span><span>  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>String<span style="color:#f92672">&gt;</span> source <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101</span><span>      v8<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span>NewFromUtf8(isolate, isolated_code).ToLocalChecked();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102</span><span>  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Script<span style="color:#f92672">&gt;</span> script;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103</span><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>v8<span style="color:#f92672">::</span>Script<span style="color:#f92672">::</span>Compile(isolated_context, source).ToLocal(<span style="color:#f92672">&amp;</span>script)) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104</span><span>    std<span style="color:#f92672">::</span>cerr <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Failed to compile isolated context script.&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105</span><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106</span><span>  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107</span><span>  script<span style="color:#f92672">-&gt;</span>Run(isolated_context).ToLocalChecked();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109</span><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> main_code <span style="color:#f92672">=</span> R<span style="color:#e6db74">&#34;( </span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110</span><span>        console.log(<span style="color:#e6db74">&#34;In Main Context:&#34;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111</span><span>      
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112</span><span>   <span style="color:#f92672">%</span>DebugPrint(exposedObject); 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113</span><span>    console.log(exposedObject.requireModule(<span style="color:#960050;background-color:#1e0010">&#39;</span>test<span style="color:#960050;background-color:#1e0010">&#39;</span>));    
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115</span><span>    )<span style="color:#e6db74">&#34;; //ctf.s1r1us.ninja</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116</span><span>  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>String<span style="color:#f92672">&gt;</span> main_source <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117</span><span>      v8<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span>NewFromUtf8(isolate, main_code).ToLocalChecked();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118</span><span>  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Script<span style="color:#f92672">&gt;</span> main_script;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119</span><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>v8<span style="color:#f92672">::</span>Script<span style="color:#f92672">::</span>Compile(main_context, main_source).ToLocal(<span style="color:#f92672">&amp;</span>main_script)) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120</span><span>    std<span style="color:#f92672">::</span>cerr <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Failed to compile main context script.&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121</span><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122</span><span>  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123</span><span>  main_script<span style="color:#f92672">-&gt;</span>Run(main_context).ToLocalChecked();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124</span><span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126</span><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> argv[]) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127</span><span>[...]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128</span><span>  v8<span style="color:#f92672">::</span>V8<span style="color:#f92672">::</span>Initialize();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130</span><span>  v8<span style="color:#f92672">::</span>Isolate<span style="color:#f92672">::</span>CreateParams create_params;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131</span><span>  create_params.array_buffer_allocator <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132</span><span>      v8<span style="color:#f92672">::</span>ArrayBuffer<span style="color:#f92672">::</span>Allocator<span style="color:#f92672">::</span>NewDefaultAllocator();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133</span><span>  v8<span style="color:#f92672">::</span>Isolate<span style="color:#f92672">*</span> isolate <span style="color:#f92672">=</span> v8<span style="color:#f92672">::</span>Isolate<span style="color:#f92672">::</span>New(create_params);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135</span><span>  {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136</span><span>    v8<span style="color:#f92672">::</span>Isolate<span style="color:#f92672">::</span>Scope isolate_scope(isolate);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137</span><span>    InitializeContextBridge(isolate);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138</span><span>  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140</span><span> [...]
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141</span><span>}
+</span></span></code></pre></div><p>Electron defines two distinct JavaScript environments—a main context[1] and an isolated context—using[2] V8&rsquo;s isolate mechanism. The isolated context cannot directly access objects or functions from the main context, thus preserving security boundaries. However, a function (ExposeInMainWorld)[3] is defined to expose specific objects from the isolated context to the main context in a controlled manner using PassValueToOtherContext[4].</p>
+<p>Few important things to note here</p>
+<ul>
+<li>V8 isolates act as self-contained JavaScript environments, ensuring that code within each isolate can only access its own memory and resources.</li>
+<li>By separating the JavaScript context of the renderer from the context of Electron internals, context isolation protects against potentially dangerous code from accessing restricted APIs.</li>
+<li>Although isolates create a barrier, Electron provides a secure way to share specific APIs between the isolated renderer and main process using ContextBridge. The ContextBridge allows carefully controlled access to selected functions and data by exposing APIs in a way that maintains isolation, allowing only pre-defined, safe interactions.</li>
+</ul>
+<h2 id="so-far-so-good-whats-wrong-with-it-tho">So far so good! What&rsquo;s wrong with it tho?</h2>
+<p>Although V8 isolates separate JavaScript contexts to prevent direct access across them, a memory corruption bug—like the common Type Confusion, can potentially allow one context to access or manipulate the memory of another. This essentially can be used to bypass Electron’s context isolation. This is a known risk not only in Electron(but it seems most apps are not aware) but also in environments like Cloudflare Workers, which uses V8 isolates for multi-tenant isolation. Cloudflare’s threat model <a href="https://developers.cloudflare.com/workers/reference/security-model/#v8-bugs-and-the-patch-gap">doc</a> addresses this risk with an impressive 24-hour patch gap, ensuring V8 bugs are swiftly patched. Electron also patches V8 vulnerabilities as soon as they’re available.</p>
+<p>However, there’s a catch: while Electron releases new versions promptly, desktop applications often way behind in updating their Electron versions. In our previous Electrovolt research, we exploited this patch gap in numerous applications, revealing how outdated Electron versions leave popular desktop apps open to compromise. You can check it out in detail <a href="https://speakerdeck.com/s1r1us/electrovolt-pwning-popular-desktop-apps-while-uncovering-new-attack-surface-on-electron?slide=2">here</a>.</p>
+<p>But it is still the case. Just Open any Electron app, go to the devtools, and run <code>navigator.userAgent</code>. Chances are, it’s running a much older version of Chromium.</p>
+<h3 id="context-isolation-bypass-via-v8-exploit">Context Isolation Bypass via V8 Exploit</h3>
+<p>For a proof of concept, I created <a href="https://gist.github.com/msrkp/6853ffb8d0cb59403744211c7aba8e66">this code</a> that bypasses context isolation using an old V8 exploit. In the example, I modify the <code>source</code> property of <code>var regexp = /^only_allow_this_module_[a-z0-9_-]+$/;</code> to arbitrary values using memory corruption bug, essentially bypassing the regular expression checks and enabling access to otherwise restricted modules. This example demonstrates how a memory corruption bug in V8 can be used to circumvent context isolation and execute unintended code.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:1;-o-tab-size:1;tab-size:1;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1</span><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> isolated_code <span style="color:#f92672">=</span> R<span style="color:#e6db74">&#34;(</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2</span><span>        console.log(<span style="color:#e6db74">&#34;In Isolated Context:&#34;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3</span><span>        var regexp <span style="color:#f92672">=</span> <span style="color:#f92672">/^</span>discord_[a<span style="color:#f92672">-</span>z0<span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>_<span style="color:#f92672">-</span>]<span style="color:#f92672">+</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">/</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4</span><span>        <span style="color:#f92672">%</span>DebugPrint(regexp);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5</span><span>        <span style="color:#f92672">%</span>DebugPrint(regexp.source);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6</span><span>        function <span style="color:#a6e22e">requireModule</span>(name) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7</span><span>             <span style="color:#66d9ef">if</span> (regexp.test(name) <span style="color:#f92672">&amp;&amp;</span> name <span style="color:#f92672">!==</span> <span style="color:#960050;background-color:#1e0010">&#39;</span>erlpack<span style="color:#960050;background-color:#1e0010">&#39;</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8</span><span>                  <span style="color:#66d9ef">return</span> false;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9</span><span>              }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10</span><span>              <span style="color:#66d9ef">return</span> true;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11</span><span>        }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12</span><span>        <span style="color:#66d9ef">const</span> myObject <span style="color:#f92672">=</span> { name: <span style="color:#e6db74">&#34;isolated_object&#34;</span>, requireModule:requireModule}
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13</span><span>        ExposeInMainWorld(<span style="color:#e6db74">&#34;exposedObject&#34;</span>, myObject);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14</span><span>        <span style="color:#f92672">%</span>DebugPrint(myObject); 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15</span><span>    
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16</span><span>    )<span style="color:#e6db74">&#34;;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17</span><span>  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>String<span style="color:#f92672">&gt;</span> source <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18</span><span>      v8<span style="color:#f92672">::</span>String<span style="color:#f92672">::</span>NewFromUtf8(isolate, isolated_code).ToLocalChecked();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19</span><span>  v8<span style="color:#f92672">::</span>Local<span style="color:#f92672">&lt;</span>v8<span style="color:#f92672">::</span>Script<span style="color:#f92672">&gt;</span> script;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20</span><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>v8<span style="color:#f92672">::</span>Script<span style="color:#f92672">::</span>Compile(isolated_context, source).ToLocal(<span style="color:#f92672">&amp;</span>script)) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21</span><span>    std<span style="color:#f92672">::</span>cerr <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Failed to compile isolated context script.&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22</span><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23</span><span>  }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24</span><span>  script<span style="color:#f92672">-&gt;</span>Run(isolated_context).ToLocalChecked();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26</span><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> main_code <span style="color:#f92672">=</span> R<span style="color:#e6db74">&#34;(</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27</span><span>        console.log(<span style="color:#e6db74">&#34;In Main Context:&#34;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28</span><span>        let conversion_buffer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayBuffer(<span style="color:#ae81ff">8</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29</span><span>        let float_view <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Float64Array(conversion_buffer);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30</span><span>        let int_view <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BigUint64Array(conversion_buffer);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31</span><span>          BigInt.prototype.hex <span style="color:#f92672">=</span> function() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32</span><span>            <span style="color:#66d9ef">return</span> <span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#ae81ff">0</span>x<span style="color:#960050;background-color:#1e0010">&#39;</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">this</span>.toString(<span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33</span><span>      };
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34</span><span>      BigInt.prototype.i2f <span style="color:#f92672">=</span> function() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35</span><span>          int_view[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36</span><span>          <span style="color:#66d9ef">return</span> float_view[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37</span><span>      }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38</span><span>      Number.prototype.f2i <span style="color:#f92672">=</span> function() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39</span><span>          float_view[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40</span><span>          <span style="color:#66d9ef">return</span> int_view[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41</span><span>      }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42</span><span>      function <span style="color:#a6e22e">gc</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43</span><span>      <span style="color:#66d9ef">for</span>(let i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>((<span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>)<span style="color:#f92672">/</span><span style="color:#ae81ff">0x10</span>); i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44</span><span>        var a <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45</span><span>      }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46</span><span>      }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47</span><span>     
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49</span><span>         function <span style="color:#a6e22e">f</span>(a) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50</span><span>            let x <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51</span><span>            <span style="color:#66d9ef">if</span> (a) x <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xFFFFFFFF</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52</span><span>            let oob_smi <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Array(Math.sign(<span style="color:#ae81ff">0</span> <span style="color:#f92672">-</span> Math.max(<span style="color:#ae81ff">0</span>, x, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)));
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53</span><span>            oob_smi.pop();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54</span><span>            let oob_double <span style="color:#f92672">=</span> [<span style="color:#ae81ff">3.14</span>, <span style="color:#ae81ff">3.14</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55</span><span>            let arr_addrof <span style="color:#f92672">=</span> [{}];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56</span><span>            let aar_double <span style="color:#f92672">=</span> [<span style="color:#ae81ff">2.17</span>, <span style="color:#ae81ff">2.17</span>];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57</span><span>            let www_double <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Float64Array(<span style="color:#ae81ff">0x20</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58</span><span>            <span style="color:#66d9ef">return</span> [oob_smi, oob_double, arr_addrof, aar_double, www_double];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59</span><span>        }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60</span><span>  <span style="color:#75715e">//  gc();
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61</span><span><span style="color:#75715e"></span>console.log(<span style="color:#ae81ff">11</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62</span><span>    <span style="color:#66d9ef">for</span> (var i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0x10000</span>; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63</span><span>        f(false);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64</span><span>    }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65</span><span>    let [oob_smi, oob_double, arr_addrof, aar_double, www_double] <span style="color:#f92672">=</span> f(true);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66</span><span>    console.log(<span style="color:#e6db74">&#34;[+] oob_smi.length = &#34;</span> <span style="color:#f92672">+</span> oob_smi.length);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67</span><span>    oob_smi[<span style="color:#ae81ff">14</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1234</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68</span><span>    console.log(<span style="color:#e6db74">&#34;[+] oob_double.length = &#34;</span> <span style="color:#f92672">+</span> oob_double.length);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69</span><span>    let primitive <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70</span><span>        addrof: (obj) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71</span><span>            arr_addrof[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> obj;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72</span><span>            <span style="color:#66d9ef">return</span> (oob_double[<span style="color:#ae81ff">8</span>].f2i() <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">32</span>n) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>n;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73</span><span>        },
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74</span><span>        half_aar64: (addr) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75</span><span>            oob_double[<span style="color:#ae81ff">15</span>] <span style="color:#f92672">=</span> ((oob_double[<span style="color:#ae81ff">15</span>].f2i() <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffffff00000000</span>n)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76</span><span>                              <span style="color:#f92672">|</span> ((addr <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x8</span>n) <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>n)).i2f();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77</span><span>            <span style="color:#66d9ef">return</span> aar_double[<span style="color:#ae81ff">0</span>].f2i();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78</span><span>        },
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79</span><span>        half_aaw64: (addr, value) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80</span><span>            oob_double[<span style="color:#ae81ff">15</span>] <span style="color:#f92672">=</span> ((oob_double[<span style="color:#ae81ff">15</span>].f2i() <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xffffffff00000000</span>n)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81</span><span>                              <span style="color:#f92672">|</span> ((addr <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x8</span>n) <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>n)).i2f();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82</span><span>            aar_double[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> value.i2f(); <span style="color:#75715e">// Writes `value` at `addr
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83</span><span><span style="color:#75715e"></span>        },
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84</span><span>        full_aaw: (addr, values) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85</span><span>            let offset <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86</span><span>            <span style="color:#66d9ef">for</span> (let i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0x100</span>; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87</span><span>                <span style="color:#66d9ef">if</span> (oob_double[i].f2i() <span style="color:#f92672">==</span> <span style="color:#ae81ff">8</span>n<span style="color:#f92672">*</span><span style="color:#ae81ff">0x20</span>n
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88</span><span>                    <span style="color:#f92672">&amp;&amp;</span> oob_double[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>].f2i() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0x20</span>n) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89</span><span>                    offset <span style="color:#f92672">=</span> i<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90</span><span>                    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91</span><span>                }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92</span><span>            }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93</span><span>            <span style="color:#66d9ef">if</span> (offset <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94</span><span>                console.log(<span style="color:#e6db74">&#34;[-] Bad luck!&#34;</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95</span><span>                <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96</span><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97</span><span>                console.log(<span style="color:#e6db74">&#34;[+] offset = &#34;</span> <span style="color:#f92672">+</span> offset);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98</span><span>            }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99</span><span>            oob_double[offset] <span style="color:#f92672">=</span> addr.i2f();
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100</span><span>            <span style="color:#66d9ef">for</span> (let i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> values.length; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101</span><span>                console.log(i, www_double[i].f2i().hex(), values[i].f2i().hex());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102</span><span>                www_double[i] <span style="color:#f92672">=</span> values[i];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103</span><span>            }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104</span><span>        }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105</span><span>    };
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106</span><span>    
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107</span><span>    exp_addrof <span style="color:#f92672">=</span> primitive.addrof(exposedObject);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108</span><span>    console.log(exp_addrof.hex());    
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109</span><span>    exp_r <span style="color:#f92672">=</span> primitive.half_aar64(exp_addrof)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110</span><span>console.log(<span style="color:#ae81ff">111</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111</span><span>    source_addrof <span style="color:#f92672">=</span> (exp_r <span style="color:#f92672">&amp;</span><span style="color:#ae81ff">0xffffffff</span>n) <span style="color:#f92672">+</span> <span style="color:#ae81ff">353016</span>n;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112</span><span>    console.log(<span style="color:#e6db74">&#34;[+] source_addrof : &#34;</span> <span style="color:#f92672">+</span>source_addrof.hex());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113</span><span>    
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115</span><span>    regexp_source <span style="color:#f92672">=</span> primitive.half_aar64(source_addrof<span style="color:#f92672">+</span><span style="color:#ae81ff">8</span>n<span style="color:#f92672">+</span><span style="color:#ae81ff">4</span>n);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116</span><span>    console.log(<span style="color:#e6db74">&#34;[+] regexp_source_str: &#34;</span><span style="color:#f92672">+</span>regexp_source.hex());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118</span><span>     primitive.full_aaw(<span style="color:#ae81ff">0x16bf081dee29</span>n<span style="color:#f92672">+</span><span style="color:#ae81ff">8</span>n, <span style="color:#ae81ff">0x64726f6373696444</span>n);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119</span><span>     regexp_source <span style="color:#f92672">=</span> primitive.half_aar64(source_addrof<span style="color:#f92672">+</span><span style="color:#ae81ff">8</span>n<span style="color:#f92672">+</span><span style="color:#ae81ff">4</span>n);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120</span><span>    console.log(<span style="color:#e6db74">&#34;[+] after regexp_source_str: &#34;</span><span style="color:#f92672">+</span>regexp_source.hex());
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122</span><span>   <span style="color:#f92672">%</span>DebugPrint(exposedObject); 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123</span><span>    console.log(exposedObject.requireModule(<span style="color:#960050;background-color:#1e0010">&#39;</span>erlpack<span style="color:#960050;background-color:#1e0010">&#39;</span>));    
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125</span><span>    )<span style="color:#e6db74">&#34;;</span>
+</span></span></code></pre></div><h4 id="passvaluetoothercontext-for-bug-hunters">PassValueToOtherContext for bug hunters</h4>
+<p>This is not a issue, but a pointer to bug hunters for to find some interesting context isolation bypass, <a href="https://github.com/electron/electron/blob/main/shell/renderer/api/electron_api_context_bridge.cc#L136C27-L136C50">PassValueToOtherContext</a> is particularly interesting function, it passes objects from isolated cotnext to main context, if not implemented correctly or missed some behaviour this would allow leaking isolated context objects or fucntions to main cotnext. few example cve
+a. <a href="https://github.com/electron/electron/security/advisories/GHSA-p7v2-p9m8-qqg7">CVE-2023-29198</a> Error thrown in isolated context leaked to main allows bypass. Diff <a href="https://github.com/electron/electron/compare/v23.2.1...v23.2.3#diff-678990291ce65586b9e4e509f021d2d699ba5ca164b2a0569c5342c60ab548b4">here</a>
+b. 3 more context isolation bypass via leaked objects in main context <a href="https://github.com/electron/electron/security?page=2">here</a></p>
+<h4 id="to-developers-of-electron-applications">To Developers of Electron Applications</h4>
+<p>Update Electron Promptly: Always update Electron to the latest version as soon as it’s available. This minimizes the risk from any recently patched vulnerabilities in V8 and Electron. Regular updates are crucial to maintaining the security of your application.</p>
+<p>Enable Sandboxing: Use Electron’s sandboxing feature to further reduce the attack surface. By isolating renderer processes, sandboxing adds an extra layer of security that helps contain potential exploits, even in the presence of vulnerabilities.</p>
+
+    </div>
+  </article>
+
+  
+  
+
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/posts">Posts</a></li>
+         
+          <li><a href="/about">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&text=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&is_video=false&description=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&body=Check out this article: %2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&title=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&name=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure&description=%3ch3%20id%3d%22tldr%22%3eTL%3bDR%3c%2fh3%3e%0a%3cp%3eAs%20I%20was%20working%20on%20the%20script%20for%20my%20Discord%20RCE%20video%2c%20I%20took%20another%20look%20at%20Electron%20security%20and%20noticed%20that%20a%20lot%20of%20apps%20don%e2%80%99t%20fully%20understand%20how%20context%20isolation%20works%20and%20potential%20vulnerabilities%20in%20context%20isolation%2c%20especially%20if%20they%e2%80%99re%20not%20regularly%20updating%20Electron.%20I%20came%20across%20a%20few%20apps%20where%2c%20with%20a%20V8%20exploit%2c%20you%20can%20actually%20bypass%20context%20isolation%20and%20access%20dangerous%20APIs%20within%20the%20isolated%20context%2c%20APIs%20that%20normally%20wouldn%e2%80%99t%20be%20accessible%20from%20the%20main%20context.%20In%20this%20post%2c%20I%20want%20to%20share%20some%20insights%20for%20both%20bug%20hunters%20and%20developers%20on%20issues%20they%20might%20find%20around%20context%20isolation.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=%2f%2flocalhost%3a1313%2fposts%2felectron-contextbridge-is-insecure%2f&t=Mind%20the%20v8%20patch%20gap%3a%20Electron%27s%20Context%20Isolation%20is%20insecure" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2024  Copyright © s1r1us 
+    
+      
+    
+      
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://github.com/ElecmsrkptrovoltSec" aria-label="github">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="mailto:l33tsirius@gmail.com" aria-label="Email">
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+        <a class="icon" target="_blank" rel="noopener" href="https://twitter.com/s1r1u5_" aria-label="twitter">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+        
+      
+      
+    
+  
+  </div>
+  <div class="footer-right">
+    <nav>
+    
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+
+<script src=/js/code-copy.js></script>
+
+
+
+
+</html>
