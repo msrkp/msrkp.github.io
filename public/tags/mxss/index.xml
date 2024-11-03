@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Mxss on s1r1us Blog</title>
-    <link>//localhost:1313/tags/mxss/</link>
+    <link>//localhost:52413/tags/mxss/</link>
     <description>Recent content in Mxss on s1r1us Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
     <lastBuildDate>Tue, 03 Sep 2024 13:40:27 +0530</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/mxss/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:52413/tags/mxss/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MXSS Evolution and Timeline: A primer to MXSS</title>
-      <link>//localhost:1313/posts/mxss-101/</link>
+      <link>//localhost:52413/posts/mxss-101/</link>
       <pubDate>Tue, 03 Sep 2024 13:40:27 +0530</pubDate>
-      <guid>//localhost:1313/posts/mxss-101/</guid>
+      <guid>//localhost:52413/posts/mxss-101/</guid>
       <description>&lt;p&gt;&lt;strong&gt;MXSS Evolution and Timeline&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Note this a document which I created while working on the MXSS video series &lt;a href=&#34;https://youtu.be/aczTceXp49U&#34;&gt;https://youtu.be/aczTceXp49U&lt;/a&gt;, its very raw just random thoughts added here, if you want anything to change. feel free to pr.&lt;/p&gt;&#xA;&lt;h3 id=&#34;how-do-html-sanitizers-work&#34;&gt;&lt;strong&gt;How Do HTML Sanitizers Work?&lt;/strong&gt;&lt;/h3&gt;&#xA;&lt;p&gt;Sanitizers are tools designed to filter harmful content from HTML, making it safe to insert into a webpage. The process involves several steps:&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;&lt;strong&gt;Parsing:&lt;/strong&gt; The HTML content is parsed into a DOM tree on either the server or in the browser.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Sanitization:&lt;/strong&gt; The sanitizer iterates through the DOM tree to remove dangerous or harmful content.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Serialization:&lt;/strong&gt; After sanitizing, the DOM tree is serialized back into an HTML string.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Re-parsing:&lt;/strong&gt; The serialized HTML is assigned to &lt;code&gt;innerHTML&lt;/code&gt;, triggering another parsing process.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Appending to Document:&lt;/strong&gt; The final, sanitized DOM tree is appended to the document.&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;However, despite these steps, sanitizers—especially server-side ones—can fail due to &lt;strong&gt;parser differentials&lt;/strong&gt; between server and client. A server-side sanitizer might miss dangerous content that behaves differently when parsed by a browser. A typical example is when content is treated as RAWTEXT on the server but as active HTML in the browser.&lt;/p&gt;</description>
     </item>
   </channel>

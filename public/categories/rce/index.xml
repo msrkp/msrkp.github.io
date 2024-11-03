@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>RCE on s1r1us Blog</title>
-    <link>//localhost:1313/categories/rce/</link>
+    <link>//localhost:52413/categories/rce/</link>
     <description>Recent content in RCE on s1r1us Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
     <lastBuildDate>Tue, 29 Oct 2024 17:30:20 +0530</lastBuildDate>
-    <atom:link href="//localhost:1313/categories/rce/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:52413/categories/rce/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>V8 CVE-2021-21224 Renderer RCE Root Cause Analysis</title>
-      <link>//localhost:1313/posts/v8-rca/</link>
+      <link>//localhost:52413/posts/v8-rca/</link>
       <pubDate>Tue, 29 Oct 2024 17:30:20 +0530</pubDate>
-      <guid>//localhost:1313/posts/v8-rca/</guid>
+      <guid>//localhost:52413/posts/v8-rca/</guid>
       <description>&lt;h3 id=&#34;v8-cve-2021-21224-renderer-rce-root-cause-analysis&#34;&gt;V8 CVE-2021-21224 Renderer RCE Root Cause Analysis&lt;/h3&gt;&#xA;&lt;p&gt;Initially, I didn’t know much about V8’s exploitation as I was a web guy with interest in v8, it was my CTF teammate, &lt;a href=&#34;https://twitter.com/ptryudai?lang=en&#34;&gt;ptr-yudai&lt;/a&gt;, who helped me craft the Discord exploit. Back then, understanding the root cause wasn’t always necessary; for some of the exploits used in &lt;a href=&#34;https://media.defcon.org/DEF%20CON%2030/DEF%20CON%2030%20presentations/Aaditya%20Purani%20-%20ElectroVolt%20Pwning%20popular%20desktop%20apps%20while%20uncovering%20new%20attack%20surface%20on%20Electron.pdf&#34;&gt;Electrovolt&lt;/a&gt; research, I relied on regression tests added with patches or on existing exploits from GitHub or blogs. From there, I would write primitives and exploit Electron internals as needed. The goal for Electrovolt research was to exploit Electron apps running on older Chromium V8 versions with plenty of known bugs, often by using a JIT bug, writing the exploit, and compromising the app, so I never had to know about the root cause of the issue 😂.&lt;/p&gt;</description>
     </item>
   </channel>
