@@ -1,7 +1,7 @@
 ---
 title: "V8 CVE-2021-21224 Renderer RCE Root Cause Analysis"
 date: 2024-10-29T17:30:20+05:30
-draft: true
+draft: false
 ---
 
 ### V8 CVE-2021-21224 Renderer RCE Root Cause Analysis
@@ -663,6 +663,68 @@ else if (use_info.type_check() == TypeCheckKind::kSignedSmall ||
 ```
 
 I’m really curious how these experts find such amazing bugs, these bugs like these are incredibly subtle and complex. Are they using fuzzing techniques, I wonder if this is found via fuzzing or is it just countless hours spent debugging and studying the source code? Respect anyway.
+
+### Type Confusion (How array gets -1)
+
+To demonstrate the issue, let’s modify the foo function and run this.
+```js
+            function foo(a) {
+                let x = -1;
+                if (a){
+                    x = 0xFFFFFFFF;
+                }
+                let oob_smi = new Array(0 - Math.max(0, x));
+                // TurboFan tracks the only possible length 0, 
+                // but the actual length in memory is 1
+                if (oob_smi.length != 0) { 
+                    // 0(turbofan tracked len) -1 
+                    oob_smi.length = -1; 
+                }
+                return oob_smi;
+               
+            }
+            try{
+                var before_opt = foo(true);
+            }
+            catch(err){
+            //RangeError: Invalid array length(-1/-0xffff_fff)
+                console.log(err)
+            }
+            for (var i = 0; i < 0x10000; ++i) {
+                foo(false);
+            }
+            //no error here? how?
+            var oob_smi = foo(true)
+            console.log(oob_smi.length)//-1 wtf how?
+           
+```
+
+Notice here that our arr length became -1. In V8, array lengths are treated as unsigned values. A length of -1, when interpreted as an unsigned integer, so it becomes 0xFFFFFFFF. This essentially gives the array a length of 4,294,967,295, allowing access to a huge portion of memory. AS u can see we can access value out of bounds at offset 1337. Now, let’s quickly understand how we got array length to be -1.
+In the code, we are just creating an array with a size equal to Math.sign(0 - Math.max(0, x)) and then call pop() on it, which decreases the array size by 1
+Quickly Note about Math.sign: it tells you the sign of a number. It returns 1 for positive, -1 for negative, and 0 for zero. 
+With that in mind, let’s see how this function can be used to achieve out-of-bounds array access, which means accessing memory beyond the array’s allocated bounds.
+Before optimization, if we call foo(false), x is -1. Math.max(0, -1) results in 0, and Math.sign(0 - 0) is also 0. This creates an array of size 0. Calling pop() on an array of size 0 simply returns undefined, leaving the array unchanged.
+Now, if we call foo(true), x is 0xFFFFFFFF. In this case, Math.max(0, x) returns 0xFFFFFFFF, and Math.sign(0 - 0xFFFFFFFF) gives -1. This creates an array with a size of -1, which is invalid and causes an error. So far, everything works as expected.
+But during the optimization two interesting things will happen, one the truncation bug which we discussed previously and other a typer confusion. If we call foo(true), x becomes 0xFFFFFFFF. We know that due to the truncation bug, Math.max(0, x) incorrectly returns -1. This causes Math.sign(0 - (-1)) to become 1, so the array is created with a size of 1. However, TurboFan assumes that the output of Math.sign will always fall within the range [-1, 0], but in reality we can produce value outside this range using the truncation bug. What do I mean by Range(-1,0)
+So TurboFan's Range type represents a specific interval of integers defined by a minimum and maximum value. Unlike generic types like Signed32 or Unsigned32, TurboFan tracks integers in precise ranges to optimize more effectively. For instance, the constant 1 is tracked as Range(1, 1) instead of a broader range like Unsigned32. This range type is further used in optimizations after typer phase. So here in our exploit, TurboFan assumes the math.sign in our code will always fall within the range [-1, 0]. However, due to the truncation bug, we can produce value outside of this confusing the typer.
+Now this confusion can give us arbitrary memory read and write, this is how, During the n. when pop() is called, instead of directly invoking the pop function, the operation is inlined. This means the pop call is replaced with a set of instructions that perform the same operation without the overhead of the function call. We can confirm this behavior by analyzing TurboFan’s output in Turbolizer and reviewing V8’s source code.
+At this stage, the inlined code reduces the array’s length by 1 and stores the updated length. It also updates the Range value of subtraction it will be (-1,-1)
+if (array.length != 0) {
+  let length = array.length;
+  --length;
+  array.length = length;
+  array[length] = %TheHole();
+}
+Later in the optimization process, TurboFan applies constant folding, which further simplifies the code. Instead of dynamically calculating length = length - 1, it directly computes the length using the assumed range values. For example, it evaluates 0 - 1 at compile time and updates the length directly with this result.
+Here’s the issue: while the array’s actual length should be 0 after a pop, the typer incorrectly tracks a value of 0 - 1 = -1 due to the truncation bug. This leads to a typer confusion where we can create an array with a length of -1, giving us full access to memory. The final inlined and folded code looks like this:
+
+let array = Array(n);
+if (n != 0) {
+  array.length = -1;
+  array[-1] = %TheHole();
+}
+By exploiting this confusion, we can craft an array with a negative length, gaining arbitrary memory access.
+
 
 
 If you’re wondering how we got an array with a length of -1, we need to dig a little deeper into TurboFan optimization.
