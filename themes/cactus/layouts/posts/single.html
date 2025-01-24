@@ -2,6 +2,11 @@
 <html lang="{{ .Site.LanguageCode }}">
 {{ partial "head.html" . }}
 <body class="max-width mx-auto px3 ltr">
+  {{ if .Params.cover }}
+  <div class="cover-image">
+    <img src="{{ .Params.cover }}" >
+  </div>
+{{ end }}
   <div class="content index py4">
 
   {{ partial "page_nav.html" . }}

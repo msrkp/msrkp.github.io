@@ -2,18 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Non Tech on s1r1us Blog</title>
-    <link>http://localhost:1313/tags/non-tech/</link>
+    <link>https://s1r1us.ninja/tags/non-tech/</link>
     <description>Recent content in Non Tech on s1r1us Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
-    <lastBuildDate>Fri, 03 Nov 2023 13:42:50 +0530</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/non-tech/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 03 Nov 2024 13:45:55 +0530</lastBuildDate>
+    <atom:link href="https://s1r1us.ninja/tags/non-tech/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My Advice for Someone Who Wants to Be an Hacker</title>
+      <link>https://s1r1us.ninja/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</link>
+      <pubDate>Sun, 03 Nov 2024 13:45:55 +0530</pubDate>
+      <guid>https://s1r1us.ninja/posts/my-advice-for-someone-who-wants-to-be-an-hacker/</guid>
+      <description>&lt;p&gt;Recently I replied to a tweet from @nahamsec &lt;a href=&#34;https://x.com/NahamSec/status/1851818696685314160&#34;&gt;https://x.com/NahamSec/status/1851818696685314160&lt;/a&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Bug bounty hunters: What’s your advice for someone who’s trying to make their first $100,000 in 2025? What should they do/learn? What should they avoid?&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;Here is my personal advice on the question:&lt;/p&gt;&#xA;&lt;p&gt;Pick a niche, become an expert, find bugs maybe even 0days or reverse n-days, and write blogs. Even if you don’t hit those $100k bounties, it’ll be a stepping stone toward a $100k job.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Hacker Roadmap 2023: Becoming a Hacker: A Personal Narrative and a Roadmap</title>
-      <link>http://localhost:1313/posts/hacker-roadmap-2023/</link>
+      <link>https://s1r1us.ninja/posts/hacker-roadmap-2023/</link>
       <pubDate>Fri, 03 Nov 2023 13:42:50 +0530</pubDate>
-      <guid>http://localhost:1313/posts/hacker-roadmap-2023/</guid>
+      <guid>https://s1r1us.ninja/posts/hacker-roadmap-2023/</guid>
       <description>&lt;h1 id=&#34;becoming-a-hacker-a-personal-narrative-and-a-roadmap&#34;&gt;Becoming a Hacker: A Personal Narrative and a Roadmap&lt;/h1&gt;&#xA;&lt;p&gt;The following will guide anyone interested in getting started in hacking or infosec. All the below content is based on the assumption that the reader doesn&amp;rsquo;t know anything about computer/hacking.&lt;/p&gt;&#xA;&lt;p&gt;&amp;ldquo;I can only show you the door. You&amp;rsquo;re the one that has to walk through it.&amp;rdquo; - Morpheus, The Matrix. I&amp;rsquo;m giving you the map, but you&amp;rsquo;ve got to steer the journey. Success depends on your effort and choices.&lt;/p&gt;</description>
     </item>
   </channel>

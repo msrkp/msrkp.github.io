@@ -43,13 +43,16 @@ weight = 2
     noClasses = true
     style = "monokai"
     tabWidth = 1
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
 
 [params]
   colortheme = "light" # dark, light, white, or classic
   rss = true # generate rss feed. default value is false
   # googleAnalyticsAsync = true # use asynchronous tracking. Synchronous tracking by default
   showAllPostsArchive = false # default
-
+  css = ["css/custom.css"]
   # Home page settings
   mainSection = "posts" # your main section
   showAllPostsOnHomePage = true # default
@@ -58,7 +61,6 @@ weight = 2
   projectsUrl = "https://github.com/msrkp" # title link for projects list
 
  dateFormat = "2006-01-02" # default
-
 [[params.social]]
   name = "github"
   link = "https://github.com/msrkp"

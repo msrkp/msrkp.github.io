@@ -68,6 +68,10 @@ weight = 4
   # Post page settings
   show_updated = true # default
   showReadTime = true # default
+  [markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
 
   [params.comments]
     enabled = true # default

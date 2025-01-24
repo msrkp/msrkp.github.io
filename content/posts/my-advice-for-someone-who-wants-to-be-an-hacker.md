@@ -2,7 +2,7 @@
 title: "My Advice for Someone Who Wants to Be an Hacker"
 date: 2024-11-03T13:45:55+05:30
 tags:
-    - v8
+    - non tech
 categories:
     - security
 keywords:

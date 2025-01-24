@@ -1,0 +1,57 @@
+.cover-image img {
+    position: relative;
+    width: 100vw; /* Full width of the viewport */
+    left: 50%; /* Center the image */
+    transform: translateX(-50%); /* Offset the centering */
+    height: 60vh; /* Maintain aspect ratio */
+    object-fit: cover; 
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+
+/* Row of images */
+.image-row {
+    position: relative; 
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center; /* Center the images horizontally */
+    align-items: center; /* Align images vertically */
+    gap: 1px; /* Add spacing between images */
+    margin: 0 auto; /* Center the row itself */
+    padding: 0; /* Remove padding */
+    width: 120%;
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+.image-row img {
+    flex: 0 0 auto; /* Prevent images from stretching or shrinking */
+    width: auto;
+  
+    margin: 0; /* Reset margins */
+    border: 0; /* Reset border if any */
+    padding: 0; /* Reset padding */
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .image-row img {
+        width: 45%; /* Make each image take 45% of the row */
+    }
+}
+
+@media (max-width: 768px) {
+    .image-row {
+        flex-wrap: wrap; /* Allow images to wrap onto a new row */
+        justify-content: center; /* Center images in the new row */
+    }
+
+    .image-row img {
+        width: 100%; /* Make each image take full width of its row */
+        margin-bottom: 10px; /* Add spacing between stacked images */
+    }
+}
+figure figcaption {
+    text-align: center;
+}
