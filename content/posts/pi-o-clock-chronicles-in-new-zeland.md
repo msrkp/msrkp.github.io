@@ -3,6 +3,8 @@ title: "π o clock chronicles in new zealand"
 date: 2025-01-23T21:05:50+05:30
 cover: /img/nz/IMG_0262.jpg
 layout: wide
+images:
+ - /img/nz/IMG_0262.jpg
 ---
 ### π o clock?
 

@@ -52,6 +52,15 @@
   
   
   
+  <meta property="og:url" content="https://s1r1us.ninja/posts/electron-contextbridge-is-insecure/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure">
+  <meta property="og:description" content="TL;DR As I was working on the script for my Discord RCE video, I took another look at Electron security and noticed that a lot of apps don’t fully understand how context isolation works and potential vulnerabilities in context isolation, especially if they’re not regularly updating Electron. I came across a few apps where, with a V8 exploit, you can actually bypass context isolation and access dangerous APIs within the isolated context, APIs that normally wouldn’t be accessible from the main context. In this post, I want to share some insights for both bug hunters and developers on issues they might find around context isolation.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-03T15:16:18+05:30">
+    <meta property="article:modified_time" content="2024-11-03T15:16:18+05:30">
 </head>
 
 <body class="max-width mx-auto px3 ltr">
