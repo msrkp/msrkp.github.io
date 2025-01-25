@@ -10,11 +10,11 @@
     <lastBuildDate>Thu, 23 Jan 2025 21:05:50 +0530</lastBuildDate>
     <atom:link href="https://s1r1us.ninja/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>pi o clock chronicles in new zealand</title>
+      <title>π o clock chronicles in new zealand</title>
       <link>https://s1r1us.ninja/posts/pi-o-clock-chronicles-in-new-zeland/</link>
       <pubDate>Thu, 23 Jan 2025 21:05:50 +0530</pubDate>
       <guid>https://s1r1us.ninja/posts/pi-o-clock-chronicles-in-new-zeland/</guid>
-      <description>&lt;h3 id=&#34;π-o-clock&#34;&gt;π o clock?&lt;/h3&gt;&#xA;&lt;p&gt;Inspired by Karpathy&amp;rsquo;s tweet, I started taking a picture every day at 3:14—Pi O&amp;rsquo;Clock. I have a terrible memory, and the moment I saw that post, I knew I had to try it. I’ve always thought of memory as a kind of key-value linked list, if you lose the key, it’s almost impossible to retrieve the memory. But by taking a picture every day, I figured it could serve as a key database. Seeing those photos might help me retrieve specific memories. Though I do think the brain&amp;rsquo;s memory is limited, only the most significant events from that day are likely weighted more heavily and stored by the hippocampus.&lt;/p&gt;</description>
+      <description>&lt;h3 id=&#34;π-o-clock&#34;&gt;π o clock?&lt;/h3&gt;&#xA;&lt;p&gt;inspired by Karpathy&amp;rsquo;s &lt;a href=&#34;https://x.com/karpathy/status/1528792715810394112?s=46&#34;&gt;tweet&lt;/a&gt;, i started taking a picture every day at 3:14—pi o&amp;rsquo;clock. i have a terrible memory, and the moment i saw that post, i knew i had to try it. i’ve always thought of memory as a kind of key:value linked list, if you lose the key, it’s almost impossible to retrieve the memory. but by taking a picture every day, i figured it could serve as a key database. Seeing those photos might help me retrieve specific memories. though i do think the brain&amp;rsquo;s memory is limited, only the most significant events from that day are likely weighted more heavily and stored by the hippocampus.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Mind the v8 patch gap: Electron&#39;s Context Isolation is insecure</title>

@@ -1,6 +1,6 @@
 .cover-image img {
     position: relative;
-    width: 100vw; /* Full width of the viewport */
+    width: 99vw; /* Full width of the viewport */
     left: 50%; /* Center the image */
     transform: translateX(-50%); /* Offset the centering */
     height: 60vh; /* Maintain aspect ratio */
@@ -9,8 +9,12 @@
     padding: 0;
     display: block;
 }
-
-
+.image-row img:hover {
+    transform: scale(1.1); /* Slightly enlarge the image */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 8px rgba(255, 255, 255, 0.2); /* Enhance shadow on hover */
+    z-index: 10; /* Bring the image forward */
+}
 /* Row of images */
 .image-row {
     position: relative; 
@@ -18,7 +22,7 @@
     flex-shrink: 0;
     justify-content: center; /* Center the images horizontally */
     align-items: center; /* Align images vertically */
-    gap: 1px; /* Add spacing between images */
+    gap: 1px;/* Add spacing between images*/
     margin: 0 auto; /* Center the row itself */
     padding: 0; /* Remove padding */
     width: 120%;
@@ -28,10 +32,13 @@
 .image-row img {
     flex: 0 0 auto; /* Prevent images from stretching or shrinking */
     width: auto;
-  
     margin: 0; /* Reset margins */
     border: 0; /* Reset border if any */
     padding: 0; /* Reset padding */
+    border: 4px solid #555; /* Adjust border for dark mode */
+    border-radius: 8px; /* Optional: makes the corners rounded */
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); /* Lighter shadow for dark mode */
+
 }
 
 /* Responsive Design */
