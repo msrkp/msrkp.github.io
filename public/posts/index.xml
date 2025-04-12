@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
-    <lastBuildDate>Thu, 23 Jan 2025 21:05:50 +0530</lastBuildDate>
+    <lastBuildDate>Sat, 12 Apr 2025 08:53:38 +0530</lastBuildDate>
     <atom:link href="https://s1r1us.ninja/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Next Token Prediction Could Result in a Super Hacker</title>
+      <link>https://s1r1us.ninja/posts/next-token-prediction-could-result-in-a-super-hacker/</link>
+      <pubDate>Sat, 12 Apr 2025 08:53:38 +0530</pubDate>
+      <guid>https://s1r1us.ninja/posts/next-token-prediction-could-result-in-a-super-hacker/</guid>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;“The limits of my language mean the limits of my world.”&#xA;– Ludwig Wittgenstein, Tractatus logigo-philosphicus, 1922&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;I used to be skeptical that next-token prediction could ever lead to AGI. Now I’m convinced it&amp;rsquo;s enough. Whether if frontier model companies will actually crack it is a separate question. They could hit a data wall, a computation wall or some natural physical limit we don’t fully understand yet.&lt;/p&gt;&#xA;&lt;p&gt;But what matters is allowing ourselves to entertain the possibility that next-token prediction is enough build super hackers or a general intelligent entity.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>π o clock chronicles in new zealand</title>
       <link>https://s1r1us.ninja/posts/pi-o-clock-chronicles-in-new-zeland/</link>

@@ -3,7 +3,7 @@
     width: 99vw; /* Full width of the viewport */
     left: 50%; /* Center the image */
     transform: translateX(-50%); /* Offset the centering */
-    height: 60vh; /* Maintain aspect ratio */
+    height: 42vh; /* Maintain aspect ratio */
     object-fit: cover; 
     margin: 0;
     padding: 0;
