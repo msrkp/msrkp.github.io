@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> How the hacking agents work? | s1r1us Blog</title>
+  <link rel = 'canonical' href = 'http://localhost:1313/posts/how-hacker-sub-agent-works/'>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:url" content="http://localhost:1313/posts/how-hacker-sub-agent-works/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="How the hacking agents work?">
+  <meta property="og:description" content="Magic or Just a Lack of Understanding? What magical trick makes us intelligent? The trick is that there is no trick. The power of intelligence stems from our vast diversity, not from any single, perfect principle. —Marvin Minsky, The Society of Mind, p. 308
+When a magician pulls birds out of thin air, makes object vanish, or transform cards value to another, we are often left in awe and confusion. Some tricks are so mindbending, they almost make it feel like the magician possesses supernatural powers.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-04-21T17:17:59+05:30">
+    <meta property="article:modified_time" content="2025-04-21T17:17:59+05:30">
+    <meta property="og:image" content="http://localhost:1313/img/nz/IMG_5823.jpeg">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/img/nz/IMG_5823.jpeg">
+  <meta name="twitter:title" content="How the hacking agents work?">
+  <meta name="twitter:description" content="Magic or Just a Lack of Understanding? What magical trick makes us intelligent? The trick is that there is no trick. The power of intelligence stems from our vast diversity, not from any single, perfect principle. —Marvin Minsky, The Society of Mind, p. 308
+When a magician pulls birds out of thin air, makes object vanish, or transform cards value to another, we are often left in awe and confusion. Some tricks are so mindbending, they almost make it feel like the magician possesses supernatural powers.">
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/styles.86975a3e31e9cbc08a4b2af5df1266f1452eb347ff82af50f74edce5211f75edbc63693c80c4b4085f2aa3ee525d41ebb87784087415d3026b0fd6d3b07145bc.css" integrity="sha512-hpdaPjHpy8CKSyr13xJm8UUus0f/gq9Q907c5SEfde28Y2k8gMS0CF8qo&#43;5SXUHruHeECHQV0wJrD9bTsHFFvA=="> 
+
+  
+   <link rel="stylesheet" href="http://localhost:1313/css/custom.css"> 
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="http://localhost:1313/images/favicon.ico" />
+
+  
+  
+  
+  
+  <meta property="og:url" content="http://localhost:1313/posts/how-hacker-sub-agent-works/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="How the hacking agents work?">
+  <meta property="og:description" content="Magic or Just a Lack of Understanding? What magical trick makes us intelligent? The trick is that there is no trick. The power of intelligence stems from our vast diversity, not from any single, perfect principle. —Marvin Minsky, The Society of Mind, p. 308
+When a magician pulls birds out of thin air, makes object vanish, or transform cards value to another, we are often left in awe and confusion. Some tricks are so mindbending, they almost make it feel like the magician possesses supernatural powers.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-04-21T17:17:59+05:30">
+    <meta property="article:modified_time" content="2025-04-21T17:17:59+05:30">
+    <meta property="og:image" content="http://localhost:1313/img/nz/IMG_5823.jpeg">
+</head>
+
+<body class="max-width mx-auto move px3 ltr">
+  
+  <div class="cover-image">
+    <img src="/img/nz/IMG_5604.jpeg" >
+  </div>
+  
+
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" http://localhost:1313/posts/kerala/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&text=How%20the%20hacking%20agents%20work%3f" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&title=How%20the%20hacking%20agents%20work%3f" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&is_video=false&description=How%20the%20hacking%20agents%20work%3f" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=How%20the%20hacking%20agents%20work%3f&body=Check out this article: http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&title=How%20the%20hacking%20agents%20work%3f" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&title=How%20the%20hacking%20agents%20work%3f" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&name=How%20the%20hacking%20agents%20work%3f&description=%3ch3%20id%3d%22magic-or-just-a-lack-of-understanding%22%3eMagic%20or%20Just%20a%20Lack%20of%20Understanding%3f%3c%2fh3%3e%0a%3cblockquote%3e%0a%3cp%3eWhat%20magical%20trick%20makes%20us%20intelligent%3f%20The%20trick%20is%20that%20there%20is%20no%20trick.%20The%20power%20of%20intelligence%20stems%20from%20our%20vast%20diversity%2c%20not%20from%20any%20single%2c%20perfect%20principle.%20%e2%80%94Marvin%20Minsky%2c%20The%20Society%20of%20Mind%2c%20p.%20308%3c%2fp%3e%0a%3c%2fblockquote%3e%0a%3cp%3eWhen%20a%20magician%20pulls%20birds%20out%20of%20thin%20air%2c%20makes%20object%20vanish%2c%20or%20transform%20cards%20value%20to%20another%2c%20we%20are%20often%20left%20in%20awe%20and%20confusion.%20Some%20tricks%20are%20so%20mindbending%2c%20they%20almost%20make%20it%20feel%20like%20the%20magician%20possesses%20supernatural%20powers.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&t=How%20the%20hacking%20agents%20work%3f" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        How the hacking agents work?
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2025-04-21 17:17:59 &#43;0530 IST" itemprop="datePublished">2025-04-21</time>
+          
+        </div>
+        
+        
+        
+        
+      </div>
+    </header>
+
+  
+    
+    <div class="content" itemprop="articleBody">
+      <h3 id="magic-or-just-a-lack-of-understanding">Magic or Just a Lack of Understanding?</h3>
+<blockquote>
+<p>What magical trick makes us intelligent? The trick is that there is no trick. The power of intelligence stems from our vast diversity, not from any single, perfect principle. —Marvin Minsky, The Society of Mind, p. 308</p>
+</blockquote>
+<p>When a magician pulls birds out of thin air, makes object vanish, or transform cards value to another, we are often left in awe and confusion. Some tricks are so mindbending, they almost make it feel like the magician possesses supernatural powers.</p>
+<p>Behind the scenes, though, there are numerous tricks that magicians uses ranging from exploting human psychology, clever misdirections and optical illusions to surprise and confusion. In the moment, without the hindsight, it truly feels magical. But once the trick is revealed, everything makes sense, and what once felt magical suddenly feels obvious.</p>
+<p>Similarly, many of the things we do intellectually such as hacking software, composing music, generating new ideas, can seem like magic at first. But this doesn&rsquo;t imply there is some supernatural is happening in brain. Rather, it only points to gap in our understanding of inner workings of the brain, one that can often be bridghed through scientific inquiry.</p>
+<p>Consider the old philosophical riddle: &ldquo;Does the tree make a sound if it falls in a forest with no one to hear it?&rdquo;. For centuries, it puzzled people. But once we understand sound as vibrating air waves, the mystery dissolves.</p>
+<p>The same applies to conciousness and creativity. They may feel magical, but with time they will be dissolved.</p>
+<p>Intelligence, by contrast, already has several compelling hypotheses explaining how it works. While we haven&rsquo;t reached a complete theory dissecting each and every part, the current cognitive and neuroscience understanding suggests that it is modular, distributed, hierarchical, and predictive, emerging from the interaction of systems like perception, memory, decision making, learning and attention.</p>
+<p>Among the many theories, one that is particularly useful for building AI agents, and aligns surprising well with both cognitive science and modern artificial intelligence, is Marvin Minsky’s Society of Mind.</p>
+<p>Minsky proposed a framework that intelligent behavior can be broken down into simple components, or &ldquo;agents,&rdquo; each responsible for a narrow task. These agents interact and cooperate in hierarchical structures to produce the rich, complex intelligence.</p>
+<p>Even if Minsky’s framework isn’t entirely accurate in describing how real minds work, treating hacking as the work of a specialized sub-agent—and narrowing down what that agent does—can still be incredibly useful. IMO, the Society of Mind framework helps us break down complex behaviors and build more effective, targeted agents.</p>
+<h3 id="how-is-the-hacking-agent-in-my-brain-works">How is the hacking agent in my brain works?</h3>
+<p>When I am not hacking, I find great joy reading psychology, philosphy, and the study of consciousness, intelligence, and creativity. Exploring these questions has always made me feel more alive. With the recent advent of AI, this became even more exciting as I now can explore both hacking and intelligence together by building hacking agents.</p>
+<p>What&rsquo;s become increasingly obvious to me is that for any given task, the frame of agency changes and the agent has to change. A “coding agent” operates completely differently from a “hacking agent.” (switching between coding agent frame to hacking agent frame could be the sole reason for many software security issues). The goals are different, the strategies are different, which needs agents has to change and their hierarchies and heuristics on approaching the goal.</p>
+<p>To develop a hacking agent, the first question I need to ask is: how does the hacking agent in my own brain work, and how does it generally operate for top-tier hackers? Only by understanding that process can I begin to transfer it into an AI agent.</p>
+<h3 id="formalize-hacking-the-science-of-insecurity">Formalize Hacking: the science of insecurity</h3>
+<blockquote>
+<p>Exploitation is setting up, instantiating and programming a weird machine &ndash; <a href="http://www.dullien.net/thomas/weird-machines-exploitability.pdf">Halvar Flake</a></p>
+</blockquote>
+<p>To create capable AI hacking agents, we must approach insecurity from first principles. In my view, the root of insecurity isn’t negligence, but <em>the cognitive limitations of humans</em>, our difficulty in reasoning about deeply composable software systems trust and the overwhelming complexity of software state machines.</p>
+<p>A hacker’s job is to understand that complexity in many levels, understand it better than the original author, and break the assumptions holding the system together.</p>
+<p>At a fundamental level, software systems are finite state machines. Each instruction or input transitions the system from one state to another. And we use Turing machines to implement these state transitions in real-world code.</p>
+<p>Take a simple login system, for example. Its high-level state path might look like this:</p>
+<pre tabindex="0"><code> -&gt; INIT -&gt; username and password entered -&gt; password verified -&gt;authenticated
+</code></pre><p>(Of course, each of these states may include their own internal substates and branching logic.)</p>
+<p>And a programmer&rsquo;s task is essentially to write such state machines, embedding the logic that governs how transitions occur. In essence, logic is the decision-making layer that controls state transitions, and Turing-complete languages give programmers the expressive power to encode that logic — for browsers, web apps, protocols, and beyond.</p>
+<blockquote>
+<p>In a more pragmatic way, we can describe information security as the work towards computer systems we can finally trust. - <a href="https://www.recurity-labs.com/research/RecurityLabs_Academia_vs_Hackers.pdf">Jörn Bratzke</a></p>
+</blockquote>
+<p>In a perfect world, programs would do exactly what they were designed to do. There would be no need for security, because there would be no malicious actors. Trust would be implicit. No one would tamper with the system or try to coerce it into weird machines.</p>
+<p>But that’s not the world we live in. And that&rsquo;s why we need hackers to create trusted systems before criminals exploit them.</p>
+<details>
+<summary> A Tangent on Trust and Coercion:</summary>
+<p>Just as a society without enforced property rights invites chaos and looting, software systems without trust enforcement invite <em>exploitation</em>. In many parts of the world, the absence of legal trust and secure ownership structures leads to poverty - not because people lack resources, but because they cannot trust the system to protect them. Rational way to survive in this situation is to cheat, and fight to survive.</p>
+<p>Trust requires coercion. In the real world, the rule of law, the threat of consequences, forces people to cooperate and creates the conditions for prosperity.</p>
+<p>In a completely different domain creating trust also requires coercion, a similar dynamic plays out in software engineering. Teaching every developer to write secure code is a losing battle. Google’s answer wasn’t education, it was <a href="https://bughunters.google.com/blog/6644316274294784/secure-by-design-google-s-blueprint-for-a-high-assurance-web-framework">control</a>. Instead of hoping developers remember secure practices, they enforced trust by design: hardened frameworks, default-safe libraries, and architectural constraints that coerce developers into writing secure code.</p>
+<p>Lack of trust inherently allows chaos. Trust should be coerced</p>
+</details>
+<blockquote>
+<p>Any complex execution environment is actually many: One intended machine, endless weird machines - Sergey Brutus</p>
+</blockquote>
+<p>And a hacker’s job is to explore a system more deeply than the person who built it — to understand it at multiple levels, mentally reconstruct its state machine, break the insecure logical assumptions, and find where assumptions break.</p>
+<h3 id="limits-of-security-dangerous-of-ai">Limits of Security: Dangerous of AI</h3>
+<p>Even world-class hackers are bound by cognitive limits. Much of software insecurity comes from human inability to grasp the full complexity of composable, dynamic systems. We’re not capable to reason about all possible states, branches, and interactions in code.</p>
+<p>If we ever witness an intelligence explosion — AI systems that can reason far beyond human cognitive limits — then it’s likely they will discover more weird machines than we ever could. Exploits that are invisible to the human mind may become trivial for them.</p>
+<p><em>This makes it very important that such AI capabilities don&rsquo;t fall into the hands of malicious actors.</em></p>
+<p>Even so, superintelligent AI would face hard theoretical limits when it comes to achieving perfect security. (Rice&rsquo;s Theorem)</p>
+<h3 id="vulnerability-discovery-as-theorem-proving">Vulnerability Discovery as Theorem proving</h3>
+<p>At a high level, vulnerability discovery is a logical problem. The goal of a hacker — or a security reasoning system — is to construct a proof that a program’s behavior can violate its specification or assumptions. Can be done by guessing or brute-forcing, but this usually happens through - identifying a logical inconsistency within the system’s structure systematically.</p>
+<p>This idea is grounded in the Curry–Howard correspondence, which draws a direct parallel between computation and logic:</p>
+<blockquote>
+<p>Programs are proofs, and proofs are programs. Running a program is akin to constructing a logical argument.
+By extension, vulnerabilities are proofs too —  they arise when an hacker constructs a logical path (i.e., an exploit) that demonstrates a proposition such as: &ldquo;the user input reaches certain sink&rdquo;</p>
+</blockquote>
+<p>In this view, vulnerability hunting is adversarial theorem proving — by humans, or by AI agents — where the proposition to be proven is:</p>
+<p>“Given a system with a certain structure, can an input exist that causes unintended behavior?”</p>
+<p>That unintended behavior might look like:</p>
+<ul>
+<li>
+<p>“Can untrusted input reach a dangerous sink?”</p>
+</li>
+<li>
+<p>“Can the attacker elevate privileges?”</p>
+</li>
+<li>
+<p>“Can this sequence of states bypass assumptions?”</p>
+</li>
+</ul>
+<p>These are all questions about the semantic properties of programs — their meaning, not just their syntax or structure. Although, note that most of the vulnerabilities in web applciation that developers make are syntactic issue and can easily be found by current AI agents or SAST tools.</p>
+<p>But what separates top-tier human researchers is their ability to reason about semantic vulnerabilities: issues that emerge from deep interactions across various systems, state transitions, and multi-layer logic.</p>
+<h3 id="not-all-humans-think-alike-information-processing-speed-memory-and-representation">Not All Humans Think Alike: Information Processing Speed, Memory, and Representation</h3>
+<p>For me, the difference between different humans hacking capabilities becomes especially clear in CTF competitions, where some of my friends exhibit a remarkable speed and processing in complex systems to identify vulnerabilites. In my opinion, this isn’t always something you can learn through practice alone. I&rsquo;ve seen newcomers, people with almost no background in hacking, rapidly outpace others simply because of how quickly they digest information and reason.</p>
+<p>This suggests that effective vulnerability discovery in complex targets require unique blend of cognitive abilities.</p>
+<p>We can generalize the cognitive abilities required to the following items.</p>
+<ol>
+<li>
+<p>Long term memory: Used to store and recall core concepts, prior vulnerabilities, bug classes, system behaviors, and high-level heuristics. This enables variant analysis and generalization.</p>
+</li>
+<li>
+<p>Working memory: Acts as a mental “scratchpad” to actively hold and manipulate details of the current subsystem or bug candidate. The larger the working memory, the more state and logic one can juggle simultaneously.</p>
+</li>
+<li>
+<p>Processing information: This is the engine behind reasoning. It allows the hacker to simulate hypotheses, test edge cases, and compress raw inputs into abstract representations. Even with strong memory, slow processing yields weak results. Conversely, high processing speed enables rapid internal updates and better state manipulation. I think one more important ability in better processing of information is, it allows storing information well in long term or working memory.</p>
+</li>
+</ol>
+<p>An especially interesting aspect of memory — particularly relevant for AI agents — is how even top-tier human hackers never ingest full codebases into working memory. Instead, they construct and rely on specific abstract representations: some kind of control-flow skeletons. These abstractions allow them to compress vast complexity into something they can actually reason about.</p>
+<p>This is one of the active areas I’m researching — how to replicate this ability in AI agents: to extract the right abstractions from large codebases, store them meaningfully, and perform targeted reasoning over them to find vulnerabilities.</p>
+<h3 id="two-modes-of-vulnerability-discovery">Two modes of vulnerability discovery</h3>
+<ol>
+<li>Known Propositions (Variant Analysis)</li>
+</ol>
+<p>This is the majority of modern vulnerability discovery: looking for known bug classes in new code.
+You&rsquo;re not inventing the proposition — you&rsquo;re just proving it in a new context.</p>
+<p>Examples:</p>
+<ul>
+<li>SQL injection</li>
+<li>SSRF</li>
+<li>XSS</li>
+<li>authn and authz issues</li>
+<li>and others</li>
+</ul>
+<p>This form of analysis is currently the primary focus of Hacktron.ai, and it accounts for 60–70% of real-world web application vulnerabilities. The search process is relatively straightforward: you begin with a known vulnerability class, retrieve its defining characteristics and exploitation patterns, then systematically process the target codebase to determine whether that pattern exists. Pragmatically speaking, at hacktron we would be able to solve this if everything works out.</p>
+<p>However, variant analysis in complex systems like V8 presents a much greater challenge. These bugs often depend on deep contextual understanding of specific subsystems, making them far harder to identify.</p>
+<ol start="2">
+<li>Novel Propositions (New Research)</li>
+</ol>
+<p>In contrast, novel research involves generating new propositions based on deep understanding of system behavior. These are often semantic, logic, or design-level bugs and require,</p>
+<ul>
+<li>A thorough understanding of the subsystem, which itself demands significant processing power to reason through complex architectures</li>
+<li>creative capacity to hypothesize how things might go wrong and break the trust</li>
+<li>Sufficient computational bandwidth (mental or machine) to simulate those hypotheses and explore potential weird state</li>
+</ul>
+<p>This is what I aspire to solve at Hacktron.ai.</p>
+<p>Why?
+Because, to be blunt—I’m not great at this myself. I&rsquo;m envious (in a good way) of people who can dive into V8 internals or kernel subsystems and find deep, structural flaws. So instead of trying to become one of them, I want to build something that comes out of me—an AI system that can do that.</p>
+<h3 id="case-study-hacking-v8-via-wasm">Case Study: Hacking V8 via WASM</h3>
+<p>A CTF teammate of mine once hacked V8’s WASM type system and landed a full exploit chain—within just three days. Honestly, that’s one of the wildest things I’ve ever seen pulled off.</p>
+<p>Here’s my rough (and probably naive) understanding of how he did it:</p>
+<ul>
+<li>
+<p>Understanding the system(Understanding Agent): He didn’t start with deep V8 WASM internals knowledge, but he had strong fundamentals—understanding type systems, compilers, and how computers work at a low level. From there, he dove into WASM specs, RFCs, and blog posts. Even parsing and internalizing those large specifications in a day or two requires what feels like superhuman processing speed.</p>
+</li>
+<li>
+<p>But that’s the key: with that kind of cognitive throughput, you can build efficient internal representations of complex systems. Some people just have this ability—not to memorize everything, but to mentally structure complexity in a way that makes reasoning about it feel almost intuitive.
+Further, Once he understood the core concepts—like WASM’s isorecursive type system—he built a compressed internal model of it, this could happen parallely. It probably wasn’t the full source code in his head, but rather something abstract: maybe a control-flow diagram, or a conceptual graph that captured how types are resolved and passed through the engine.
+It’s not about raw memory. It’s about the quality of the representation—how well the structure captures essential behavior.</p>
+</li>
+<li>
+<p>Manipulating the system(Reasoning Agent): Now comes the hacker mindset agent, the frame has to change, simulate what could go wrong. What happens if a type check fails? What happens if an optimization assumes something that turns out to be false?</p>
+</li>
+</ul>
+<p>He ran these &ldquo;what-if&rdquo; computations mentally, probing the gap between the type system as designed and as implemented. That’s where vulnerabilities live.</p>
+<p>Interestingly, even V8 developers themselves might not have this kind of adversarial model in mind—they’re focused on building, not breaking. But a hacker has the freedom to focus purely on failure. Whatever assumptions the system was built on—those become targets.</p>
+<h3 id="why-this-matters-for-hacktronai">Why This Matters for Hacktron.ai</h3>
+<p>The insight here is that you don’t need to load the full codebase to find deep bugs.
+What you need is:</p>
+<ul>
+<li>
+<p>An agent that can navigate and isolate a subsystem</p>
+</li>
+<li>
+<p>Build an internal model or abstraction of how it works</p>
+</li>
+<li>
+<p>Simulate hypotheis and see what breaks</p>
+</li>
+<li>
+<p>Compress that insight and hand it off to a vulnerability-finding agent</p>
+</li>
+</ul>
+<p>That’s how humans do it. And maybe AI should be modelled in that way.</p>
+<p>This is how I think AI will eventually hack large, complex systems like V8.
+And that’s what we’re trying to build.</p>
+
+    </div>
+  </article>
+
+  
+  
+
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/posts">Posts</a></li>
+         
+          <li><a href="/about">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&text=How%20the%20hacking%20agents%20work%3f" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&title=How%20the%20hacking%20agents%20work%3f" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&is_video=false&description=How%20the%20hacking%20agents%20work%3f" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=How%20the%20hacking%20agents%20work%3f&body=Check out this article: http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&title=How%20the%20hacking%20agents%20work%3f" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&title=How%20the%20hacking%20agents%20work%3f" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&name=How%20the%20hacking%20agents%20work%3f&description=%3ch3%20id%3d%22magic-or-just-a-lack-of-understanding%22%3eMagic%20or%20Just%20a%20Lack%20of%20Understanding%3f%3c%2fh3%3e%0a%3cblockquote%3e%0a%3cp%3eWhat%20magical%20trick%20makes%20us%20intelligent%3f%20The%20trick%20is%20that%20there%20is%20no%20trick.%20The%20power%20of%20intelligence%20stems%20from%20our%20vast%20diversity%2c%20not%20from%20any%20single%2c%20perfect%20principle.%20%e2%80%94Marvin%20Minsky%2c%20The%20Society%20of%20Mind%2c%20p.%20308%3c%2fp%3e%0a%3c%2fblockquote%3e%0a%3cp%3eWhen%20a%20magician%20pulls%20birds%20out%20of%20thin%20air%2c%20makes%20object%20vanish%2c%20or%20transform%20cards%20value%20to%20another%2c%20we%20are%20often%20left%20in%20awe%20and%20confusion.%20Some%20tricks%20are%20so%20mindbending%2c%20they%20almost%20make%20it%20feel%20like%20the%20magician%20possesses%20supernatural%20powers.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fhow-hacker-sub-agent-works%2f&t=How%20the%20hacking%20agents%20work%3f" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2025  Copyright © s1r1us 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+
+<script src=/js/code-copy.js></script>
+
+
+
+
+</html>
