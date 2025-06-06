@@ -7,14 +7,28 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
-    <lastBuildDate>Mon, 21 Apr 2025 17:17:59 +0530</lastBuildDate>
+    <lastBuildDate>Fri, 06 Jun 2025 17:17:59 +0530</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Copenhagen-PCR Interpretation of LLMs</title>
+      <link>http://localhost:1313/posts/copenhagen-pcr-interpretation-of-llms/</link>
+      <pubDate>Fri, 06 Jun 2025 17:17:59 +0530</pubDate>
+      <guid>http://localhost:1313/posts/copenhagen-pcr-interpretation-of-llms/</guid>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;What’s coming is both exciting and a little scary. I&amp;rsquo;ve been looking for the right analogy to explain this feeling, the sense that something fundamental is shifting in how machines interact with &lt;em&gt;knowledge&lt;/em&gt; and how it might distrupt every corner of the economy.&lt;/p&gt;&#xA;&lt;p&gt;From the beginning, knowledge was something confined to the walls of the human mind, that is discovered, refined and passed through language, intuition and teaching. But, now, for the first time, machines are not only consuming that knowledge, but learning how to replicate it(And replciation, frankly, is what most human jobs are). The machine doesn&amp;rsquo;t understand it, it applies. At scale, and often better than us and without tiring.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>How the hacking agents work?</title>
       <link>http://localhost:1313/posts/how-hacker-sub-agent-works/</link>
       <pubDate>Mon, 21 Apr 2025 17:17:59 +0530</pubDate>
       <guid>http://localhost:1313/posts/how-hacker-sub-agent-works/</guid>
       <description>&lt;h3 id=&#34;magic-or-just-a-lack-of-understanding&#34;&gt;Magic or Just a Lack of Understanding?&lt;/h3&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;What magical trick makes us intelligent? The trick is that there is no trick. The power of intelligence stems from our vast diversity, not from any single, perfect principle. —Marvin Minsky, The Society of Mind, p. 308&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;When a magician pulls birds out of thin air, makes object vanish, or transform cards value to another, we are often left in awe and confusion. Some tricks are so mindbending, they almost make it feel like the magician possesses supernatural powers.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Kerala</title>
+      <link>http://localhost:1313/posts/kerala/</link>
+      <pubDate>Sun, 20 Apr 2025 17:03:46 +0530</pubDate>
+      <guid>http://localhost:1313/posts/kerala/</guid>
+      <description>&lt;p&gt;abandoned mansions - gulf money?&#xA;football = rather circket&lt;/p&gt;&#xA;&lt;p&gt;clean beaches&lt;/p&gt;&#xA;&lt;p&gt;liberal&lt;/p&gt;&#xA;&lt;p&gt;no casteism - guru&lt;/p&gt;&#xA;&lt;p&gt;travancore literacy campaigns&lt;/p&gt;&#xA;&lt;p&gt;less poverty&lt;/p&gt;&#xA;&lt;p&gt;coconut oil&lt;/p&gt;</description>
     </item>
     <item>
       <title>Next Token Prediction Could Result in a Super Hacker</title>
