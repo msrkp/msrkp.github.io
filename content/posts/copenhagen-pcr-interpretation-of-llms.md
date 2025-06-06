@@ -1,11 +1,11 @@
 ---
 title: "Copenhagen-PCR Interpretation of LLMs"
-date: 2025-04-21T17:17:59+05:30
+date: 2025-06-06T17:17:59+05:30
 draft: false
 cover: /img/nz/IMG_5210.jpeg
 layout: wide
 images:
- - /img/nz/IMG_5604.jpeg
+ - /img/nz/IMG_5210.jpeg
 ---
 
 # Intro
