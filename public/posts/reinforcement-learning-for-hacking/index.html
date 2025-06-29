@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/font-awesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Reinforcement Learning for Hacking? | s1r1us Blog</title>
+  <link rel = 'canonical' href = 'http://localhost:1313/posts/reinforcement-learning-for-hacking/'>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:url" content="http://localhost:1313/posts/reinforcement-learning-for-hacking/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="Reinforcement Learning for Hacking?">
+  <meta property="og:description" content="Intro I came across a interesting post on twitter that claims the following:
+It is an interesting take, but not the hack mentioned, from the screenshot, it looks like a basic script-kiddie hack, brute-forcing credentials on an exposed RTSP camera (rtsp://[username:password@]ip_address:port/path).
+Still, the bigger question behind it is interesting:
+vulnerable software is simulatable. penetration success is verifiable. hacking is RLable. More importantly, the assertion that vulnerable software is simulatable begs and exploitation success is verifiable suggests we could apply RL to vulnerability research. But this claim requires much deeper understanding from first principles to determine if vulnerability research can truly be solved through RL.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-06-29T13:42:16+05:30">
+    <meta property="article:modified_time" content="2025-06-29T13:42:16+05:30">
+    <meta property="og:image" content="http://localhost:1313/img/nz/IMG_5210.jpeg">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/img/nz/IMG_5210.jpeg">
+  <meta name="twitter:title" content="Reinforcement Learning for Hacking?">
+  <meta name="twitter:description" content="Intro I came across a interesting post on twitter that claims the following:
+It is an interesting take, but not the hack mentioned, from the screenshot, it looks like a basic script-kiddie hack, brute-forcing credentials on an exposed RTSP camera (rtsp://[username:password@]ip_address:port/path).
+Still, the bigger question behind it is interesting:
+vulnerable software is simulatable. penetration success is verifiable. hacking is RLable. More importantly, the assertion that vulnerable software is simulatable begs and exploitation success is verifiable suggests we could apply RL to vulnerability research. But this claim requires much deeper understanding from first principles to determine if vulnerability research can truly be solved through RL.">
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/styles.86975a3e31e9cbc08a4b2af5df1266f1452eb347ff82af50f74edce5211f75edbc63693c80c4b4085f2aa3ee525d41ebb87784087415d3026b0fd6d3b07145bc.css" integrity="sha512-hpdaPjHpy8CKSyr13xJm8UUus0f/gq9Q907c5SEfde28Y2k8gMS0CF8qo&#43;5SXUHruHeECHQV0wJrD9bTsHFFvA=="> 
+
+  
+   <link rel="stylesheet" href="http://localhost:1313/css/custom.css"> 
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="http://localhost:1313/images/favicon.ico" />
+
+  
+  
+  
+  
+  <meta property="og:url" content="http://localhost:1313/posts/reinforcement-learning-for-hacking/">
+  <meta property="og:site_name" content="s1r1us Blog">
+  <meta property="og:title" content="Reinforcement Learning for Hacking?">
+  <meta property="og:description" content="Intro I came across a interesting post on twitter that claims the following:
+It is an interesting take, but not the hack mentioned, from the screenshot, it looks like a basic script-kiddie hack, brute-forcing credentials on an exposed RTSP camera (rtsp://[username:password@]ip_address:port/path).
+Still, the bigger question behind it is interesting:
+vulnerable software is simulatable. penetration success is verifiable. hacking is RLable. More importantly, the assertion that vulnerable software is simulatable begs and exploitation success is verifiable suggests we could apply RL to vulnerability research. But this claim requires much deeper understanding from first principles to determine if vulnerability research can truly be solved through RL.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-06-29T13:42:16+05:30">
+    <meta property="article:modified_time" content="2025-06-29T13:42:16+05:30">
+    <meta property="og:image" content="http://localhost:1313/img/nz/IMG_5210.jpeg">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li>
+          <a class="icon" href=" http://localhost:1313/posts/copenhagen-pcr-interpretation-of-llms/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&text=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&title=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&is_video=false&description=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Reinforcement%20Learning%20for%20Hacking%3f&body=Check out this article: http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&title=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&title=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&name=Reinforcement%20Learning%20for%20Hacking%3f&description=%3ch1%20id%3d%22intro%22%3eIntro%3c%2fh1%3e%0a%3cp%3eI%20came%20across%20a%20interesting%20%3ca%20href%3d%22https%3a%2f%2fx.com%2fkhoomeik%2fstatus%2f1937901394369134753%22%3epost%3c%2fa%3e%20on%20twitter%20that%20claims%20the%20following%3a%3c%2fp%3e%0a%3cimg%20src%3d%22%2fimg%2fpost.png%22%20height%3d50%25%20width%3d50%25%20%3e%0a%3cp%3eIt%20is%20an%20interesting%20take%2c%20but%20not%20the%20hack%20mentioned%2c%20from%20the%20screenshot%2c%20it%20looks%20like%20a%20basic%20script-kiddie%20hack%2c%20brute-forcing%20credentials%20on%20an%20exposed%20RTSP%20camera%20%28rtsp%3a%2f%2f%5busername%3apassword%40%5dip_address%3aport%2fpath%29.%3c%2fp%3e%0a%3cp%3eStill%2c%20the%20bigger%20question%20behind%20it%20is%20interesting%3a%3c%2fp%3e%0a%3cul%3e%0a%3cli%3evulnerable%20software%20is%20simulatable.%3c%2fli%3e%0a%3cli%3epenetration%20success%20is%20verifiable.%3c%2fli%3e%0a%3cli%3ehacking%20is%20RLable.%3c%2fli%3e%0a%3c%2ful%3e%0a%3cp%3eMore%20importantly%2c%20the%20assertion%20that%20vulnerable%20software%20is%20simulatable%20begs%20and%20exploitation%20success%20is%20verifiable%20suggests%20we%20could%20apply%20RL%20to%20vulnerability%20research.%20But%20this%20claim%20requires%20much%20deeper%20understanding%20from%20first%20principles%20to%20determine%20if%20vulnerability%20research%20can%20truly%20be%20solved%20through%20RL.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&t=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    
+    <div id="toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#intro">Intro</a></li>
+    <li><a href="#science-of-a-vulnerability">Science of a Vulnerability</a></li>
+    <li><a href="#can-we-do-rl-powered-vulnerability-research">Can we do RL powered vulnerability research?</a></li>
+    <li><a href="#caveat-1-variant-analysis">Caveat 1: Variant Analysis</a></li>
+    <li><a href="#caveat-2-the-new-knowledge-problem">Caveat 2: The New Knowledge Problem</a></li>
+    <li><a href="#why-alphaproof-succeeded-where-rl-hacking-would-fail">Why AlphaProof Succeeded Where RL Hacking Would Fail</a></li>
+    <li><a href="#a-potentially-better-way-to-solve-hacking">A potentially better way to solve hacking?</a></li>
+  </ul>
+</nav>
+    </div>
+    
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        Reinforcement Learning for Hacking?
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2025-06-29 13:42:16 &#43;0530 IST" itemprop="datePublished">2025-06-29</time>
+          
+        </div>
+        
+        
+        
+        
+      </div>
+    </header>
+
+  
+    
+    <div class="content" itemprop="articleBody">
+      <h1 id="intro">Intro</h1>
+<p>I came across a interesting <a href="https://x.com/khoomeik/status/1937901394369134753">post</a> on twitter that claims the following:</p>
+<img src="/img/post.png" height=50% width=50% >
+<p>It is an interesting take, but not the hack mentioned, from the screenshot, it looks like a basic script-kiddie hack, brute-forcing credentials on an exposed RTSP camera (rtsp://[username:password@]ip_address:port/path).</p>
+<p>Still, the bigger question behind it is interesting:</p>
+<ul>
+<li>vulnerable software is simulatable.</li>
+<li>penetration success is verifiable.</li>
+<li>hacking is RLable.</li>
+</ul>
+<p>More importantly, the assertion that vulnerable software is simulatable begs and exploitation success is verifiable suggests we could apply RL to vulnerability research. But this claim requires much deeper understanding from first principles to determine if vulnerability research can truly be solved through RL.</p>
+<h1 id="science-of-a-vulnerability">Science of a Vulnerability</h1>
+<p>If you ask a top security researcher how they find bugs in complex software like Chrome&rsquo;s V8 engine, you&rsquo;ll get the same vague answers Cristiano Ronaldo gives about scoring goals: &ldquo;hard work, practice, experience, mindset.&rdquo;  You won&rsquo;t get the real answer about what happens inside their brain and body when they spot a vulnerability or hit a goal, because it&rsquo;s tacit knowledge learned through years of experience.</p>
+<p>But here is my attempt to hypothize what vulnerability research actually is:</p>
+<blockquote>
+<p>Vulnerability research is recursively understanding software by processing code and documentation, forming highly abstract concepts in memory similar to state machines, then recursively applying reasoning to these abstract concepts to find weird states we call vulnerabilities.</p>
+</blockquote>
+<p>The recursive nature is crucial both for identification of weird state machines and for processing the information itself. To understand V8 code, you need to understand JavaScript engines. To understand JavaScript engines, you need to understand compilers. To understand compilers, you need to understand computer architecture. And so on.</p>
+<p>A similar recursive loop applies while identifying a bug. Once you have the understanding and abstract concepts, you apply recursive reasoning in multiple layers. A type confusion could allow remote code execution, but to find a type confusion, you need to understand how type confusion works, then reason about the code to find where type assumptions can be violated. And so on.</p>
+<h1 id="can-we-do-rl-powered-vulnerability-research">Can we do RL powered vulnerability research?</h1>
+<p>Now that we&rsquo;ve defined what vulnerability research entails, let&rsquo;s examine the prospects of applying reinforcement learning to this domain.</p>
+<p>For successful application of RL to vulnerability research, there are two critical requirements:</p>
+<ol>
+<li>Environment that can simulate &ldquo;real&rdquo; vulnerabilities</li>
+<li>Good feedback signals (rewards) for trajectories that lead to vulnerability discovery</li>
+</ol>
+<p>At first glance this seems doable, to create an environment with good signals, we could harvest all Chromium security issues, generate training data, and perform something like GRPO (Group Relative Policy Optimization) for successful vulnerability identification compared against the oracle of original bugs. We&rsquo;d have both a simulated environment and grounded reward signals.</p>
+<p>But there are fundamental caveats that make this approach less promising than it initially appears.</p>
+<h1 id="caveat-1-variant-analysis">Caveat 1: Variant Analysis</h1>
+<p>This is not a caveat but, I argue that if we know what vulnerability to simulate, then you don&rsquo;t need an RL-trained hacking LLM, you could just use Gemini 5 or Claude 5 to find that vulnerability. These models would likely be able to reason through it as a side effect of being trained on mathematical reasoning.</p>
+<p>Remember that &ldquo;programs are proofs, and proofs are programs, and a vulnerability is also a proof for a program.&rdquo; If we&rsquo;ve already identified the vulnerability class and can simulate it, we&rsquo;ve essentially solved the hard part. The actual discovery becomes a reasoning task that future general LLMs can likely handle.</p>
+<p>This means RL would only be valuable for finding completely novel vulnerability classes , discovering entirely new knowledge rather than variants of known bugs.</p>
+<h1 id="caveat-2-the-new-knowledge-problem">Caveat 2: The New Knowledge Problem</h1>
+<p>Finding a new vulnerability is a completely different beast. It&rsquo;s like discovering new knowledge in a state machine, the bigger and more complex the state machine, the harder it becomes to find novel vulnerabilities.</p>
+<p>Consider a real example: when V8 introduced the new heap sandbox cage, a V8 vulnerability researcher receives this initial prompt: &ldquo;V8 introduced this heap sandbox cage, bypass the cage.&rdquo;
+This represents completely new information, so the researcher has to:</p>
+<ol>
+<li>Dig into design documents and code to completely understand the cage mechanism</li>
+<li>Build mental models of how it constrains memory access</li>
+<li>Start reasoning about the state machine to find ways to escape the cage</li>
+<li>Iterate through countless failed attempts</li>
+</ol>
+<p>That single prompt would eventually lead to finding a bypass, but only after the bypass is discovered do we get any reward. The reward signal is incredibly sparse, you might spend weeks or months understanding the system with zero positive feedback until that eureka moment when you find the escape vector.</p>
+<p>Isn&rsquo;t this level of sparse reward would be extraordinarily difficult to simulate and even harder for an RL system to navigate effectively?</p>
+<h1 id="why-alphaproof-succeeded-where-rl-hacking-would-fail">Why AlphaProof Succeeded Where RL Hacking Would Fail</h1>
+<p>The recent <a href="https://deepmind.google/discover/blog/ai-solves-imo-problems-at-silver-medal-level/">Alphaproof</a> breakthrough might illustrates exactly why mathematical theorem proving works for RL while vulnerability research doesn&rsquo;t.</p>
+<p>Its success can be completely attributed to having an incredible environment and feedback loop from Lean programming and the Lean theorem prover. You get immediate feedback on whether the formal method you provided as proof is correct, and then RL systems like AlphaGo can handle the remaining search task.</p>
+<p>In my opinion, VR has no immediate feedback. It would be hard to provide a better feedback loop for finding completely new vulnerabilities. Most of the exploration is useless, until a point where weird machine appears. I would argue that finding a needle in haystack is where RL might fail.</p>
+<p>That doesn&rsquo;t mean this problem is unsolvable. Problems are soluble.</p>
+<h1 id="a-potentially-better-way-to-solve-hacking">A potentially better way to solve hacking?</h1>
+<p>Rather than trying to create &ldquo;AlphaHacker&rdquo; with sparse vulnerability rewards, we provbably should focus on improving base LLMs on mathematical reasoning tasks. The side effect will naturally lead to better vulnerability research capabilities.</p>
+<p>This mirrors how humans actually learn. We don&rsquo;t start with tabula rasa before vulnerability identification. We build reasoning capabilities through other methods, mathematics, nature, programming, then apply those skills to security research.</p>
+<p>I would argue that LLM that do better on math and programming domains, will naturally transfer to vulnerability research. I will revisit this blog in a year, if its true or not.</p>
+
+    </div>
+  </article>
+
+  
+  
+
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/posts">Posts</a></li>
+         
+          <li><a href="/about">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#intro">Intro</a></li>
+    <li><a href="#science-of-a-vulnerability">Science of a Vulnerability</a></li>
+    <li><a href="#can-we-do-rl-powered-vulnerability-research">Can we do RL powered vulnerability research?</a></li>
+    <li><a href="#caveat-1-variant-analysis">Caveat 1: Variant Analysis</a></li>
+    <li><a href="#caveat-2-the-new-knowledge-problem">Caveat 2: The New Knowledge Problem</a></li>
+    <li><a href="#why-alphaproof-succeeded-where-rl-hacking-would-fail">Why AlphaProof Succeeded Where RL Hacking Would Fail</a></li>
+    <li><a href="#a-potentially-better-way-to-solve-hacking">A potentially better way to solve hacking?</a></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&text=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&title=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&is_video=false&description=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Reinforcement%20Learning%20for%20Hacking%3f&body=Check out this article: http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&title=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&title=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&name=Reinforcement%20Learning%20for%20Hacking%3f&description=%3ch1%20id%3d%22intro%22%3eIntro%3c%2fh1%3e%0a%3cp%3eI%20came%20across%20a%20interesting%20%3ca%20href%3d%22https%3a%2f%2fx.com%2fkhoomeik%2fstatus%2f1937901394369134753%22%3epost%3c%2fa%3e%20on%20twitter%20that%20claims%20the%20following%3a%3c%2fp%3e%0a%3cimg%20src%3d%22%2fimg%2fpost.png%22%20height%3d50%25%20width%3d50%25%20%3e%0a%3cp%3eIt%20is%20an%20interesting%20take%2c%20but%20not%20the%20hack%20mentioned%2c%20from%20the%20screenshot%2c%20it%20looks%20like%20a%20basic%20script-kiddie%20hack%2c%20brute-forcing%20credentials%20on%20an%20exposed%20RTSP%20camera%20%28rtsp%3a%2f%2f%5busername%3apassword%40%5dip_address%3aport%2fpath%29.%3c%2fp%3e%0a%3cp%3eStill%2c%20the%20bigger%20question%20behind%20it%20is%20interesting%3a%3c%2fp%3e%0a%3cul%3e%0a%3cli%3evulnerable%20software%20is%20simulatable.%3c%2fli%3e%0a%3cli%3epenetration%20success%20is%20verifiable.%3c%2fli%3e%0a%3cli%3ehacking%20is%20RLable.%3c%2fli%3e%0a%3c%2ful%3e%0a%3cp%3eMore%20importantly%2c%20the%20assertion%20that%20vulnerable%20software%20is%20simulatable%20begs%20and%20exploitation%20success%20is%20verifiable%20suggests%20we%20could%20apply%20RL%20to%20vulnerability%20research.%20But%20this%20claim%20requires%20much%20deeper%20understanding%20from%20first%20principles%20to%20determine%20if%20vulnerability%20research%20can%20truly%20be%20solved%20through%20RL.%3c%2fp%3e" aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=http%3a%2f%2flocalhost%3a1313%2fposts%2freinforcement-learning-for-hacking%2f&t=Reinforcement%20Learning%20for%20Hacking%3f" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2025  Copyright © s1r1us 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/posts">Posts</a></li>
+         
+        <li><a href="/about">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+
+<script src=/js/code-copy.js></script>
+
+
+
+
+</html>

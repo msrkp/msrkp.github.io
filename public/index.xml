@@ -7,14 +7,21 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
-    <lastBuildDate>Fri, 06 Jun 2025 17:17:59 +0530</lastBuildDate>
+    <lastBuildDate>Sun, 29 Jun 2025 13:42:16 +0530</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reinforcement Learning for Hacking?</title>
+      <link>http://localhost:1313/posts/reinforcement-learning-for-hacking/</link>
+      <pubDate>Sun, 29 Jun 2025 13:42:16 +0530</pubDate>
+      <guid>http://localhost:1313/posts/reinforcement-learning-for-hacking/</guid>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;I came across a interesting &lt;a href=&#34;https://x.com/khoomeik/status/1937901394369134753&#34;&gt;post&lt;/a&gt; on twitter that claims the following:&lt;/p&gt;&#xA;&lt;img src=&#34;http://localhost:1313/img/post.png&#34; height=50% width=50% &gt;&#xA;&lt;p&gt;It is an interesting take, but not the hack mentioned, from the screenshot, it looks like a basic script-kiddie hack, brute-forcing credentials on an exposed RTSP camera (rtsp://[username:password@]ip_address:port/path).&lt;/p&gt;&#xA;&lt;p&gt;Still, the bigger question behind it is interesting:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;vulnerable software is simulatable.&lt;/li&gt;&#xA;&lt;li&gt;penetration success is verifiable.&lt;/li&gt;&#xA;&lt;li&gt;hacking is RLable.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;More importantly, the assertion that vulnerable software is simulatable begs and exploitation success is verifiable suggests we could apply RL to vulnerability research. But this claim requires much deeper understanding from first principles to determine if vulnerability research can truly be solved through RL.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Copenhagen-PCR Interpretation of LLMs</title>
       <link>http://localhost:1313/posts/copenhagen-pcr-interpretation-of-llms/</link>
       <pubDate>Fri, 06 Jun 2025 17:17:59 +0530</pubDate>
       <guid>http://localhost:1313/posts/copenhagen-pcr-interpretation-of-llms/</guid>
-      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;What’s coming is both exciting and a little scary. I&amp;rsquo;ve been looking for the right analogy to explain this feeling, the sense that something fundamental is shifting in how machines interact with &lt;em&gt;knowledge&lt;/em&gt; and how it might distrupt every corner of the economy.&lt;/p&gt;&#xA;&lt;p&gt;From the beginning, knowledge was something confined to the walls of the human mind, that is discovered, refined and passed through language, intuition and teaching. But, now, for the first time, machines are not only consuming that knowledge, but learning how to replicate it(And replciation, frankly, is what most human jobs are). The machine doesn&amp;rsquo;t understand it, it applies. At scale, and often better than us and without tiring.&lt;/p&gt;</description>
+      <description>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;&#xA;&lt;p&gt;What’s coming is both exciting and a little scary. I&amp;rsquo;ve been looking for the right analogy to explain this feeling, the sense that something fundamental is shifting in how machines interact with &lt;em&gt;knowledge&lt;/em&gt; and how it might distrupt every corner of the economy.&lt;/p&gt;&#xA;&lt;p&gt;From the beginning, knowledge was something confined to the walls of the human mind, that is discovered, refined and passed through language, intuition and teaching. But, now, for the first time, machines are not only consuming that knowledge, but learning how to replicate it(And replication, frankly, is what most human jobs are). The machine doesn&amp;rsquo;t understand it, it applies. At scale, and often better than us and without tiring.&lt;/p&gt;</description>
     </item>
     <item>
       <title>How the hacking agents work?</title>
