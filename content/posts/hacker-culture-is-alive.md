@@ -7,7 +7,7 @@ categories:
 keywords:
     - hacker
 images:
- - /img/nz/nz.jpeg 
+ - /img/nz/nz.jpg 
 ---
 
 >what killed the hacker culture
