@@ -7,8 +7,22 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>Copyright © s1r1us</copyright>
-    <lastBuildDate>Wed, 06 Aug 2025 16:18:33 +0530</lastBuildDate>
+    <lastBuildDate>Thu, 04 Dec 2025 16:18:33 +0530</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/security/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hacker With AI Hacking AI</title>
+      <link>http://localhost:1313/posts/hacking-with-ai-hacking-ai/</link>
+      <pubDate>Thu, 04 Dec 2025 16:18:33 +0530</pubDate>
+      <guid>http://localhost:1313/posts/hacking-with-ai-hacking-ai/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;http://localhost:1313/img/nz/image.png&#34; alt=&#34;I will let you know if AI can do shit!&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;I gave a presentation on Hacking with AI and Hacking AI at HackAICon in portugal.&lt;/p&gt;&#xA;&lt;p&gt;Link to the slides:&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://docs.google.com/presentation/d/16v28zsGlgixZjECwqPNrcGKJbpChwj2F44bqzfAgTcg/edit?slide=id.g37c5d8d8a49_0_1#slide=id.g37c5d8d8a49_0_1&#34;&gt;https://docs.google.com/presentation/d/16v28zsGlgixZjECwqPNrcGKJbpChwj2F44bqzfAgTcg/edit?slide=id.g37c5d8d8a49_0_1#slide=id.g37c5d8d8a49_0_1&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Ask the Right Question</title>
+      <link>http://localhost:1313/posts/ask-the-right-question/</link>
+      <pubDate>Fri, 07 Nov 2025 16:18:33 +0530</pubDate>
+      <guid>http://localhost:1313/posts/ask-the-right-question/</guid>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;To ask the right question is already half the solution of a problem. - Carl Jung&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;Whether solving a hard problem, building something people use, or breaking a system the first step is “asking a good question”.&lt;/p&gt;&#xA;&lt;p&gt;But that’s only half the journey. The other half is doing the work, pushing through the fog until the next question appears. Most questions start broad and shallow, and that’s perfectly fine; the key is to keep digging deeper, layer by layer, until real understanding emerges.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Hacker Culture Is Alive and Thriving</title>
       <link>http://localhost:1313/posts/hacker-culture-is-alive/</link>
